@@ -1,0 +1,111 @@
+//Gradle version: 5.6.2
+apply plugin: 'base'
+apply plugin: 'java'
+apply plugin: 'war'
+
+description = """Ansible Operator Web Server"""
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+repositories {
+    mavenLocal()
+    maven { url "http://nexus.arksea.net:8081/nexus/content/groups/public/" }
+    maven { url "https://repo.maven.apache.org/maven2" }
+}
+
+dependencies {
+    compile 'net.arksea:restapi-base:1.1.0-SNAPSHOT'
+    compile 'net.arksea:restapi-influx:1.1.0-SNAPSHOT'
+    compile 'net.arksea:httpclient-asker:1.1.0-SNAPSHOT'
+
+    compile 'org.springframework:spring-core:4.3.27.RELEASE'
+    compile 'org.springframework:spring-context:4.3.27.RELEASE'
+    compile 'org.springframework:spring-context-support:4.3.27.RELEASE'
+    compile 'org.springframework:spring-webmvc:4.3.27.RELEASE'
+
+    compile 'com.google.guava:guava:17.0'
+    compile 'org.aspectj:aspectjweaver:1.9.5'
+    compile 'org.apache.commons:commons-lang3:3.3.2'
+
+    compile 'org.apache.logging.log4j:log4j-api:2.13.3'
+    compile 'org.apache.logging.log4j:log4j-core:2.13.3'
+    //Log4j 1.x Bridge to Log4j 2.x
+    compile 'org.apache.logging.log4j:log4j-1.2-api:2.13.3'
+    //Apache Commons Logging Bridge to Log4j 2.x
+    compile 'org.apache.logging.log4j:log4j-jcl:2.13.3'
+    //slf4j Bridge to Log4j 2.x
+    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.13.3'
+    //Java Util Logging Bridge to Log4j 2.x
+    compile 'org.apache.logging.log4j:log4j-jul:2.13.3'
+
+    providedCompile  'javax.servlet:javax.servlet-api:3.1.0'
+
+    runtime 'mysql:mysql-connector-java:5.1.22'
+    runtime 'org.apache.tomcat:tomcat-dbcp:8.0.30'
+    runtime 'commons-dbcp:commons-dbcp:1.4'
+    runtime 'org.apache.commons:commons-pool2:2.2'
+
+    testCompile 'junit:junit:4.11'
+    testCompile 'org.springframework:spring-test:4.3.27.RELEASE'
+}
+
+task ngBuild(type: Exec) {
+    workingDir '../aop-web'
+    commandLine 'cmd', '/c', 'ng build --prod'
+}
+
+//------------------------------------------------------------------------
+//Development
+
+task ngBuildDev(type: Exec) {
+    workingDir '../aop-web'
+    commandLine 'cmd', '/c', 'ng build --output-path dist-dev'
+}
+//拷贝部署文件到指定目录
+task publishDev {
+    dependsOn(build,ngBuildDev)
+    doLast {
+        //拷贝前先删除部署目录
+        delete('tomcat/webapps/aop-web-server')
+        copy { //拷贝本项目WEB相关文件
+            from 'src/main/webapp/'
+            into 'tomcat/webapps/aop-web-server'
+        }
+        copy { //拷贝本项目WEB相关文件
+            from '../aop-web/dist-dev'
+            into 'tomcat/webapps/aop-web-server'
+        }
+        copy { //拷贝依赖库
+            from configurations.runtime
+            into 'tomcat/webapps/aop-web-server/WEB-INF/lib'
+        }
+        delete('tomcat/webapps/aop-web-server/WEB-INF/lib/xml-apis-1.0.b2.jar')
+        copy { //拷贝类
+            from 'build/classes/groovy/main/'
+            into 'tomcat/webapps/aop-web-server/WEB-INF/classes'
+        }
+        copy { //拷贝资源
+            from 'build/resources/main/'
+            into 'tomcat/webapps/aop-web-server/WEB-INF/classes'
+        }
+        copy { //拷贝资源
+            from 'build/resources/test/'
+            into 'tomcat/webapps/aop-web-server/WEB-INF/classes'
+        }
+        copy { //拷贝META-INF
+            from 'build/tmp/war/'
+            into 'tomcat/webapps/aop-web-server/META-INF/'
+        }
+    }
+}
+
+task startTomcat(type: Exec) {
+    workingDir './tomcat/bin'
+    commandLine 'cmd', '/c', 'startup.bat'
+    environment CATALINA_HOME: 'e:\\github\\ansible-operator\\aop-web-server\\tomcat'
+}
+
+startTomcat.dependsOn(publishDev)

@@ -1,11 +1,11 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { ConfirmDialog } from './confirm.dialog';
-
+import { NgModule } from '@angular/core'
+import { CommonModule } from '@angular/common'
+import { HttpClientModule } from '@angular/common/http'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap'
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap'
+import { ConfirmDialog } from './confirm.dialog'
+import { AppMessageNotify } from './app-message-notify'
 
 @NgModule({
   imports: [
@@ -18,7 +18,7 @@ import { ConfirmDialog } from './confirm.dialog';
   entryComponents: [
     ConfirmDialog
   ],
-  providers: [],
+  providers: [AppMessageNotify],
   exports: []
 })
 export class CommonUtilsModule { }

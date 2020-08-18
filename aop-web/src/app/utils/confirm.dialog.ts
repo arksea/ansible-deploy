@@ -3,7 +3,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'confirm-dialog',
-  templateUrl: './confirm-dialog.html'
+  templateUrl: './confirm.dialog.html'
 })
 export class ConfirmDialog {
   @Input() title: string = '请确认'

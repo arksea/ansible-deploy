@@ -10,6 +10,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AppNavbarComponent } from './app-navbar.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { CommonUtilsModule } from './utils/utils.module';
 /////////////////////////////////////////////////////////////////////////////////////
 
 @NgModule({
@@ -17,9 +18,12 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     AppComponent,AppNavbarComponent
   ],
   imports: [
-    BrowserModule,
-    AppRoutingModule,
-    NgbModule
+    BrowserModule,BrowserAnimationsModule,
+    AppRoutingModule,FormsModule,ReactiveFormsModule,
+    NgbModule,
+    CommonUtilsModule
+  ],
+  entryComponents: [
   ],
   providers: [],
   bootstrap: [AppComponent]

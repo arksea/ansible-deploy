@@ -9,7 +9,7 @@ http://www.springmodules.org/schema/cache/springmodules-ehcache.xsd"
             http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          version="3.0">
 
-    <display-name>weather-config-web</display-name>
+    <display-name>aop-web-server</display-name>
     
     <context-param>
         <param-name>contextConfigLocation</param-name>

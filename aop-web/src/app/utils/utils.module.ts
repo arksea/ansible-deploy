@@ -5,7 +5,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap'
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap'
 import { ConfirmDialog } from './confirm.dialog'
-import { AppMessageNotify } from './app-message-notify'
+import { MessageNotify } from './message-notify'
+import { HttpUtils } from './http-utils'
 
 @NgModule({
   imports: [
@@ -18,7 +19,7 @@ import { AppMessageNotify } from './app-message-notify'
   entryComponents: [
     ConfirmDialog
   ],
-  providers: [AppMessageNotify],
+  providers: [MessageNotify,HttpUtils],
   exports: []
 })
 export class CommonUtilsModule { }

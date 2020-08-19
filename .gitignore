@@ -2,3 +2,6 @@
 /aop-web-server/build
 /aop-web-server/.gradle
 /aop-web/node_modules
+/aop-web/dist-dev
+/aop-web-server/tomcat/webapps
+/aop-web-server/tomcat/logs/*.log

@@ -9,7 +9,7 @@
             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
     
     <!-- 自动扫描且只扫描@Controller -->
-    <context:component-scan base-package="com.felink.weather.config" use-default-filters="false">
+    <context:component-scan base-package="net.arksea.ansible.operator.api" use-default-filters="false">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
         <context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
     </context:component-scan>
@@ -44,16 +44,5 @@
         <property name="maxUploadSize" value="10240000"></property><!-- 最大上传文件大小 -->
         <property name="maxInMemorySize" value="10240"></property>
     </bean>
-     <!--将Controller抛出的异常转到特定View--> 
-<!--    <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">  
-         定义默认的异常处理页面，当该异常类型的注册时使用   
-        <property name="defaultErrorView" value="error/500"></property>
-         定义异常处理页面用来获取异常信息的变量名，默认名为exception   
-        <property name="exceptionAttribute" value="exception"></property>
-        <property name="exceptionMappings">  
-            <props>  
-                <prop key="java.lang.Throwable">error/500</prop>
-            </props>  
-        </property>  
-    </bean>-->
+
 </beans>

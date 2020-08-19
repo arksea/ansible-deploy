@@ -26,9 +26,19 @@ dependencies {
     compile 'org.springframework:spring-context-support:4.3.27.RELEASE'
     compile 'org.springframework:spring-webmvc:4.3.27.RELEASE'
 
+    compile 'org.springframework.data:spring-data-jpa:1.11.4.RELEASE'
+    compile  'org.hibernate:hibernate-entitymanager:4.3.5.Final'
+    compile  'org.hibernate:hibernate-validator:5.0.3.Final'
+
+    compile 'org.apache.shiro:shiro-core:1.5.1'
+    compile 'org.apache.shiro:shiro-web:1.5.1'
+    compile 'org.apache.shiro:shiro-spring:1.5.1'
+    compile 'com.auth0:java-jwt:3.2.0'
+
     compile 'com.google.guava:guava:17.0'
     compile 'org.aspectj:aspectjweaver:1.9.5'
     compile 'org.apache.commons:commons-lang3:3.3.2'
+    compile 'commons-fileupload:commons-fileupload:1.3.2'
 
     compile 'org.apache.logging.log4j:log4j-api:2.13.3'
     compile 'org.apache.logging.log4j:log4j-core:2.13.3'
@@ -50,6 +60,7 @@ dependencies {
 
     testCompile 'junit:junit:4.11'
     testCompile 'org.springframework:spring-test:4.3.27.RELEASE'
+    testCompile 'org.mockito:mockito-core:1.9.5'
 }
 
 task ngBuild(type: Exec) {
@@ -84,7 +95,7 @@ task publishDev {
         }
         delete('tomcat/webapps/aop-web-server/WEB-INF/lib/xml-apis-1.0.b2.jar')
         copy { //拷贝类
-            from 'build/classes/groovy/main/'
+            from 'build/classes/java/main/'
             into 'tomcat/webapps/aop-web-server/WEB-INF/classes'
         }
         copy { //拷贝资源

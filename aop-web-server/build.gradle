@@ -116,7 +116,7 @@ task publishDev {
 task startTomcat(type: Exec) {
     workingDir './tomcat/bin'
     commandLine 'cmd', '/c', 'startup.bat'
-    environment CATALINA_HOME: 'e:\\github\\ansible-operator\\aop-web-server\\tomcat'
+    environment CATALINA_HOME: 'e:\\github\\ansible-deploy\\aop-web-server\\tomcat'
 }
 
 startTomcat.dependsOn(publishDev)

@@ -1,4 +1,4 @@
-package net.arksea.ansible.deploy.api.auth.entity;
+package net.arksea.ansible.deploy.api.hosts.entity;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;

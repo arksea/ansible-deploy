@@ -9,7 +9,7 @@
             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
     
     <!-- 自动扫描且只扫描@Controller -->
-    <context:component-scan base-package="net.arksea.ansible.operator.api" use-default-filters="false">
+    <context:component-scan base-package="net.arksea.ansible.deploy.api" use-default-filters="false">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
         <context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
     </context:component-scan>

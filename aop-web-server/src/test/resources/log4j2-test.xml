@@ -8,7 +8,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="net.arksea.ansible.operator.api" level="debug"/>
+        <Logger name="net.arksea.ansible.deploy.api" level="debug"/>
         <Root level="info">
             <AppenderRef ref="console"/>
         </Root>

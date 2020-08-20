@@ -3,7 +3,7 @@ apply plugin: 'base'
 apply plugin: 'java'
 apply plugin: 'war'
 
-description = """Ansible Operator Web Server"""
+description = """Ansible Deploy Web Server"""
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 

@@ -46,7 +46,7 @@
         <property name="maxAge" value="2592000"/>
     </bean>
 
-    <bean id="authRealm" class="net.arksea.ansible.operator.api.auth.service.AuthRealm">
+    <bean id="authRealm" class="net.arksea.ansible.deploy.api.auth.service.AuthRealm">
         <property name="authService" ref="authService"/>
         <property name="credentialsMatcher" ref="credentialsMatcher"/>
     </bean>

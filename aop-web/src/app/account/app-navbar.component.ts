@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
-import { AccountService } from './account/account.service';
+import { AccountService } from './account.service';
 import { map } from 'rxjs/operators';
 
 @Component({

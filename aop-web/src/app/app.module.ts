@@ -12,15 +12,16 @@ import { AppRoutingModule } from './app-routing.module';
 //导航、公共控件
 import { AppComponent } from './app.component';
 import { AppHomeComponent } from './app-home.component';
-import { AppNavbarComponent } from './app-navbar.component';
 import { CommonUtilsModule } from './utils/utils.module';
 //登录与权限
 import { AccountModule } from './account/account.module';
+//组管理
+import { GroupModule } from './group/group.module';
 /////////////////////////////////////////////////////////////////////////////////////
 
 @NgModule({
   declarations: [
-    AppComponent,AppHomeComponent,AppNavbarComponent
+    AppComponent,AppHomeComponent
   ],
   imports: [
     //系统模块
@@ -29,6 +30,7 @@ import { AccountModule } from './account/account.module';
     VenderModule, CommonUtilsModule,
     //登录与权限
     AccountModule,
+    GroupModule,
     //路由
     AppRoutingModule, //主路由必须在最后，以避免屏蔽各子模块自己的路由
   ],

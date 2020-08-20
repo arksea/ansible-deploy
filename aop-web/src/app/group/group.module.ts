@@ -6,13 +6,9 @@ import { VenderModule } from '../vender.module';
 import { NgbPaginationModule, NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { RouterModule } from '@angular/router';
-import { AccountService } from './account.service';
-import { AuthGuard } from './auth-guard';
-import { LoginComponent } from './login.component';
-import { SignUpComponent } from './sign-up.component';
-import { AccountRoutingModule } from './account-routing.module';
-import { CommonUtilsModule } from '../utils/utils.module';
-import { AppNavbarComponent } from './app-navbar.component';
+import { GroupRoutingModule } from './group-routing.module';
+import { GroupsComponent } from './groups.component';
+import { AccountModule } from '../account/account.module';
 
 @NgModule({
   imports: [
@@ -20,15 +16,13 @@ import { AppNavbarComponent } from './app-navbar.component';
     CommonModule, FormsModule, ReactiveFormsModule,
     HttpClientModule,
     VenderModule, NgbPaginationModule, NgbAlertModule, NgbModule,
-    CommonUtilsModule, AccountRoutingModule],
+    AccountModule, GroupRoutingModule],
   declarations: [
-    AppNavbarComponent,
-    LoginComponent,
-    SignUpComponent,
+    GroupsComponent
   ],
   entryComponents: [
   ],
-  providers: [AuthGuard, AccountService],
-  exports: [ AppNavbarComponent ]
+  providers: [],
+  exports: []
 })
-export class AccountModule { }
+export class GroupModule { }

@@ -3,10 +3,12 @@
 // The list of file replacements can be found in `angular.json`.
 
 const account_web_server = "http://localhost:8080"
+const api_web_server = "http://localhost:8080"
 
 export const environment = {
   production: false,
   accountApiUrl: account_web_server,
+  apiUrl: api_web_server
 };
 
 /*

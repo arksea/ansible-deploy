@@ -1,9 +1,9 @@
-package net.arksea.ansible.deploy.api.hosts.entity;
+package net.arksea.ansible.deploy.api.manage.entity;
 
 import net.arksea.ansible.deploy.api.auth.entity.User;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 /**
@@ -13,22 +13,42 @@ import java.util.Set;
 @Entity
 @Table(name = "dp2_app_group")
 public class AppGroup extends IdEntity {
-    private String describes; // 应用分组描述
+    private String name;      // 分组名称
+    private String description; // 分组描述
+    private String avatar;    // 分组头像
     private Set<App> apps;    // 分组管理的应用
     private Set<Host> hosts;  // 分组管理的主机
     private Set<User> users;  // 加入分组的用户
 
-    @NotNull
-    @Column(length = 64, nullable = false)
-    public String getDescribes() {
-        return describes;
+    @NotBlank
+    @Column(length = 64, nullable = false, unique = true)
+    public String getName() {
+        return name;
     }
 
-    public void setDescribes(String describes) {
-        this.describes = describes;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    @OneToMany(mappedBy = "appGroup", cascade = CascadeType.ALL)
+    @Column(length = 128)
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    @Column(length = 128)
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @OneToMany(mappedBy = "appGroup")
     public Set<App> getApps() {
         return apps;
     }
@@ -37,7 +57,7 @@ public class AppGroup extends IdEntity {
         this.apps = apps;
     }
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany()
     @JoinTable(name = "dp2_app_group_hosts",
             joinColumns = @JoinColumn(name = "app_group_id"),
             inverseJoinColumns = @JoinColumn(name = "host_id"))
@@ -49,7 +69,7 @@ public class AppGroup extends IdEntity {
         this.hosts = hosts;
     }
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany()
     @JoinTable(name = "dp2_app_group_users",
             joinColumns = @JoinColumn(name = "app_group_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))

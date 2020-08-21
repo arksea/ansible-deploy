@@ -9,6 +9,8 @@ import { RouterModule } from '@angular/router';
 import { GroupRoutingModule } from './group-routing.module';
 import { GroupsComponent } from './groups.component';
 import { AccountModule } from '../account/account.module';
+import { NewGroupDialog } from './new-group.dialog';
+import { GroupService } from './group.service';
 
 @NgModule({
   imports: [
@@ -18,11 +20,12 @@ import { AccountModule } from '../account/account.module';
     VenderModule, NgbPaginationModule, NgbAlertModule, NgbModule,
     AccountModule, GroupRoutingModule],
   declarations: [
-    GroupsComponent
+    GroupsComponent,NewGroupDialog
   ],
   entryComponents: [
+    NewGroupDialog
   ],
-  providers: [],
+  providers: [GroupService],
   exports: []
 })
 export class GroupModule { }

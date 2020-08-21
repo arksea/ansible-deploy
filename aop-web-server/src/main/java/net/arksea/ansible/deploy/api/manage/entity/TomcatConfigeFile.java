@@ -1,4 +1,4 @@
-package net.arksea.ansible.deploy.api.hosts.entity;
+package net.arksea.ansible.deploy.api.manage.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

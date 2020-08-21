@@ -1,4 +1,4 @@
-package net.arksea.ansible.deploy.api.hosts.entity;
+package net.arksea.ansible.deploy.api.manage.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

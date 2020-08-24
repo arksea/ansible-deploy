@@ -3,6 +3,7 @@ import { FormDataEvent } from '@angular/forms/esm2015';
 import { FormGroup,FormControl,Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NewGroupDialog } from './new-group.dialog';
+import { GroupService } from './group.service';
 
 @Component({
   selector: 'groups',
@@ -10,7 +11,7 @@ import { NewGroupDialog } from './new-group.dialog';
 })
 export class GroupsComponent implements OnInit {
 
-  constructor(private modal: NgbModal) {
+  constructor(private modal: NgbModal, public svc: GroupService) {
   }
 
   searchForm: FormGroup = new FormGroup({
@@ -18,12 +19,12 @@ export class GroupsComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.svc.getGroups();
   }
 
   search(event: FormDataEvent) {
     event.preventDefault();
     let pre = this.searchForm.get('searchPrefix').value;
-    //this.accountService.login({name: n, password: p});
   }
 
   newGroup() {

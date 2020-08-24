@@ -11,7 +11,7 @@ import java.util.Set;
 @Entity
 @Table(name = "sys_roles")
 public class Role extends IdEntity {
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final static ObjectMapper objectMapper = new ObjectMapper();
 
     private String role;
     private String description;

@@ -23,12 +23,12 @@ export class NewGroupDialog {
         event.preventDefault();
         let name = this.createForm.get('name').value;
         let desc = this.createForm.get('description').value;
-        this.svc.createGroup(name, desc).subscribe(response => {
-            if (response.code === 0) {
+        this.svc.createGroup(name, desc).subscribe(error => {
+            if (!error) {
                 this.modal.close('ok');
                 this.alert.success('新建组成功');
             } else {
-                this.alert.warning(response.error);
+                this.alert.warning(error);
             }
         });
     }

@@ -48,7 +48,7 @@ public class AppGroup extends IdEntity {
         this.description = description;
     }
 
-    @OneToMany(mappedBy = "appGroup")
+    @OneToMany(mappedBy = "appGroup",fetch = FetchType.EAGER)
     public Set<App> getApps() {
         return apps;
     }
@@ -57,7 +57,7 @@ public class AppGroup extends IdEntity {
         this.apps = apps;
     }
 
-    @ManyToMany()
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "dp2_app_group_hosts",
             joinColumns = @JoinColumn(name = "app_group_id"),
             inverseJoinColumns = @JoinColumn(name = "host_id"))
@@ -69,7 +69,7 @@ public class AppGroup extends IdEntity {
         this.hosts = hosts;
     }
 
-    @ManyToMany()
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "dp2_app_group_users",
             joinColumns = @JoinColumn(name = "app_group_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))

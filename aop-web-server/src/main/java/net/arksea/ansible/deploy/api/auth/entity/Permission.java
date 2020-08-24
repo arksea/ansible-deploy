@@ -12,7 +12,7 @@ import java.util.Map;
 @Entity
 @Table(name = "sys_permissions")
 public class Permission extends IdEntity implements Comparable<Permission> {
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final static ObjectMapper objectMapper = new ObjectMapper();
 
     private String permission;  //权限
     private String description; //描述

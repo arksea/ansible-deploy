@@ -13,12 +13,13 @@ import java.util.Set;
 @Entity
 @Table(name = "dp2_app_group")
 public class AppGroup extends IdEntity {
-    private String name;      // 分组名称
-    private String description; // 分组描述
-    private String avatar;    // 分组头像
-    private Set<App> apps;    // 分组管理的应用
-    private Set<Host> hosts;  // 分组管理的主机
-    private Set<User> users;  // 加入分组的用户
+    private String name;       // 分组名称
+    private String description;// 分组描述
+    private String avatar;     // 分组头像
+    private Set<App> apps;     // 分组管理的应用
+    private Set<Host> hosts;   // 分组管理的主机
+    private Set<User> users;   // 加入分组的用户
+    private boolean enabled;   // 默认为true，删除或锁定将设置为false
 
     @NotBlank
     @Column(length = 64, nullable = false, unique = true)
@@ -79,5 +80,14 @@ public class AppGroup extends IdEntity {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    @Column(nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

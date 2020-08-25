@@ -1,15 +1,13 @@
 package net.arksea.ansible.deploy.api.manage.rest;
 
 import net.arksea.ansible.deploy.api.ResultCode;
+import net.arksea.ansible.deploy.api.auth.entity.User;
 import net.arksea.ansible.deploy.api.manage.entity.AppGroup;
 import net.arksea.ansible.deploy.api.manage.service.ManageService;
 import net.arksea.restapi.RestResult;
 import net.arksea.restapi.RestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -40,5 +38,43 @@ public class ManageController {
         Iterable<AppGroup> groups = manageService.getAppGroups();
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         return new RestResult<>(0, groups, reqid);
+    }
+
+    @RequestMapping(path="groups/{groupId}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
+    public String deleteGroup(@PathVariable(name="groupId") long groupId,
+                              final HttpServletRequest httpRequest) {
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        manageService.deleteAppGroup(groupId);
+        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+    }
+    //-------------------------------------------------------------------------
+    @RequestMapping(path="users/active", method = RequestMethod.GET, produces = MEDIA_TYPE)
+    public RestResult<Iterable<User>> getActiveUsers(final HttpServletRequest httpRequest) {
+        Iterable<User> users = manageService.getUsers(true);
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        return new RestResult<>(0, users, reqid);
+    }
+
+    @RequestMapping(path="users/active/{userId}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
+    public String blockUser(@PathVariable(name="userId") long userId,
+                               final HttpServletRequest httpRequest) {
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        manageService.blockUser(userId);
+        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+    }
+
+    @RequestMapping(path="users/blocked", method = RequestMethod.GET, produces = MEDIA_TYPE)
+    public RestResult<Iterable<User>> getBlockedUsers(final HttpServletRequest httpRequest) {
+        Iterable<User> users = manageService.getUsers(false);
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        return new RestResult<>(0, users, reqid);
+    }
+
+    @RequestMapping(path="users/blocked/{userId}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
+    public String deleteUser(@PathVariable(name="userId") long userId,
+                              final HttpServletRequest httpRequest) {
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        //manageService.deleteUser(userId);
+        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
     }
 }

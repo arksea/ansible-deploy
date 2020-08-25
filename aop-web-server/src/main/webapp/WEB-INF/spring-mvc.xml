@@ -36,7 +36,6 @@
 	
      <!--定义无需Controller的url<->view直接映射--> 
     <mvc:view-controller path="/" view-name="/index.html"/>
-    <mvc:view-controller path="/app/**" view-name="/index.html"/>
 
     <!-- 文件上传解析器 -->
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">

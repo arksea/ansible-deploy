@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject, BehaviorSubject, Observable } from 'rxjs';
-import { AppGroup } from './group.entity';
+import { Subject, Observable } from 'rxjs';
+import { AppGroup } from './groups.entity';
 import { ServiceResponse } from '../utils/http-utils';
 import { HttpUtils } from '../utils/http-utils';
 import { MessageNotify } from "../utils/message-notify";
 import { environment } from '../../environments/environment';
-import { map, flatMap } from 'rxjs/operators';
-import { CrudModel, IModelInfo, UpdateModelField } from '../utils/crud-model';
-import { AddModel } from '../utils/crud-model';
+import { map } from 'rxjs/operators';
+import { CrudModel, IModelInfo } from '../utils/crud-model';
 
 // type ChildPermMap = Map<string, Set<string>>;
 
@@ -22,11 +21,14 @@ class AppGroupModelInfo implements IModelInfo<number, AppGroup> {
     public needSort(): boolean {
         return true;
     }
+    public getSortOrder(): string {
+        return 'asc';
+    }
 }
 
 
 @Injectable()
-export class GroupService {
+export class GroupsService {
     private EMETY_SET: Set<string> = new Set();
     public model: CrudModel<number, AppGroup> = new CrudModel<number, AppGroup>(new AppGroupModelInfo());
     public groupList: Subject<AppGroup[]> = this.model.modelList;
@@ -59,8 +61,24 @@ export class GroupService {
         const url = environment.apiUrl + '/api/groups';
         let ret: Observable<ServiceResponse<Array<AppGroup>>> = this.httpUtils.httpGet('查询组信息', url);
         ret.subscribe(data => {
-            this.model.opResetModels.next(data.result);
+            if (data.code == 0) {
+                this.model.opResetModels.next(data.result);
+            }
         });
     }
 
+    public deleteGroup(group: AppGroup): Observable<boolean> {
+        const url = environment.apiUrl + '/api/groups/' + group.id;
+        let ret = this.httpUtils.httpDelete('删除组', url);
+        return ret.pipe(map (
+            data => {
+                if (data.code == 0) {
+                    this.model.opDelModel.next(group.id)
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        ));
+    }
 }

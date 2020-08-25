@@ -20,6 +20,7 @@ export interface IModelInfo<K,T> {
     getModelMapKey(t: T): K;
     getSortKey(t: T): any;
     needSort(): boolean;
+    getSortOrder(): string;
 }
 
 export class CrudModel<K,T> {
@@ -27,12 +28,14 @@ export class CrudModel<K,T> {
     // opUpdateModel      ──┤
     // opResetModels      ──┤
     // opAddModel         ──┤
-    // opDelModel         ──┘
+    // opDelModel         ──┤
+    // opUpdateSort       ──┘
     opResetModels: Subject<T[]> = new Subject();
     opUpdateModels: Subject<T[]> = new Subject();
     opUpdateModel: Subject<T> = new Subject();
     opAddModel: Subject<AddModel<K,T>> = new Subject();
     opDelModel: Subject<K> = new Subject();
+    opUpdateSort: Subject<any> = new Subject();
     updates: Subject<IModelMapOperation<K,T>> = new Subject();
     public modelMap: Observable<ModelMap<K,T>>;
     public modelList: Subject<T[]> = new BehaviorSubject<T[]>([]);
@@ -83,7 +86,7 @@ export class CrudModel<K,T> {
                     list.push(it);
                 });
                 if (mapping.needSort()) {
-                    return _.sortBy(list, (t: T) => mapping.getSortKey(t));
+                    return _.orderBy(list, (t: T) => mapping.getSortKey(t), [mapping.getSortOrder()]);
                 } else {
                     return list;
                 }
@@ -103,6 +106,14 @@ export class CrudModel<K,T> {
             map(function (key: K): IModelMapOperation<K,T> {
                 return (modelMap: ModelMap<K,T>) => {
                     modelMap.delete(key);
+                    return modelMap;
+                };
+            })
+        ).subscribe(this.updates);
+
+        this.opUpdateSort.pipe(
+            map(function (_: any): IModelMapOperation<K,T> {
+                return (modelMap: ModelMap<K,T>) => {
                     return modelMap;
                 };
             })

@@ -14,7 +14,7 @@ import java.util.Set;
 @Entity
 @Table(name = "sys_users", indexes = {@Index(columnList = "lastLogin")})
 public class User extends IdEntity {
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final static ObjectMapper objectMapper = new ObjectMapper();
 
     private String name;
     private String email;

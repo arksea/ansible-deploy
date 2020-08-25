@@ -16,7 +16,9 @@ import { CommonUtilsModule } from './utils/utils.module';
 //登录与权限
 import { AccountModule } from './account/account.module';
 //组管理
-import { GroupModule } from './group/group.module';
+import { GroupsModule } from './groups/groups.module';
+//用户管理
+import { UsersModule } from './users/users.module';
 /////////////////////////////////////////////////////////////////////////////////////
 
 @NgModule({
@@ -30,7 +32,8 @@ import { GroupModule } from './group/group.module';
     VenderModule, CommonUtilsModule,
     //登录与权限
     AccountModule,
-    GroupModule,
+    GroupsModule,
+    UsersModule,
     //路由
     AppRoutingModule, //主路由必须在最后，以避免屏蔽各子模块自己的路由
   ],

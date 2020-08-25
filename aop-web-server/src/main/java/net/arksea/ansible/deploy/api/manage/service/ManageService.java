@@ -1,5 +1,7 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
+import net.arksea.ansible.deploy.api.auth.dao.UserDao;
+import net.arksea.ansible.deploy.api.auth.entity.User;
 import net.arksea.ansible.deploy.api.manage.dao.AppGroupDao;
 import net.arksea.ansible.deploy.api.manage.entity.AppGroup;
 import net.arksea.restapi.RestException;
@@ -8,8 +10,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Create by xiaohaixing on 2020/8/21
@@ -77,12 +77,16 @@ public class ManageService {
     @Autowired
     AppGroupDao appGroupDao;
 
+    @Autowired
+    UserDao userDao;
+
     @Transactional
     public AppGroup createGroup(String name, String description) {
         try {
             AppGroup group = new AppGroup();
             group.setName(name);
             group.setDescription(description);
+            group.setEnabled(true);
             return appGroupDao.save(group);
         } catch (DataIntegrityViolationException ex) {
             throw new RestException("新建组失败, 可能组名重复或过长", ex);
@@ -93,9 +97,35 @@ public class ManageService {
 
     public Iterable<AppGroup> getAppGroups() {
         try {
-            return appGroupDao.findAll();
+            return appGroupDao.findAllByEnabled(true);
         } catch (Exception ex) {
             throw new RestException("查询组信息失败", ex);
+        }
+    }
+
+    @Transactional
+    public void deleteAppGroup(long id) {
+        try {
+            appGroupDao.deleteById(id);
+        } catch (Exception ex) {
+            throw new RestException("删除组失败", ex);
+        }
+    }
+
+    public Iterable<User> getUsers(boolean active) {
+        try {
+            return userDao.findAllByLocked(!active);
+        } catch (Exception ex) {
+            throw new RestException("查询用户信息失败", ex);
+        }
+    }
+
+    @Transactional
+    public void blockUser(long id) {
+        try {
+            userDao.lockById(id);
+        } catch (Exception ex) {
+            throw new RestException("禁用账号失败", ex);
         }
     }
 }

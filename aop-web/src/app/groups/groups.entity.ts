@@ -1,4 +1,4 @@
-import { User } from "../account/account.entity";
+import { User } from "../users/users.entity";
 
 export class GroupVar {
   id: number;

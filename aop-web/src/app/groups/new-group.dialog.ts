@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { FormDataEvent } from '@angular/forms/esm2015';
 import { FormGroup,FormControl,Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { GroupService } from './group.service';
+import { GroupsService } from './groups.service';
 import { MessageNotify } from '../utils/message-notify';
 
 @Component({
@@ -11,7 +11,7 @@ import { MessageNotify } from '../utils/message-notify';
 })
 export class NewGroupDialog {
     //@Input() ok: string = '确认'
-    constructor(public modal: NgbActiveModal, private svc: GroupService, private alert: MessageNotify) {
+    constructor(public modal: NgbActiveModal, private svc: GroupsService, private alert: MessageNotify) {
     }
 
     createForm: FormGroup = new FormGroup({
@@ -27,8 +27,6 @@ export class NewGroupDialog {
             if (!error) {
                 this.modal.close('ok');
                 this.alert.success('新建组成功');
-            } else {
-                this.alert.warning(error);
             }
         });
     }

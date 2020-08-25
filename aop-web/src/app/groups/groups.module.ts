@@ -6,11 +6,11 @@ import { VenderModule } from '../vender.module';
 import { NgbPaginationModule, NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { RouterModule } from '@angular/router';
-import { GroupRoutingModule } from './group-routing.module';
+import { GroupsRoutingModule } from './groups-routing.module';
 import { GroupsComponent } from './groups.component';
 import { AccountModule } from '../account/account.module';
 import { NewGroupDialog } from './new-group.dialog';
-import { GroupService } from './group.service';
+import { GroupsService } from './groups.service';
 
 @NgModule({
   imports: [
@@ -18,14 +18,14 @@ import { GroupService } from './group.service';
     CommonModule, FormsModule, ReactiveFormsModule,
     HttpClientModule,
     VenderModule, NgbPaginationModule, NgbAlertModule, NgbModule,
-    AccountModule, GroupRoutingModule],
+    AccountModule, GroupsRoutingModule],
   declarations: [
     GroupsComponent,NewGroupDialog
   ],
   entryComponents: [
     NewGroupDialog
   ],
-  providers: [GroupService],
+  providers: [GroupsService],
   exports: []
 })
-export class GroupModule { }
+export class GroupsModule { }

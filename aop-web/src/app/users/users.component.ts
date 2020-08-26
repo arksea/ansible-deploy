@@ -62,6 +62,8 @@ export class ActiveUsersComponent extends UsersComponent implements OnInit {
         }, resaon => { })
     }
 
+    onUnblockBtnClick(user: User) {}
+
     hiddenUnblockBtn() {
         return true
     }

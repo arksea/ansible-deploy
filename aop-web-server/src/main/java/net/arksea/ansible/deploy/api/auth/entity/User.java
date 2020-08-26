@@ -65,6 +65,7 @@ public class User extends IdEntity {
     }
 
     @Column(length = 44)
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
@@ -74,6 +75,7 @@ public class User extends IdEntity {
     }
 
     @Column(length = 44, nullable = false)
+    @JsonIgnore
     public String getSalt() {
         return salt;
     }

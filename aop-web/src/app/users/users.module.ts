@@ -7,7 +7,7 @@ import { NgbPaginationModule, NgbAlertModule } from '@ng-bootstrap/ng-bootstrap'
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { RouterModule } from '@angular/router';
 import { UsersRoutingModule } from './users-routing.module';
-import { UsersComponent } from './users.component';
+import { ActiveUsersComponent, BlockedUsersComponent } from './users.component';
 import { AccountModule } from '../account/account.module';
 // import { NewGroupDialog } from './new-group.dialog';
 import { UsersService } from './users.service';
@@ -20,7 +20,7 @@ import { UsersService } from './users.service';
     VenderModule, NgbPaginationModule, NgbAlertModule, NgbModule,
     AccountModule, UsersRoutingModule],
   declarations: [
-    UsersComponent
+    ActiveUsersComponent, BlockedUsersComponent
   ],
   entryComponents: [
 

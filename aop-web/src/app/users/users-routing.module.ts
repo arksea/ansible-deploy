@@ -1,10 +1,12 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { UsersComponent } from './users.component';
+import { ActiveUsersComponent, BlockedUsersComponent } from './users.component';
 import { AuthGuard } from '../account/auth-guard';
 
 const routes: Routes = [
-  { path: 'users/:active', component: UsersComponent, canActivate: [AuthGuard]  }
+  { path: 'users',   redirectTo: 'users/active', pathMatch: 'full' },
+  { path: 'users/active', component: ActiveUsersComponent, canActivate: [AuthGuard]  },
+  { path: 'users/blocked', component: BlockedUsersComponent, canActivate: [AuthGuard]  }
 ];
 
 @NgModule({

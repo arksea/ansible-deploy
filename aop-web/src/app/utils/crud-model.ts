@@ -24,7 +24,7 @@ export interface IModelInfo<K,T> {
 }
 
 export class CrudModel<K,T> {
-    // opUpdateModels     ──┬──＞ updates  ──＞ modelMap ──＞ modelList
+    // opUpdateModels     ──┬──＞ updates  ===＞ modelMap ──＞ modelList
     // opUpdateModel      ──┤
     // opResetModels      ──┤
     // opAddModel         ──┤

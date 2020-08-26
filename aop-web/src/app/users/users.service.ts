@@ -110,6 +110,21 @@ export class UsersService {
         ));
     }
 
+    public unblockUser(user: User): Observable<boolean> {
+        const url = environment.apiUrl + '/api/users/blocked/' + user.id + '?action=unblock';
+        let ret = this.httpUtils.httpPut('启用账号', url, '');
+        return ret.pipe(map (
+            data => {
+                if (data.code == 0) {
+                    this.usersModel.opDelModel.next(user.id)
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        ));
+    }
+
     public deleteUser(user: User): Observable<boolean> {
         const url = environment.apiUrl + '/api/users/blocked/' + user.id;
         let ret = this.httpUtils.httpDelete('删除用户', url);

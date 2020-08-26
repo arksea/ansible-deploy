@@ -46,9 +46,12 @@
                             <strong>{{u.name}}</strong>
                             <p>{{u.email}}</p>
                         </div>
-                        <div class="p-2"><button type="button" class="btn btn-outline-secondary btn-sm">编辑</button>
+                        <div class="p-1"><button type="button" class="btn btn-outline-secondary btn-sm">编辑</button>
                         </div>
-                        <div class="p-2"><button type="button" class="btn btn-danger btn-sm"
+                        <div class="p-1"><button type="button" [hidden]="hiddenUnblockBtn()" class="btn btn-warning btn-sm"
+                                (click)="this.onUnblockBtnClick(u)">启用</button>
+                        </div>
+                        <div class="p-1"><button type="button" class="btn btn-danger btn-sm"
                                 (click)="onDelBtnClick(u)">{{getDelBtnLabel()}}</button></div>
                     </div>
                 </li>

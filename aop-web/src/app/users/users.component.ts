@@ -62,6 +62,10 @@ export class ActiveUsersComponent extends UsersComponent implements OnInit {
         }, resaon => { })
     }
 
+    hiddenUnblockBtn() {
+        return true
+    }
+
     getDelBtnLabel() {
         return '禁用'
     }
@@ -100,6 +104,26 @@ export class BlockedUsersComponent extends UsersComponent implements OnInit {
                 });
             }
         }, resaon => { })
+    }
+
+    onUnblockBtnClick(user: User) {
+        let ref = this.modal.open(ConfirmDialog);
+        ref.componentInstance.title = "启用账号: " + user.name
+        ref.componentInstance.message = "确认要启用吗?"
+        ref.componentInstance.detail = "此操作将启用账号'" + user.name + "',用户可以正常登陆并访问或操作被授权的资源"
+        ref.result.then(result => {
+            if (result == "ok") {
+                this.svc.unblockUser(user).subscribe(succeed => {
+                    if (succeed) {
+                        this.alert.success('启用账号成功');
+                    }
+                });
+            }
+        }, resaon => { })
+    }
+
+    hiddenUnblockBtn() {
+        return false
     }
 
     getDelBtnLabel() {

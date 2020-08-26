@@ -77,4 +77,12 @@ public class ManageController {
         //manageService.deleteUser(userId);
         return RestUtils.createResult(ResultCode.SUCCEED, reqid);
     }
+
+    @RequestMapping(path="users/blocked/{userId}", params = {"action=unblock"},method = RequestMethod.PUT, produces = MEDIA_TYPE)
+    public String unblockUser(@PathVariable(name="userId") long userId,
+                             final HttpServletRequest httpRequest) {
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        manageService.unblockUser(userId);
+        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+    }
 }

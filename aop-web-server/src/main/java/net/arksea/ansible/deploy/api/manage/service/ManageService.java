@@ -128,4 +128,13 @@ public class ManageService {
             throw new RestException("禁用账号失败", ex);
         }
     }
+
+    @Transactional
+    public void unblockUser(long id) {
+        try {
+            userDao.unlockById(id);
+        } catch (Exception ex) {
+            throw new RestException("启用账号失败", ex);
+        }
+    }
 }

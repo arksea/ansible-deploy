@@ -2,7 +2,7 @@
 <div>
     <div id="groups-contain" class="container-xl mt-3">
         <div id="group-head" class="m-3">
-            <h1>组管理</h1>
+            <h1>分组管理</h1>
             <div class="mr-auto">‘组’允许管理员组织‘应用’、‘用户’与‘主机’。‘应用’只能属于一个组；‘用户’可以加入多个组；‘主机’可以由多个组共享。</div>
         </div>
         <div id="group-list">
@@ -29,7 +29,7 @@
                                 <a class="dropdown-item">主机数</a>
                             </div>
                         </div>
-                        <div><button type="button" class="btn btn-success" (click)="newGroup()">新建组</button></div>
+                        <div><button type="button" class="btn btn-success" (click)="newGroup()">新建分组</button></div>
                     </div>
                 </li>
                 <li *ngFor="let g of svc.groupList | async;index as i;" class="list-group-item">

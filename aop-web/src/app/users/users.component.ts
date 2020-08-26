@@ -1,112 +1,109 @@
 import { Component, OnInit } from '@angular/core';
 import { FormDataEvent } from '@angular/forms/esm2015';
-import { FormGroup,FormControl,Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { UsersService } from './users.service';
 import { ConfirmDialog } from '../utils/confirm.dialog';
 import { MessageNotify } from '../utils/message-notify';
-import { ActivatedRoute, ParamMap } from '@angular/router';
 import { User } from './users.entity';
-import { BehaviorSubject, Observable } from 'rxjs'
-import { map, publishReplay, refCount } from 'rxjs/operators';
 
 export class UsersComponent {
 
-  constructor(
-    public svc: UsersService, 
-    protected alert: MessageNotify,
-    protected modal: NgbModal) {
-  }
+    constructor(
+        public svc: UsersService,
+        protected alert: MessageNotify,
+        protected modal: NgbModal) {
+    }
 
-  searchForm: FormGroup = new FormGroup({
-    searchPrefix: new FormControl('',[Validators.required]),
-  });
+    searchForm: FormGroup = new FormGroup({
+        searchPrefix: new FormControl('', [Validators.required]),
+    });
 
-  search(event: FormDataEvent) {
-    event.preventDefault();
-    //let pre = this.searchForm.get('searchPrefix').value;
-  }
+    search(event: FormDataEvent) {
+        event.preventDefault();
+        //let pre = this.searchForm.get('searchPrefix').value;
+    }
 
-  newUser() {
-    //this.modal.open(NewUserDialog);
-  }
+    newUser() {
+        //this.modal.open(NewUserDialog);
+    }
 }
 
 @Component({
-  selector: 'active-users',
-  templateUrl: './users.component.html'
+    selector: 'active-users',
+    templateUrl: './users.component.html'
 })
 export class ActiveUsersComponent extends UsersComponent implements OnInit {
 
-  constructor(
-    public svc: UsersService, 
-    protected alert: MessageNotify,
-    protected modal: NgbModal) {
-      super(svc,alert,modal);
-  }
-  
-  ngOnInit(): void {
-    this.svc.getUsers('active');
-  }
+    constructor(
+        public svc: UsersService,
+        protected alert: MessageNotify,
+        protected modal: NgbModal) {
+        super(svc, alert, modal);
+    }
 
-  onDelBtnClick(user: User) {
-    let ref = this.modal.open(ConfirmDialog);
-    ref.componentInstance.title = "禁用账号: "+user.name
-    ref.componentInstance.message = "确认要禁用吗?"
-    ref.componentInstance.detail = "此操作将把账号'"+user.name+"'标记为禁用状态，不会直接删除用户及其相关资源数据"
-    ref.result.then(result => {
-      if (result == "ok") {
-        this.svc.blockUser(user).subscribe(succeed => {
-          if (succeed) {
-            this.alert.success('禁用账号成功');
-          }
-        });
-      }
-    }, resaon => {})
-  }
+    ngOnInit(): void {
+        this.svc.getUsers('active');
+    }
 
-  getDelBtnLabel() {
-    return '禁用'
-  }
+    onDelBtnClick(user: User) {
+        let ref = this.modal.open(ConfirmDialog);
+        ref.componentInstance.title = "禁用账号: " + user.name
+        ref.componentInstance.message = "确认要禁用吗?"
+        ref.componentInstance.detail = "此操作将把账号'" + user.name + "'标记为禁用状态，不会直接删除用户及其相关资源数据"
+        ref.result.then(result => {
+            if (result == "ok") {
+                this.svc.blockUser(user).subscribe(succeed => {
+                    if (succeed) {
+                        this.alert.success('禁用账号成功');
+                    }
+                });
+            }
+        }, resaon => { })
+    }
+
+    getDelBtnLabel() {
+        return '禁用'
+    }
 
 }
 
 
 @Component({
-  selector: 'blocked-users',
-  templateUrl: './users.component.html'
+    selector: 'blocked-users',
+    templateUrl: './users.component.html'
 })
 export class BlockedUsersComponent extends UsersComponent implements OnInit {
 
-  constructor(
-    public svc: UsersService, 
-    protected alert: MessageNotify,
-    protected modal: NgbModal) {
-      super(svc,alert,modal);
-  }
-  
-  ngOnInit(): void {
-    this.svc.getUsers('blocked');
-  }
+    constructor(
+        public svc: UsersService,
+        protected alert: MessageNotify,
+        protected modal: NgbModal) {
+        super(svc, alert, modal);
+    }
 
-  onDelBtnClick(user: User) {
-    let ref = this.modal.open(ConfirmDialog);
-    ref.componentInstance.title = "删除账号: "+user.name
-    ref.componentInstance.message = "确认要删除吗?"
-    ref.componentInstance.detail = "此操作将删除账号'"+user.name+"',此操作不可恢复请谨慎操作！"
-    ref.result.then(result => {
-      if (result == "ok") {
-        this.svc.deleteUser(user).subscribe(succeed => {
-          if (succeed) {
-            this.alert.success('删除账号成功');
-          }
-        });
-      }
-    }, resaon => {})
-  }
+    ngOnInit(): void {
+        this.svc.getUsers('blocked');
+    }
 
-  getDelBtnLabel() {
-    return '删除'
-  }
+    onDelBtnClick(user: User) {
+        let ref = this.modal.open(ConfirmDialog);
+        ref.componentInstance.title = "删除账号: " + user.name
+        ref.componentInstance.message = "确认要删除吗?"
+        ref.componentInstance.detail = "此操作将删除账号'" + user.name + "',此操作不可恢复请谨慎操作！"
+        ref.result.then(result => {
+            if (result == "ok") {
+                this.svc.deleteUser(user).subscribe(succeed => {
+                    if (succeed) {
+                        this.alert.success('删除账号成功');
+                    }
+                });
+            }
+        }, resaon => { })
+    }
+
+    getDelBtnLabel() {
+        return '删除'
+    }
 
 }

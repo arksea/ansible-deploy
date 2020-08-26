@@ -1,14 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { Subject, BehaviorSubject, Observable } from 'rxjs';
 import { User } from './users.entity';
 import { ServiceResponse } from '../utils/http-utils';
 import { HttpUtils } from '../utils/http-utils';
-import { MessageNotify } from "../utils/message-notify";
 import { environment } from '../../environments/environment';
-import { map, flatMap } from 'rxjs/operators';
-import { CrudModel, IModelInfo, UpdateModelField } from '../utils/crud-model';
-import { AddModel } from '../utils/crud-model';
+import { map } from 'rxjs/operators';
+import { CrudModel, IModelInfo } from '../utils/crud-model';
 
 // type ChildPermMap = Map<string, Set<string>>;
 
@@ -37,21 +34,36 @@ class UsersModelInfo implements IModelInfo<number, User> {
     }
 }
 
+class SortType {
+    type: string;
+    order: string;
+    desc: string;
+}
 
 @Injectable()
 export class UsersService {
     private EMETY_SET: Set<string> = new Set();
-    private activeUserModelInfo: UsersModelInfo = new UsersModelInfo();
-    public activeUsersModel: CrudModel<number, User> = new CrudModel<number, User>(this.activeUserModelInfo);
-    public activeUserList: Subject<User[]> = this.activeUsersModel.modelList;
+    private userModelInfo: UsersModelInfo = new UsersModelInfo();
+    public usersModel: CrudModel<number, User> = new CrudModel<number, User>(this.userModelInfo);
+    public userList: Subject<User[]> = this.usersModel.modelList;
+    public sortTypes: Array<SortType> = [{type:"name", order:"asc", desc:"用户名-正序"},
+                                         {type:"name", order:"desc",desc:"用户名-逆序"}]
+    public selectedSortType: BehaviorSubject<SortType> = new BehaviorSubject(this.sortTypes[1])
 
-    public constructor(private httpUtils: HttpUtils, private router: Router, private alert: MessageNotify) {
+    public constructor(private httpUtils: HttpUtils) {
     }
 
-    public setActiveUsersSort(type: string,order: string) {
-        this.activeUserModelInfo.setSortType(type, order);
-        this.activeUsersModel.opUpdateSort.next(true);
+    public getSortDesc(index: number): string {
+        let cfg = this.sortTypes[index];
+        return cfg.desc;
     }
+
+    public setSortType(cfg) {
+        this.selectedSortType.next(cfg);
+        this.userModelInfo.setSortType(cfg.type, cfg.order);
+        this.usersModel.opUpdateSort.next(true);        
+    }
+
     // public createGroup(name: string, description: string): Observable<string> {
     //     let n = encodeURI(name);
     //     let d = encodeURI(description);
@@ -78,7 +90,7 @@ export class UsersService {
         let ret: Observable<ServiceResponse<Array<User>>> = this.httpUtils.httpGet('查询用户信息', url);
         ret.subscribe(data => {
             if (data.code == 0) {
-                this.activeUsersModel.opResetModels.next(data.result);
+                this.usersModel.opResetModels.next(data.result);
             }
         });
     }
@@ -89,7 +101,7 @@ export class UsersService {
         return ret.pipe(map (
             data => {
                 if (data.code == 0) {
-                    this.activeUsersModel.opDelModel.next(user.id)
+                    this.usersModel.opDelModel.next(user.id)
                     return true;
                 } else {
                     return false;
@@ -104,7 +116,7 @@ export class UsersService {
         return ret.pipe(map (
             data => {
                 if (data.code == 0) {
-                    this.activeUsersModel.opDelModel.next(user.id)
+                    this.usersModel.opDelModel.next(user.id)
                     return true;
                 } else {
                     return false;

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject, Observable } from 'rxjs';
-import { AppGroup } from './groups.entity';
+import { AppGroup } from '../app.entity';
 import { ServiceResponse } from '../utils/http-utils';
 import { HttpUtils } from '../utils/http-utils';
 import { MessageNotify } from "../utils/message-notify";

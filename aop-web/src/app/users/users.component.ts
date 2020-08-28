@@ -6,6 +6,7 @@ import { UsersService } from './users.service';
 import { ConfirmDialog } from '../utils/confirm.dialog';
 import { MessageNotify } from '../utils/message-notify';
 import { User } from './users.entity';
+import { AccountService } from '../account/account.service';
 
 export class UsersComponent {
 
@@ -37,6 +38,7 @@ export class ActiveUsersComponent extends UsersComponent implements OnInit {
 
     constructor(
         public svc: UsersService,
+        public account: AccountService,
         protected alert: MessageNotify,
         protected modal: NgbModal) {
         super(svc, alert, modal);
@@ -83,6 +85,7 @@ export class BlockedUsersComponent extends UsersComponent implements OnInit {
 
     constructor(
         public svc: UsersService,
+        public account: AccountService,
         protected alert: MessageNotify,
         protected modal: NgbModal) {
         super(svc, alert, modal);

@@ -1,0 +1,129 @@
+import { Injectable } from '@angular/core';
+import { Subject, BehaviorSubject, Observable } from 'rxjs';
+import { App } from '../app.entity';
+import { ServiceResponse } from '../utils/http-utils';
+import { HttpUtils } from '../utils/http-utils';
+import { environment } from '../../environments/environment';
+import { map } from 'rxjs/operators';
+import { CrudModel, IModelInfo } from '../utils/crud-model';
+
+// type ChildPermMap = Map<string, Set<string>>;
+
+class AppsModelInfo implements IModelInfo<number, App> {
+    private sortType: string;
+    private sortOrder: string; //正序asc或逆序desc
+    public getModelMapKey(t: App): number {
+        return t.id;
+    }
+    public getSortKey(t: App): any {
+        if (this.sortType == 'name') {
+            return t.apptag;
+        } else {
+            return t.apptag;
+        }
+    }
+    public getSortOrder(): string {
+        return this.sortOrder;
+    }
+    public needSort(): boolean {
+        return true;
+    }
+    public setSortType(type: string, order: string) {
+        this.sortType = type;
+        this.sortOrder = order;
+    }
+}
+
+class SortType {
+    type: string;
+    order: string;
+    desc: string;
+}
+
+@Injectable()
+export class AppsService {
+    private EMETY_SET: Set<string> = new Set();
+    private appsModelInfo: AppsModelInfo = new AppsModelInfo();
+    public appsModel: CrudModel<number, App> = new CrudModel<number, App>(this.appsModelInfo);
+    public appList: Subject<App[]> = this.appsModel.modelList;
+    public sortTypes: Array<SortType> = [{type:"name", order:"asc", desc:"应用名-正序"},
+                                         {type:"name", order:"desc",desc:"应用名-逆序"}]
+    public selectedSortType: BehaviorSubject<SortType> = new BehaviorSubject(this.sortTypes[1])
+
+    public constructor(private httpUtils: HttpUtils) {}
+
+    public getSortDesc(index: number): string {
+        let cfg = this.sortTypes[index];
+        return cfg.desc;
+    }
+
+    public setSortType(cfg) {
+        this.selectedSortType.next(cfg);
+        this.appsModelInfo.setSortType(cfg.type, cfg.order);
+        this.appsModel.opUpdateSort.next(true);        
+    }
+
+    // public createGroup(name: string, description: string): Observable<string> {
+    //     let n = encodeURI(name);
+    //     let d = encodeURI(description);
+    //     const url = environment.apiUrl + '/api/groups?name=' + n + '&desc=' + d;
+    //     return this.httpUtils.httpPost('新建组', url, '').pipe(
+    //         map(response => {
+    //                 if (response.code === 0) {
+    //                     let group: User = new User()
+    //                     group.id = response.result;
+    //                     group.name = name;
+    //                     group.description = description;
+    //                     this.model.opAddModel.next({key: response.result, value: group});
+    //                     return null;
+    //                 } else {
+    //                     return response.error;
+    //                 }
+    //             }
+    //         )
+    //     );
+    // }
+
+    public getUserApps(user: string) {
+
+        // let url = environment.apiUrl + '/api/apps?user=' + user;
+        // let ret: Observable<ServiceResponse<Array<App>>> = this.httpUtils.httpGet('查询用户应用', url);
+        // ret.subscribe(data => {
+        //     if (data.code == 0) {
+        //         this.appsModel.opResetModels.next(data.result);
+        //     }
+        // });
+        let app1 = new App();
+        app1.id = 1;
+        app1.apptag = 'app1';
+        app1.describes = '黄历天气API服务';
+        app1.apptype = 'Tomcat';
+        app1.vars = [{id:1,describes: 'HTTP端口',   value: '8061', name:'http_port', inputAddon: '', isPort: true, inputType: ''},
+                {id:2,describes: 'HTTPS端口',  value:'8461', name:'https_port', inputAddon: '', isPort: true, inputType: ''},
+                {id:3,describes: '服务管理端口',value: '8260', name:'server_port', inputAddon: '', isPort: true, inputType: ''},
+                {id:4,describes: 'AJP协议端口', value: '8660', name:'ajp_port', inputAddon: '', isPort: true, inputType: ''},
+                {id:5,describes: 'JMX管理端口', value: '8931', name:'jmx_port', inputAddon: '', isPort: true, inputType: ''},
+                {id:6,describes: '域名', value: 'localhost', name:'domain', inputAddon: '', isPort: false, inputType: ''},
+                {id:7,describes: 'ContextPath, URL路径', value: '', name:'context_path', inputAddon: '', isPort: false, inputType: ''}]
+        let app2 = new App();
+        app2.id = 2;
+        app2.apptag = 'app2';
+        app2.describes = '精灵天气API服务';
+        app2.apptype = 'Command';
+        app2.vars = [{id:5,describes: 'JMX管理端口', value: '8938', name:'jmx_port', inputAddon: '', isPort: true, inputType: ''}]
+        this.appsModel.opResetModels.next([app1,app2]);
+    }
+
+    public newTomcatApp(): App {
+        let app = new App();
+        app.apptag = '';
+        app.apptype = 'tomcat';
+        app.deployPath = '';
+        app.describes = '';
+        app.enableJmx = true;
+        app.vars = [{id:null,describes: '域名', value: 'localhost', name:'domain', inputAddon: '', isPort: false, inputType: 'text'},
+                    {id:null,describes: 'ContextPath, URL路径', value: '', name:'context_path', inputAddon: 'http://domain/', isPort: false, inputType: 'text'}]
+        app.versions = [];
+        return app;
+    }
+}

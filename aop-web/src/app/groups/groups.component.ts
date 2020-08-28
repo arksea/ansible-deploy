@@ -6,14 +6,17 @@ import { NewGroupDialog } from './new-group.dialog';
 import { GroupsService } from './groups.service';
 import { ConfirmDialog } from '../utils/confirm.dialog';
 import { MessageNotify } from '../utils/message-notify';
-import { AppGroup } from './groups.entity';
+import { AppGroup } from '../app.entity';
+import { AccountService } from '../account/account.service';
 @Component({
   selector: 'groups',
   templateUrl: './groups.component.html'
 })
 export class GroupsComponent implements OnInit {
 
-  constructor(private modal: NgbModal, public svc: GroupsService, private alert: MessageNotify) {
+  constructor(private modal: NgbModal, public svc: GroupsService, 
+              public account: AccountService,
+              private alert: MessageNotify) {
   }
 
   searchForm: FormGroup = new FormGroup({
@@ -48,5 +51,4 @@ export class GroupsComponent implements OnInit {
       }
     }, resaon => {})
   }
-
 }

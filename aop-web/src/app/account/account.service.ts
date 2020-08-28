@@ -72,7 +72,7 @@ export class AccountService {
           this.getPermsAndRoles(info.name);
           localStorage.setItem('token_expires',  response.result);
           localStorage.setItem('login_user', info.name);
-          this.router.navigate(['/']);
+          this.router.navigate(['/apps']);
         } else {
           this.loginUser.next('');
           this.loginUserPerms.next(this.EMETY_SET);
@@ -89,7 +89,7 @@ export class AccountService {
           this.getPermsAndRoles(info.name);
           localStorage.setItem('token_expires',  response.result);
           localStorage.setItem('login_user', info.name);
-          this.router.navigate(['/']);
+          this.router.navigate(['/apps']);
           this.alert.success("注册成功");
         } else {
           this.loginUser.next('');
@@ -146,6 +146,14 @@ export class AccountService {
           return new BehaviorSubject(false);
         }
       }))
+  }
+
+  public perm(name: string): Observable<boolean> {
+    return this.hasPerm(name).pipe(map(b => !b));
+  }
+
+  public perms(name: string): Observable<boolean> {
+    return this.hasPermOrChild(name).pipe(map(b => !b));
   }
 
   public httpLogin(info: LoginInfo): Observable<ServiceResponse<string>> {

@@ -1,10 +1,13 @@
-import { User } from "../users/users.entity";
+import { User } from "./users/users.entity";
 
 export class GroupVar {
   id: number;
   name: string; // 变量名
   value: string;// 变量值
   describes: string; // 参数描述
+  inputAddon: string;// 输入显示的前缀
+  isPort: boolean;// 是否端口值，用于主机范围的唯一性判断
+  inputType: string;
 }
 
 export class Port {
@@ -34,14 +37,14 @@ export class Host {
 
 export class App {
   id: number;
-  apptag: string;     //应用标签，通常用来部署时建立应用目录名
-  apptype: string;    //应用的类型
-  deployPath: string; //应用部署目标路径
-  describes: string;  //应用描述
-  vars: Array<GroupVar>;// 变量
-  ports: Array<Port>;
-  enableJmx: boolean;
-  versions: Array<Version>;
+  apptag: string = '';     //应用标签，通常用来部署时建立应用目录名
+  apptype: string = '';    //应用的类型
+  deployPath: string = ''; //应用部署目标路径
+  describes: string = '';  //应用描述
+  appGroup: AppGroup; //应用所属分组
+  vars: Array<GroupVar> = [];// 变量
+  enableJmx: boolean = true;
+  versions: Array<Version> = [];
   createTime: string; //创建时间
 }
 

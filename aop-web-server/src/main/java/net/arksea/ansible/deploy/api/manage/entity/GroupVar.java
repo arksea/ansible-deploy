@@ -15,7 +15,10 @@ public class GroupVar extends IdEntity {
     private App app; // 所属应用
     private String name;// 变量名
     private String value;// 变量值
+    private String inputAddon;// 输入显示的前缀
     private String describes; // 参数描述
+    private Boolean isPort;// 是否端口值，用于主机范围的唯一性判断
+    private String inputType;
 
     @ManyToOne
     @JoinColumn(name = "app_id", nullable = false)
@@ -28,7 +31,7 @@ public class GroupVar extends IdEntity {
         this.app = app;
     }
 
-    @Column(length = 24, nullable = false)
+    @Column(name = "var_name", length = 24, nullable = false)
     public String getName() {
         return name;
     }
@@ -37,7 +40,7 @@ public class GroupVar extends IdEntity {
         this.name = name;
     }
 
-    @Column(length = 256, nullable = false)
+    @Column(name = "var_value", length = 256, nullable = false)
     public String getValue() {
         return value;
     }
@@ -46,7 +49,16 @@ public class GroupVar extends IdEntity {
         this.value = value;
     }
 
-    @Column(length = 256, nullable = false)
+    @Column(length = 256, nullable = true)
+    public String getInputAddon() {
+        return inputAddon;
+    }
+
+    public void setInputAddon(final String inputAddon) {
+        this.inputAddon = inputAddon;
+    }
+
+    @Column(name = "describes", length = 256, nullable = false)
     public String getDescribes() {
         return describes;
     }
@@ -54,4 +66,23 @@ public class GroupVar extends IdEntity {
     public void setDescribes(final String describes) {
         this.describes = describes;
     }
+
+    @Column(name = "is_port", nullable = false)
+    public Boolean getIsPort() {
+        return isPort;
+    }
+
+    public void setIsPort(final Boolean isPort) {
+        this.isPort = isPort;
+    }
+
+    @Transient
+    public String getInputType() {
+        return inputType;
+    }
+
+    public void setInputType(final String inputType) {
+        this.inputType = inputType;
+    }
+
 }

@@ -1,6 +1,5 @@
 package net.arksea.ansible.deploy.api.manage.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import net.arksea.ansible.deploy.api.auth.entity.User;
 import org.hibernate.validator.constraints.NotBlank;

@@ -5,11 +5,12 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppsService } from './apps.service';
 import { ConfirmDialog } from '../utils/confirm.dialog';
 import { MessageNotify } from '../utils/message-notify';
-import { App, AppGroup } from '../app.entity';
+import { App, AppGroup, GroupVar } from '../app.entity';
 import { AccountService } from '../account/account.service';
 import { ActivatedRoute } from '@angular/router';
 import { map,publishReplay,refCount } from 'rxjs/operators';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { format } from 'url';
 
 
 @Component({
@@ -58,7 +59,23 @@ export class AppEditComponent implements OnInit {
                 g.name = "天气";
                 app.appGroup = g;
                 app.enableJmx = f.get('enableJmx').value;
-                this.svc.saveApp(app);
+                // for (let key in f.controls) {
+                //     let c = f.controls[key];
+                //     if (key.startsWith('var_')) {
+                //         let v = new GroupVar();
+                //         v.name = key.substring(4);
+                //         v.value = c.value;
+                //         app.vars.push(v)
+                //     }
+                // }
+                this.app.subscribe(a => {
+                    for (let i of a.vars) {
+                        let c = f.get('var_' + i.name);
+                        i.value = c.value;
+                        app.vars.push(i);
+                    }
+                    this.svc.saveApp(app);
+                })
             }
         )
 

@@ -1,5 +1,7 @@
 package net.arksea.ansible.deploy.api.manage.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
@@ -11,14 +13,13 @@ import java.util.Set;
  *
  * @author xiaohaixing
  */
-
 @Entity
 @Table(name = "dp2_app")
 public class App extends IdEntity {
     private String apptag;     //应用标签，通常用来部署时建立应用目录名
     private String apptype;    //应用的类型
     private String deployPath; //应用部署目标路径
-    private String describes;  //应用描述
+    private String description;  //应用描述
     private AppGroup appGroup;
     private Set<GroupVar> vars;// 变量
     private Set<Port> ports;
@@ -57,16 +58,17 @@ public class App extends IdEntity {
 
     @NotNull
     @Column(length = 255, nullable = false)
-    public String getDescribes() {
-        return describes;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDescribes(final String describes) {
-        this.describes = describes;
+    public void setDescription(final String description) {
+        this.description = description;
     }
 
     @ManyToOne
     @JoinColumn(name = "app_group_id", nullable = false)
+    @JsonBackReference
     public AppGroup getAppGroup() {
         return appGroup;
     }
@@ -84,7 +86,7 @@ public class App extends IdEntity {
         this.vars = vars;
     }
 
-    @OneToMany(mappedBy = "app", cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "app", fetch = FetchType.EAGER)
     @OrderBy("value")
     public Set<Port> getPorts() {
         return ports;
@@ -108,7 +110,7 @@ public class App extends IdEntity {
         this.enableJmx = enableJmx;
     }
 
-    @OneToMany(mappedBy = "app", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "app", fetch = FetchType.EAGER)
     @OrderBy("id")
     public Set<Version> getVersions() {
         return versions;

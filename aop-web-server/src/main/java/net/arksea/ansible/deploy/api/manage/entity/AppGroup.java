@@ -1,9 +1,12 @@
 package net.arksea.ansible.deploy.api.manage.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import net.arksea.ansible.deploy.api.auth.entity.User;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -16,7 +19,7 @@ public class AppGroup extends IdEntity {
     private String name;       // 分组名称
     private String description;// 分组描述
     private String avatar;     // 分组头像
-    private Set<App> apps;     // 分组管理的应用
+    private List<App> apps;     // 分组管理的应用
     private Set<Host> hosts;   // 分组管理的主机
     private Set<User> users;   // 加入分组的用户
     private boolean enabled;   // 默认为true，删除或锁定将设置为false
@@ -50,11 +53,12 @@ public class AppGroup extends IdEntity {
     }
 
     @OneToMany(mappedBy = "appGroup",fetch = FetchType.EAGER)
-    public Set<App> getApps() {
+    @JsonManagedReference
+    public List<App> getApps() {
         return apps;
     }
 
-    public void setApps(Set<App> apps) {
+    public void setApps(List<App> apps) {
         this.apps = apps;
     }
 

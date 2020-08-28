@@ -84,6 +84,17 @@ export class AppsService {
     //     );
     // }
 
+    public saveApp(app: App) {
+        let url = environment.apiUrl + '/api/apps';
+        let ret: Observable<ServiceResponse<number>> = this.httpUtils.httpPost('保存应用', url, app);
+        ret.subscribe(data => {
+            if (data.code == 0) {
+                app.id = data.result;
+                this.appsModel.opAddModel.next({key: app.id, value: app});
+            }
+        });
+    }
+
     public getUserApps(user: string) {
 
         // let url = environment.apiUrl + '/api/apps?user=' + user;
@@ -96,21 +107,21 @@ export class AppsService {
         let app1 = new App();
         app1.id = 1;
         app1.apptag = 'app1';
-        app1.describes = '黄历天气API服务';
+        app1.description = '黄历天气API服务';
         app1.apptype = 'Tomcat';
-        app1.vars = [{id:1,describes: 'HTTP端口',   value: '8061', name:'http_port', inputAddon: '', isPort: true, inputType: ''},
-                {id:2,describes: 'HTTPS端口',  value:'8461', name:'https_port', inputAddon: '', isPort: true, inputType: ''},
-                {id:3,describes: '服务管理端口',value: '8260', name:'server_port', inputAddon: '', isPort: true, inputType: ''},
-                {id:4,describes: 'AJP协议端口', value: '8660', name:'ajp_port', inputAddon: '', isPort: true, inputType: ''},
-                {id:5,describes: 'JMX管理端口', value: '8931', name:'jmx_port', inputAddon: '', isPort: true, inputType: ''},
-                {id:6,describes: '域名', value: 'localhost', name:'domain', inputAddon: '', isPort: false, inputType: ''},
-                {id:7,describes: 'ContextPath, URL路径', value: '', name:'context_path', inputAddon: '', isPort: false, inputType: ''}]
+        app1.vars = [{id:1,description: 'HTTP端口',   value: '8061', name:'http_port', inputAddon: '', isPort: true, inputType: ''},
+                {id:2,description: 'HTTPS端口',  value:'8461', name:'https_port', inputAddon: '', isPort: true, inputType: ''},
+                {id:3,description: '服务管理端口',value: '8260', name:'server_port', inputAddon: '', isPort: true, inputType: ''},
+                {id:4,description: 'AJP协议端口', value: '8660', name:'ajp_port', inputAddon: '', isPort: true, inputType: ''},
+                {id:5,description: 'JMX管理端口', value: '8931', name:'jmx_port', inputAddon: '', isPort: true, inputType: ''},
+                {id:6,description: '域名', value: 'localhost', name:'domain', inputAddon: '', isPort: false, inputType: ''},
+                {id:7,description: 'ContextPath, URL路径', value: '', name:'context_path', inputAddon: '', isPort: false, inputType: ''}]
         let app2 = new App();
         app2.id = 2;
         app2.apptag = 'app2';
-        app2.describes = '精灵天气API服务';
+        app2.description = '精灵天气API服务';
         app2.apptype = 'Command';
-        app2.vars = [{id:5,describes: 'JMX管理端口', value: '8938', name:'jmx_port', inputAddon: '', isPort: true, inputType: ''}]
+        app2.vars = [{id:5,description: 'JMX管理端口', value: '8938', name:'jmx_port', inputAddon: '', isPort: true, inputType: ''}]
         this.appsModel.opResetModels.next([app1,app2]);
     }
 
@@ -119,10 +130,10 @@ export class AppsService {
         app.apptag = '';
         app.apptype = 'tomcat';
         app.deployPath = '';
-        app.describes = '';
+        app.description = '';
         app.enableJmx = true;
-        app.vars = [{id:null,describes: '域名', value: 'localhost', name:'domain', inputAddon: '', isPort: false, inputType: 'text'},
-                    {id:null,describes: 'ContextPath, URL路径', value: '', name:'context_path', inputAddon: 'http://domain/', isPort: false, inputType: 'text'}]
+        app.vars = [{id:null,description: '域名', value: 'localhost', name:'domain', inputAddon: '', isPort: false, inputType: 'text'},
+                    {id:null,description: 'ContextPath, URL路径', value: '', name:'context_path', inputAddon: 'http://domain/', isPort: false, inputType: 'text'}]
         app.versions = [];
         return app;
     }

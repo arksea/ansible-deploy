@@ -15,7 +15,7 @@ public class Host extends IdEntity {
 
     private String publicIp;//公网IP
     private String privateIp;//内网IP
-    private String describes;//主机用途描述
+    private String description;//主机用途描述
     private Timestamp createTime; //创建时间
 
     @Column(name = "public_ip", length = 36)
@@ -37,12 +37,12 @@ public class Host extends IdEntity {
     }
 
     @Column(length = 64, nullable = false)
-    public String getDescribes() {
-        return describes;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDescribes(final String describes) {
-        this.describes = describes;
+    public void setDescription(final String description) {
+        this.description = description;
     }
 
     @Column(nullable = false, columnDefinition = ("TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"))

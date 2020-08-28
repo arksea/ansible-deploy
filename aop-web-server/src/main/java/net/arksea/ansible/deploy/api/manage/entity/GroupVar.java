@@ -16,7 +16,7 @@ public class GroupVar extends IdEntity {
     private String name;// 变量名
     private String value;// 变量值
     private String inputAddon;// 输入显示的前缀
-    private String describes; // 参数描述
+    private String description; // 参数描述
     private Boolean isPort;// 是否端口值，用于主机范围的唯一性判断
     private String inputType;
 
@@ -31,7 +31,7 @@ public class GroupVar extends IdEntity {
         this.app = app;
     }
 
-    @Column(name = "var_name", length = 24, nullable = false)
+    @Column(length = 24, nullable = false)
     public String getName() {
         return name;
     }
@@ -40,7 +40,7 @@ public class GroupVar extends IdEntity {
         this.name = name;
     }
 
-    @Column(name = "var_value", length = 256, nullable = false)
+    @Column(length = 256, nullable = false)
     public String getValue() {
         return value;
     }
@@ -58,16 +58,16 @@ public class GroupVar extends IdEntity {
         this.inputAddon = inputAddon;
     }
 
-    @Column(name = "describes", length = 256, nullable = false)
-    public String getDescribes() {
-        return describes;
+    @Column(length = 256, nullable = false)
+    public String getDescription() {
+        return description;
     }
 
-    public void setDescribes(final String describes) {
-        this.describes = describes;
+    public void setDescription(final String description) {
+        this.description = description;
     }
 
-    @Column(name = "is_port", nullable = false)
+    @Column(nullable = false)
     public Boolean getIsPort() {
         return isPort;
     }

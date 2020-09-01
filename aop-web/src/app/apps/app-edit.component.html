@@ -9,7 +9,7 @@
             <path d="M5.25 6.033h1.32c0-.781.458-1.384 1.36-1.384.685 0 1.313.343 1.313 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.007.463h1.307v-.355c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.326 0-2.786.647-2.754 2.533zm1.562 5.516c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
         </svg>
     </ng-template>
-    <form (submit)="save($event)" [formGroup]="appForm | async">
+    <form (submit)="save($event)" [formGroup]="appForm">
         <div class="row form-group">
             <div class="col-lg-6 col-md-6 form-group mb-4">
                 <label for="apptag">应用短名
@@ -17,8 +17,8 @@
                     <span class="mx-1" [ngbPopover]="apptagPopContent">
                         <ng-container *ngTemplateOutlet="formInfoIcon"></ng-container>
                     </span>
-                    <span class="text-danger" *ngIf="(apptag|async)?.errors?.required">*</span>
-                    <span class="text-danger" *ngIf="(apptag|async)?.errors?.minlength || (apptag|async)?.errors?.maxlength">(长度4至30)</span>
+                    <span class="text-danger" *ngIf="apptag?.errors?.required">*</span>
+                    <span class="text-danger" *ngIf="apptag?.errors?.minlength || apptag?.errors?.maxlength">(长度4至30)</span>
                 </label>
                 <input type="text" id="apptag" formControlName="apptag" class="form-control" placeholder="以字母开头，由字母与下划线组成">
             </div>
@@ -28,7 +28,7 @@
                     <span class="mx-1" [ngbPopover]="deployPathPopContent">
                         <ng-container *ngTemplateOutlet="formInfoIcon"></ng-container>
                     </span>
-                    <span class="text-danger" *ngIf="(deployPath|async)?.invalid">(长度4至128)</span>
+                    <span class="text-danger" *ngIf="deployPath?.invalid">(长度4至128)</span>
                 </label>
                 <div class="input-group">
                     <div class="input-group-prepend">
@@ -37,9 +37,9 @@
                     <input type="text" id="deployPath" formControlName="deployPath" class="form-control" placeholder="建议设置为应用短名">
                 </div>
             </div>
-            <div *ngFor="let v of (app|async)?.vars" class="col-lg-6 col-md-6 form-group mb-4">
+            <div *ngFor="let v of app?.vars" class="col-lg-6 col-md-6 form-group mb-4">
                 <label for="var_{{v.name}}">{{v.description}}
-                    <span class="text-danger" *ngIf="(appForm | async).get('var_'+v.name)?.invalid">(长度0至128)</span>
+                    <span class="text-danger" *ngIf="appForm.get('var_'+v.name)?.invalid">(长度0至128)</span>
                 </label>
                 <div class="input-group">
                     <div class="input-group-prepend"  *ngIf="v.inputAddon.length > 0">
@@ -60,8 +60,8 @@
         <div class="row form-group mb-4">
             <div class="col-lg-12 col-md-12 form-group">
                 <label for="description">应用描述
-                    <span class="text-danger" *ngIf="(description|async)?.errors?.required">*</span>
-                    <span class="text-danger" *ngIf="(description|async)?.errors?.minlength || (description|async)?.errors?.maxlength">(长度5至256)</span>
+                    <span class="text-danger" *ngIf="description?.errors?.required">*</span>
+                    <span class="text-danger" *ngIf="description?.errors?.minlength || description?.errors?.maxlength">(长度5至256)</span>
                 </label>
                 <textarea id="description" class="form-control" rows="3" formControlName="description"></textarea>
             </div>
@@ -70,7 +70,7 @@
         <div class="row form-group">
             <div class="col-lg-12 col-md-12 form-group text-right">
                 <button type="button" class="btn btn-outline-secondary mr-3" (click)="cancel()">取消</button>
-                <button type="submit" class="btn btn-danger" [disabled]="(appForm|async).invalid || (appForm|async).pristine">保存</button>
+                <button type="submit" class="btn btn-danger" [disabled]="appForm.invalid || appForm.pristine">保存</button>
             </div>
         </div>
 

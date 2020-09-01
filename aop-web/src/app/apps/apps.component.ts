@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AppsService } from './apps.service';
 
 @Component({
     selector: 'apps',
@@ -6,9 +7,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AppsComponent implements OnInit {
 
-    constructor() {
+    constructor(private svc: AppsService) {
     }
 
     ngOnInit(): void {
+        this.svc.queryUserApps();
     }
 }

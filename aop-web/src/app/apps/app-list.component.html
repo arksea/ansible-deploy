@@ -26,7 +26,7 @@
                         </div>
                     </div>
                     <div [hidden]="account.perm('应用:修改') | async">
-                        <button type="button" class="btn btn-success" [routerLink]="['/apps/edit/new']">新建应用</button>
+                        <button type="button" class="btn btn-success" (click)="onNewBtnClick()">新建应用</button>
                     </div>
                 </div>
             </li>

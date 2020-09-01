@@ -37,11 +37,16 @@ export class AppListComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.svc.queryUserApps();
+        // this.svc.queryUserApps();
     }
 
     onEditBtnClick(app: App) {
-        this.svc.editingApp.next(app);
+        this.svc.editingApp = app;
+        this.router.navigate(['/apps/edit'])
+    }
+
+    onNewBtnClick() {
+        this.svc.editingApp = this.svc.newTomcatApp();
         this.router.navigate(['/apps/edit'])
     }
 

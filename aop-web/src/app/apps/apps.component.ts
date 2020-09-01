@@ -7,6 +7,7 @@ import { ConfirmDialog } from '../utils/confirm.dialog';
 import { MessageNotify } from '../utils/message-notify';
 import { App } from '../app.entity';
 import { AccountService } from '../account/account.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'apps',
@@ -18,7 +19,8 @@ export class AppsComponent implements OnInit {
         public svc: AppsService,
         public account: AccountService,
         protected alert: MessageNotify,
-        protected modal: NgbModal) {
+        protected modal: NgbModal,
+        private router: Router) {
     }
 
     searchForm: FormGroup = new FormGroup({
@@ -35,13 +37,12 @@ export class AppsComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.account.loginUser.subscribe(
-            user => this.svc.getUserApps(user)
-        )
+        this.svc.queryUserApps();
     }
 
     onEditBtnClick(app: App) {
-
+        this.svc.editingApp.next(app);
+        this.router.navigate(['/apps/edit'])
     }
 
 }

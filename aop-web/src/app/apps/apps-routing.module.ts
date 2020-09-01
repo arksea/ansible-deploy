@@ -6,7 +6,7 @@ import { AppEditComponent} from './app-edit.component';
 
 const routes: Routes = [
   { path: 'apps', component: AppsComponent, canActivate: [AuthGuard]  },
-  { path: 'apps/edit/:id', component: AppEditComponent, canActivate: [AuthGuard]  },
+  { path: 'apps/edit', component: AppEditComponent, canActivate: [AuthGuard]  },
 ];
 
 @NgModule({

@@ -6,12 +6,10 @@ import { catchError, tap } from 'rxjs/operators';
 import { MessageNotify } from './message-notify';
 
 export class ServiceResponse<T> {
-    status: number;
-    message: string;
-    result: T;
-    requestId: string;
-    code ?:number;
+    code :number;
     error? : string;
+    result?: T;
+    requestId?: string;
 }
 
 @Injectable()

@@ -10,6 +10,11 @@ import net.arksea.ansible.deploy.api.auth.entity.OperationTypeEnum;
 import net.arksea.ansible.deploy.api.auth.info.GetUserList;
 import net.arksea.ansible.deploy.api.auth.info.UserInfo;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.UnauthenticatedException;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +26,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -30,6 +36,7 @@ import java.util.Set;
 
 @Component
 public class UserService implements IUserService {
+    private static final Logger logger = LogManager.getLogger(UserService.class.getName());
     @Autowired
     UserDao userDao;
     @Autowired
@@ -88,5 +95,26 @@ public class UserService implements IUserService {
         String modifiedContent = newUser.makeContent();
         iOperationLogService.addOperationLog(clientInfo, OperationTypeEnum.UPDATE, ResourceTypeEnum.USER, userId, originalContent, modifiedContent, true);
         return Pair.of("", newUser);
+    }
+
+    public ClientInfo getClientInfo(HttpServletRequest httpRequest) {
+        Subject subject = SecurityUtils.getSubject();
+        Long userId = (Long)subject.getSession().getAttribute("user_id");
+        String userName = (String)subject.getSession().getAttribute("user_name");
+        if (userId == null || userName == null) {
+            //session失效则根据remberMe记录的用户Id重新设置session
+            userId = (long)subject.getPrincipal();
+            logger.debug("session失效，重新加载，userID={}", userId);
+            User user = userDao.findOne(userId);
+            if (user == null) {
+                throw new UnauthenticatedException("获取用户信息失败，userID=" + userId);
+            } else {
+                userName = user.getName();
+                subject.getSession().setAttribute("user_id", userId);
+                subject.getSession().setAttribute("user_name", userName);
+            }
+        }
+        final String remoteIp = httpRequest.getRemoteAddr();
+        return new ClientInfo(userId, userName, remoteIp);
     }
 }

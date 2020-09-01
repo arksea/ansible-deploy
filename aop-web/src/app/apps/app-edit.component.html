@@ -18,8 +18,8 @@
                     <span class="mx-1" [ngbPopover]="apptagPopContent">
                         <ng-container *ngTemplateOutlet="formInfoIcon"></ng-container>
                     </span>
-                    <span class="text-danger" *ngIf="(apptag|async).errors?.required">*</span>
-                    <span class="text-danger" *ngIf="(apptag|async).errors?.minlength || (apptag|async).errors?.maxlength">(长度4至30)</span>
+                    <span class="text-danger" *ngIf="(apptag|async)?.errors?.required">*</span>
+                    <span class="text-danger" *ngIf="(apptag|async)?.errors?.minlength || (apptag|async)?.errors?.maxlength">(长度4至30)</span>
                 </label>
                 <input type="text" id="apptag" formControlName="apptag" class="form-control" placeholder="以字母开头，由字母与下划线组成">
             </div>
@@ -29,7 +29,7 @@
                     <span class="mx-1" [ngbPopover]="deployPathPopContent">
                         <ng-container *ngTemplateOutlet="formInfoIcon"></ng-container>
                     </span>
-                    <span class="text-danger" *ngIf="(deployPath|async).invalid">(长度4至128)</span>
+                    <span class="text-danger" *ngIf="(deployPath|async)?.invalid">(长度4至128)</span>
                 </label>
                 <div class="input-group">
                     <div class="input-group-prepend">
@@ -37,9 +37,8 @@
                     </div>
                     <input type="text" id="deployPath" formControlName="deployPath" class="form-control" placeholder="建议设置为应用短名">
                 </div>
-
             </div>
-            <div *ngFor="let v of (app | async).vars" class="col-lg-6 col-md-6 form-group mb-4">
+            <div *ngFor="let v of (app|async)?.vars" class="col-lg-6 col-md-6 form-group mb-4">
                 <label for="var_{{v.name}}">{{v.description}}
                     <span class="text-danger" *ngIf="(appForm | async).get('var_'+v.name)?.invalid">(长度0至128)</span>
                 </label>
@@ -62,8 +61,8 @@
         <div class="row form-group mb-4">
             <div class="col-lg-12 col-md-12 form-group">
                 <label for="description">应用描述
-                    <span class="text-danger" *ngIf="(description|async).errors?.required">*</span>
-                    <span class="text-danger" *ngIf="(description|async).errors?.minlength || (description|async).errors?.maxlength">(长度5至256)</span>
+                    <span class="text-danger" *ngIf="(description|async)?.errors?.required">*</span>
+                    <span class="text-danger" *ngIf="(description|async)?.errors?.minlength || (description|async)?.errors?.maxlength">(长度5至256)</span>
                 </label>
                 <textarea id="description" class="form-control" rows="3" formControlName="description"></textarea>
             </div>

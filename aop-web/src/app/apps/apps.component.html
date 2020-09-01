@@ -36,11 +36,11 @@
                 <div class="d-flex mt-2">
                     <div class="mr-auto">
                         <a [routerLink]="['/apps',a.id]"> <strong>{{a.apptag}}</strong> </a>
-                        <p>{{a.describes}}</p>
+                        <p>{{a.description}}</p>
                     </div>
                     <div class="p-1" [hidden]="account.perm('应用:修改') | async">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
-                            [routerLink]="['/apps/edit',a.id]">编辑</button>
+                            (click)="onEditBtnClick(a)">编辑</button>
                     </div>
                 </div>
             </li>

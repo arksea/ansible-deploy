@@ -49,7 +49,7 @@ export class AppListComponent implements OnInit {
         let ref = this.modal.open(ConfirmDialog);
         ref.componentInstance.title = "删除应用: "+app.apptag;
         ref.componentInstance.message = "确认要删除吗?"
-        ref.componentInstance.detail = "此操作将删除应用'"+app.apptag+"'及其相关配置与文件"
+        ref.componentInstance.detail = "此操作将暂时把应用'"+app.apptag+"'标记为删除状态，其相关配置与文件会在之后的定时维护任务中集中删除"
         ref.result.then(result => {
           if (result == "ok") {
             this.svc.deleteApp(app.id).subscribe(succeed => {

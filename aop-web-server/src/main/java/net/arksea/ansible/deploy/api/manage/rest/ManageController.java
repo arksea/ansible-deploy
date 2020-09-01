@@ -6,11 +6,11 @@ import net.arksea.ansible.deploy.api.manage.entity.AppGroup;
 import net.arksea.ansible.deploy.api.manage.service.ManageService;
 import net.arksea.restapi.RestResult;
 import net.arksea.restapi.RestUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  *
@@ -24,6 +24,7 @@ public class ManageController {
     @Autowired
     ManageService manageService;
 
+    @RequiresPermissions("组管理:修改")
     @RequestMapping(path="groups", method = RequestMethod.POST, produces = MEDIA_TYPE)
     public String createGroup(@RequestParam final String name,
                               @RequestParam final String desc,
@@ -33,6 +34,7 @@ public class ManageController {
         return RestUtils.createResult(ResultCode.SUCCEED, group.getId(), reqid);
     }
 
+    @RequiresPermissions("组管理:查询")
     @RequestMapping(path="groups", method = RequestMethod.GET, produces = MEDIA_TYPE)
     public RestResult<Iterable<AppGroup>> getAppGroups(final HttpServletRequest httpRequest) {
         Iterable<AppGroup> groups = manageService.getAppGroups();
@@ -40,6 +42,7 @@ public class ManageController {
         return new RestResult<>(0, groups, reqid);
     }
 
+    @RequiresPermissions("组管理:修改")
     @RequestMapping(path="groups/{groupId}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
     public String deleteGroup(@PathVariable(name="groupId") long groupId,
                               final HttpServletRequest httpRequest) {
@@ -48,6 +51,7 @@ public class ManageController {
         return RestUtils.createResult(ResultCode.SUCCEED, reqid);
     }
     //-------------------------------------------------------------------------
+    @RequiresPermissions("用户管理:查询")
     @RequestMapping(path="users/active", method = RequestMethod.GET, produces = MEDIA_TYPE)
     public RestResult<Iterable<User>> getActiveUsers(final HttpServletRequest httpRequest) {
         Iterable<User> users = manageService.getUsers(true);
@@ -55,6 +59,7 @@ public class ManageController {
         return new RestResult<>(0, users, reqid);
     }
 
+    @RequiresPermissions("用户管理:修改")
     @RequestMapping(path="users/active/{userId}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
     public String blockUser(@PathVariable(name="userId") long userId,
                                final HttpServletRequest httpRequest) {
@@ -63,6 +68,7 @@ public class ManageController {
         return RestUtils.createResult(ResultCode.SUCCEED, reqid);
     }
 
+    @RequiresPermissions("用户管理:查询")
     @RequestMapping(path="users/blocked", method = RequestMethod.GET, produces = MEDIA_TYPE)
     public RestResult<Iterable<User>> getBlockedUsers(final HttpServletRequest httpRequest) {
         Iterable<User> users = manageService.getUsers(false);
@@ -70,6 +76,7 @@ public class ManageController {
         return new RestResult<>(0, users, reqid);
     }
 
+    @RequiresPermissions("用户管理:修改")
     @RequestMapping(path="users/blocked/{userId}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
     public String deleteUser(@PathVariable(name="userId") long userId,
                               final HttpServletRequest httpRequest) {
@@ -78,6 +85,7 @@ public class ManageController {
         return RestUtils.createResult(ResultCode.SUCCEED, reqid);
     }
 
+    @RequiresPermissions("用户管理:修改")
     @RequestMapping(path="users/blocked/{userId}", params = {"action=unblock"},method = RequestMethod.PUT, produces = MEDIA_TYPE)
     public String unblockUser(@PathVariable(name="userId") long userId,
                              final HttpServletRequest httpRequest) {

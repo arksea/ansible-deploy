@@ -54,7 +54,9 @@ public class AuthRealm extends AuthorizingRealm {
         UsernamePasswordToken upToken = (UsernamePasswordToken) authcToken;
         User user = authService.getUserByName(upToken.getUsername());
         if (user == null) {
-            return null;
+            throw new AuthenticationException("用户名或密码错误");
+        } else if (user.isLocked()) {
+            throw new AuthenticationException("账号已禁用");
         } else {
             return new SimpleAuthenticationInfo(user.getId(), user, getName());
         }

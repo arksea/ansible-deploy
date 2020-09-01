@@ -2,11 +2,18 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AppsComponent } from './apps.component';
 import { AuthGuard } from '../account/auth-guard';
-import { AppEditComponent} from './app-edit.component';
+import { AppListComponent } from './app-list.component';
+import { AppEditComponent } from './app-edit.component';
 
 const routes: Routes = [
-  { path: 'apps', component: AppsComponent, canActivate: [AuthGuard]  },
-  { path: 'apps/edit', component: AppEditComponent, canActivate: [AuthGuard]  },
+  {
+    path: 'apps', component: AppsComponent, canActivate: [AuthGuard],
+    children: [
+      { path: '', component: AppListComponent, canActivate: [AuthGuard] },
+      { path: 'edit', component: AppEditComponent, canActivate: [AuthGuard] },
+    ]
+  }
+
 ];
 
 @NgModule({

@@ -1,0 +1,47 @@
+<div id="groups-contain" class="container-xl mt-3">
+    <div id="group-head" class="m-3">
+        <h1>我的应用</h1>
+    </div>
+    <div id="group-list">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <div class="d-flex">
+                    <div class="mr-auto">
+                        <form (submit)="search($event)" [formGroup]="searchForm">
+                            <div class="d-flex">
+                                <div><input type="text" class="form-control" id="searchPrefix"
+                                        formControlName="searchPrefix"></div>
+                                <div><button type="submit" class="btn btn-info form-control ml-2">搜索</button></div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="pr-2 dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{(svc.selectedSortType | async).desc}}
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a *ngFor="let c of svc.sortTypes" class="dropdown-item"
+                                (click)="svc.setSortType(c)">{{c.desc}}</a>
+                        </div>
+                    </div>
+                    <div [hidden]="account.perm('应用:修改') | async">
+                        <button type="button" class="btn btn-success" [routerLink]="['/apps/edit/new']">新建应用</button>
+                    </div>
+                </div>
+            </li>
+            <li *ngFor="let a of svc.appList | async;index as i;" class="list-group-item">
+                <div class="d-flex mt-2">
+                    <div class="mr-auto">
+                        <a [routerLink]="['/apps',a.id]"> <strong>{{a.apptag}}</strong> </a>
+                        <p>{{a.description}}</p>
+                    </div>
+                    <div class="p-1" [hidden]="account.perm('应用:修改') | async">
+                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                            (click)="onEditBtnClick(a)">编辑</button>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

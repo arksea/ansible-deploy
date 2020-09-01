@@ -11,6 +11,7 @@ import { AppsComponent } from './apps.component';
 import { AccountModule } from '../account/account.module';
 // import { NewGroupDialog } from './new-group.dialog';
 import { AppsService } from './apps.service';
+import { AppListComponent } from './app-list.component';
 import { AppEditComponent } from './app-edit.component';
 
 @NgModule({
@@ -21,7 +22,7 @@ import { AppEditComponent } from './app-edit.component';
     VenderModule, NgbPaginationModule, NgbAlertModule, NgbModule,
     AccountModule, AppsRoutingModule],
   declarations: [
-    AppsComponent, AppEditComponent
+    AppsComponent, AppListComponent, AppEditComponent
   ],
   entryComponents: [
 

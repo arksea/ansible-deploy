@@ -45,6 +45,22 @@ export class AppListComponent implements OnInit {
         this.router.navigate(['/apps/edit'])
     }
 
+    onDelBtnClick(app: App) {
+        let ref = this.modal.open(ConfirmDialog);
+        ref.componentInstance.title = "删除应用: "+app.apptag;
+        ref.componentInstance.message = "确认要删除吗?"
+        ref.componentInstance.detail = "此操作将删除应用'"+app.apptag+"'及其相关配置与文件"
+        ref.result.then(result => {
+          if (result == "ok") {
+            this.svc.deleteApp(app.id).subscribe(succeed => {
+              if (succeed) {
+                this.alert.success('删除应用成功');
+              }
+            });
+          }
+        }, resaon => {})
+    }
+
     onNewBtnClick() {
         this.svc.editingApp = this.svc.newTomcatApp();
         this.router.navigate(['/apps/edit'])

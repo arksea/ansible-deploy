@@ -37,6 +37,10 @@
                         <p>{{a.description}}</p>
                     </div>
                     <div class="p-1" [hidden]="account.perm('应用:修改') | async">
+                        <button type="button" class="btn btn-outline-danger btn-sm"
+                            (click)="onDelBtnClick(a)">删除</button>
+                    </div>
+                    <div class="p-1" [hidden]="account.perm('应用:修改') | async">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
                             (click)="onEditBtnClick(a)">编辑</button>
                     </div>

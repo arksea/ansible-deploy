@@ -45,6 +45,13 @@ public class AppsController {
     }
 
     //-------------------------------------------------------------------------
+    @RequestMapping(path="apps/{appId}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
+    public RestResult<Long> delAppById(@PathVariable("appId") long appId, HttpServletRequest httpRequest) {
+        appService.updateDeletedById(appId, true);
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        return new RestResult<>(0, appId, reqid);
+    }
+    //-------------------------------------------------------------------------
     @RequestMapping(path="user/apps", method = RequestMethod.GET, produces = MEDIA_TYPE)
     public RestResult<List<App>> getUserApps(HttpServletRequest httpRequest) {
         ClientInfo info = userService.getClientInfo(httpRequest);

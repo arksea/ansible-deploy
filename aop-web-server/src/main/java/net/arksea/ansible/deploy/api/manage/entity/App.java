@@ -1,6 +1,8 @@
 package net.arksea.ansible.deploy.api.manage.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
@@ -25,6 +27,7 @@ public class App extends IdEntity {
     private boolean enableJmx;
     private Set<Version> versions;
     private Timestamp createTime; //创建时间
+    private boolean deleted; //是否标记为删除状态，系统将定时删除标记为删除状态的记录
 
     @NotBlank
     @Column(length = 20, nullable = false, unique = true)
@@ -76,7 +79,8 @@ public class App extends IdEntity {
         this.appGroup = appGroup;
     }
 
-    @OneToMany(mappedBy = "app", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "app", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE) //在数据库层面进行级联删除操作（生成库表时定义的外键会加 ON DELETE CASCADE修饰词）
     public Set<GroupVar> getVars() {
         return vars;
     }
@@ -109,7 +113,7 @@ public class App extends IdEntity {
         this.enableJmx = enableJmx;
     }
 
-    @OneToMany(mappedBy = "app", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "app", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @OrderBy("id")
     public Set<Version> getVersions() {
         return versions;
@@ -126,5 +130,14 @@ public class App extends IdEntity {
 
     public void setCreateTime(Timestamp createTime) {
         this.createTime = createTime;
+    }
+
+    @Column(nullable = false, columnDefinition = "TINYINT NOT NULL DEFAULT 1")
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }

@@ -43,8 +43,8 @@ public class AppService {
     }
 
     @Transactional
-    public void delete(final App app) {
-        appDao.delete(app);
+    public void updateDeletedById(final long id, boolean deleted) {
+        appDao.updateDeletedById(id, deleted);
     }
 
     public List<App> findByUserId(long userId) {

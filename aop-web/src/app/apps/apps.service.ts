@@ -86,6 +86,23 @@ export class AppsService {
         )
     }
 
+    public deleteApp(appId: number): Observable<boolean> {
+        let url = environment.apiUrl + '/api/apps/' + appId;
+        let ret: Observable<ServiceResponse<number>> = this.httpUtils.httpDelete('删除应用', url);
+        return ret.pipe(
+            map (
+                resp => {
+                    if (resp.code == 0) {
+                        this.appsModel.opDelModel.next(appId);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            )
+        )
+    }
+
     public getAppById(id: number): Observable<ServiceResponse<App>> {
         let url = environment.apiUrl + '/api/apps/'+id;
         let ret: Observable<ServiceResponse<App>> = this.httpUtils.httpGet('查询应用', url);

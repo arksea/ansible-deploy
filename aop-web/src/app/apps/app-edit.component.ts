@@ -28,12 +28,11 @@ export class AppEditComponent implements OnInit {
         enableJmx: new FormControl()
     });
 
-    constructor(
-        public svc: AppsService,
-        public account: AccountService,
-        protected alert: MessageNotify,
-        protected modal: NgbModal,
-        private router: Router) {
+    constructor(public svc: AppsService,
+                public account: AccountService,
+                protected alert: MessageNotify,
+                protected modal: NgbModal,
+                private router: Router) {
             this.app = this.svc.editingApp;
             this.initAddon(this.app);
             this.initFormGroup(this.app);

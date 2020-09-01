@@ -9,7 +9,9 @@ import javax.persistence.*;
  * @author xiaohaixing
  */
 @Entity
-@Table(name = "dp2_group_vars", uniqueConstraints = @UniqueConstraint(columnNames = { "app_id", "name" }) )
+@Table(name = "dp2_group_vars",
+        uniqueConstraints = @UniqueConstraint(columnNames = { "app_id", "name" })
+)
 public class GroupVar extends IdEntity {
 
     private App app; // 所属应用

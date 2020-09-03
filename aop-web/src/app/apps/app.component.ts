@@ -18,30 +18,20 @@ import { format } from 'url';
     templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
-    public app: Observable<App>;
+
     public svnaddr = 'svn://127.0.0.1';
     constructor(public svc: AppsService,
                 public account: AccountService,
                 private route: ActivatedRoute,
                 private router: Router,
                 private alert: MessageNotify) {
-        if (this.svc.selectedApp.id == null) {
-            let id: number = Number(this.route.snapshot.paramMap.get('id'));
-            this.app = this.svc.getAppById(id).pipe(map (
-                resp => {
-                    if (resp.code == 0) {
-                        return resp.result;
-                    } 
-                }
-            ))
-        } else {
-            this.app = new BehaviorSubject(this.svc.selectedApp);
+        let id = Number(this.route.snapshot.paramMap.get('id'));
+        if (this.svc.app.id != id) {
+            this.svc.updateCurrnetAppById(id).subscribe();
         }
     }
 
-    ngOnInit() {
-
-    }
+    ngOnInit() {}
 
     onNewVersionBtnClick() {
         this.router.navigate(['/apps/edit/ver'])

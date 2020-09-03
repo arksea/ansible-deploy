@@ -43,7 +43,7 @@ class SortType {
 @Injectable()
 export class AppsService {
     private EMETY_SET: Set<string> = new Set();
-    public selectedApp: App = this.newTomcatApp();
+    private _currentApp: App = new App();
     private appsModelInfo: AppsModelInfo = new AppsModelInfo();
     public appsModel: CrudModel<number, App> = new CrudModel<number, App>(this.appsModelInfo);
     public appList: Subject<App[]> = this.appsModel.modelList;
@@ -103,10 +103,17 @@ export class AppsService {
         )
     }
 
-    public getAppById(id: number): Observable<ServiceResponse<App>> {
+    public updateCurrnetAppById(id: number): Observable<App> {
         let url = environment.apiUrl + '/api/apps/'+id;
         let ret: Observable<ServiceResponse<App>> = this.httpUtils.httpGet('查询应用', url);
-        return ret;
+        return ret.pipe(map(
+            resp => {
+                if (resp.code == 0) {
+                    this._currentApp = resp.result;
+                }
+                return this._currentApp;
+            }
+        ));
     }
 
     public queryUserApps() {
@@ -139,5 +146,13 @@ export class AppsService {
             default:
                 return '$HOME/';
         }
+    }
+
+    get app(): App {
+        return this._currentApp;
+    }
+
+    set app(app: App) {
+        this._currentApp = app;
     }
 }

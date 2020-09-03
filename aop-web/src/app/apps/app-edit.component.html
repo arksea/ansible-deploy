@@ -37,7 +37,7 @@
                     <input type="text" id="deployPath" formControlName="deployPath" class="form-control" placeholder="建议设置为应用短名">
                 </div>
             </div>
-            <div *ngFor="let v of app?.vars" class="col-lg-6 col-md-6 form-group mb-4">
+            <div *ngFor="let v of svc.app.vars" class="col-lg-6 col-md-6 form-group mb-4">
                 <label for="var_{{v.name}}">{{v.description}}
                     <span class="text-danger" *ngIf="appForm.get('var_'+v.name)?.invalid">(长度0至128)</span>
                 </label>

@@ -14,7 +14,6 @@ import { AppsService } from './apps.service';
 import { AppListComponent } from './app-list.component';
 import { AppEditComponent } from './app-edit.component';
 import { AppComponent } from './app.component';
-import { VersionEditComponent } from './version-edit.component';
 
 @NgModule({
   imports: [
@@ -24,7 +23,7 @@ import { VersionEditComponent } from './version-edit.component';
     VenderModule, NgbPaginationModule, NgbAlertModule, NgbModule,
     AccountModule, AppsRoutingModule],
   declarations: [
-    AppsComponent, AppListComponent, AppEditComponent, AppComponent, VersionEditComponent
+    AppsComponent, AppListComponent, AppEditComponent, AppComponent
   ],
   entryComponents: [
 

@@ -3,16 +3,21 @@ import { FormDataEvent } from '@angular/forms/esm2015';
 import { FormGroup, FormControl, AbstractControl, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppsService } from './apps.service';
+import { ConfirmDialog } from '../utils/confirm.dialog';
 import { MessageNotify } from '../utils/message-notify';
-import { App, AppGroup } from '../app.entity';
+import { App, AppGroup, GroupVar } from '../app.entity';
 import { AccountService } from '../account/account.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { map, flatMap, publishReplay, refCount } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { format } from 'url';
+
 
 @Component({
-    selector: 'app-edit',
-    templateUrl: './app-edit.component.html'
+    selector: 'version-edit',
+    templateUrl: './version-edit.component.html'
 })
-export class AppEditComponent implements OnInit {
+export class VersionEditComponent implements OnInit {
 
     public app: App;
     public deployPathAddon: string = '';

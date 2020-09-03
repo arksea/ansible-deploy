@@ -43,7 +43,7 @@ class SortType {
 @Injectable()
 export class AppsService {
     private EMETY_SET: Set<string> = new Set();
-    public editingApp: App = this.newTomcatApp();
+    public selectedApp: App = this.newTomcatApp();
     private appsModelInfo: AppsModelInfo = new AppsModelInfo();
     public appsModel: CrudModel<number, App> = new CrudModel<number, App>(this.appsModelInfo);
     public appList: Subject<App[]> = this.appsModel.modelList;
@@ -130,5 +130,14 @@ export class AppsService {
                     {id:null,description: 'ContextPath, URL路径', value: '', name:'context_path', inputAddon: 'http://domain/', isPort: false, inputType: 'text'}]
         app.versions = [];
         return app;
+    }
+
+    public deployPathAddon(apptype: string) {
+        switch (apptype) {
+            case 'tomcat':
+                return '$HOME/tomcat/webapps/';
+            default:
+                return '$HOME/';
+        }
     }
 }

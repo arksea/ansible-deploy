@@ -1,0 +1,64 @@
+<div id="app-contain" class="container-xl mt-3">
+    <div id="app-head" class="m-3">
+        <h1>{{(app|async).apptag}} - {{(app|async).description}}</h1>
+    </div>
+    <div id="group-list">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <div class="d-flex">
+                    <div class="mr-auto">
+                    </div>
+                    <div [hidden]="account.perm('应用:修改') | async">
+                        <button type="button" class="btn btn-success" (click)="onNewVersionBtnClick()">新增版本</button>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex">
+                            <div class="mr-auto pt-2">
+                                <strong>版本: Online</strong>
+                            </div>
+                            <div [hidden]="account.perm('应用:修改') | async">
+                                <button type="button" class="btn btn-outline-danger btn-sm"
+                                    (click)="onDelBtnClick()">删除</button>
+                            </div>
+                            <div class="pl-1" [hidden]="account.perm('应用:修改') | async">
+                                <button type="button" class="btn btn-outline-secondary btn-sm"
+                                    (click)="onEditBtnClick()">修改</button>
+                            </div>
+                        </div>
+
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <div class="row">
+                                    <div class="col-sm-2">内网IP</div>
+                                    <div class="col">描述</div>
+                                    <div class="col-sm-2">状态</div>
+                                    <div class="col-sm-2 text-right"><input type="checkbox"></div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col-sm-2">10.79.186.113</div>
+                                <div class="col">flfzct</div>
+                                <div class="col-sm-2">online</div>
+                                <div class="col-sm-2 text-right"><input type="checkbox"></div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col-sm-2">10.79.186.114</div>
+                                <div class="col">flfzct-tq-web186114</div>
+                                <div class="col-sm-2">online</div>
+                                <div class="col-sm-2 text-right"><input type="checkbox"></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

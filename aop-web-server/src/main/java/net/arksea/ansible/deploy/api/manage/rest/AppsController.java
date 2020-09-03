@@ -5,6 +5,8 @@ import net.arksea.ansible.deploy.api.auth.info.ClientInfo;
 import net.arksea.ansible.deploy.api.auth.service.UserService;
 import net.arksea.ansible.deploy.api.manage.entity.App;
 import net.arksea.ansible.deploy.api.manage.service.AppService;
+import net.arksea.restapi.BaseResult;
+import net.arksea.restapi.ErrorResult;
 import net.arksea.restapi.RestResult;
 import net.arksea.restapi.RestUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -42,10 +44,14 @@ public class AppsController {
     //-------------------------------------------------------------------------
     @RequiresPermissions("应用:查询")
     @RequestMapping(path="apps/{appId}", method = RequestMethod.GET, produces = MEDIA_TYPE)
-    public RestResult<App> getAppById(@PathVariable("appId") long appId, HttpServletRequest httpRequest) {
-        App app = appService.findOne(appId);
+    public BaseResult getAppById(@PathVariable("appId") long appId, HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        return new RestResult<>(0, app, reqid);
+        App app = appService.findOne(appId);
+        if (app == null) {
+            return new ErrorResult(1, reqid, "应用不存在");
+        } else {
+            return new RestResult<>(0, app, reqid);
+        }
     }
 
     //-------------------------------------------------------------------------

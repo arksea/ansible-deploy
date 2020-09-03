@@ -33,7 +33,7 @@
             <li *ngFor="let a of svc.appList | async;index as i;" class="list-group-item">
                 <div class="d-flex mt-2">
                     <div class="mr-auto">
-                        <a [routerLink]="['/apps',a.id]"> <strong>{{a.apptag}}</strong> </a>
+                        <a (click)="onViewBtnClick(a)" class="btn btn-link pl-0"><strong>{{a.apptag}}</strong> </a>
                         <p>{{a.description}}</p>
                     </div>
                     <div class="p-1" [hidden]="account.perm('应用:修改') | async">

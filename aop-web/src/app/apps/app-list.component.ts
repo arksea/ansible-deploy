@@ -32,17 +32,18 @@ export class AppListComponent implements OnInit {
         //let pre = this.searchForm.get('searchPrefix').value;
     }
 
-    newApp() {
-        //this.modal.open(NewUserDialog);
-    }
 
     ngOnInit(): void {
-        // this.svc.queryUserApps();
     }
 
     onEditBtnClick(app: App) {
-        this.svc.editingApp = app;
+        this.svc.selectedApp = app;
         this.router.navigate(['/apps/edit'])
+    }
+
+    onViewBtnClick(app: App) {
+        this.svc.selectedApp = app;
+        this.router.navigate(['/apps/'+app.id])
     }
 
     onDelBtnClick(app: App) {
@@ -62,7 +63,7 @@ export class AppListComponent implements OnInit {
     }
 
     onNewBtnClick() {
-        this.svc.editingApp = this.svc.newTomcatApp();
+        this.svc.selectedApp = this.svc.newTomcatApp();
         this.router.navigate(['/apps/edit'])
     }
 

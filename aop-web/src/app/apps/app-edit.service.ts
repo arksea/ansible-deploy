@@ -15,9 +15,11 @@ export type IAppEditModelOperation = (data: AppEditModel) => AppEditModel;
 
 @Injectable()
 export class AppEditService {
-    // opSetApp     ──┬──＞ updates  ===＞ model ──＞ 
-    //              ──┤
-    // opSaveApp    ──┘
+    // opSetApp     ──┬──> updates  ───> model ──┬─> appForm
+    //              ──┤                          ├─> apptag
+    // opSaveApp    ──┘                          ├─> deployPath
+    //                                           ├─> description
+    //                                           └─> deployPathAddon
     opSetApp: Subject<App> = new Subject();
     opSaveApp: Subject<any> = new Subject();
     updates: Subject<IAppEditModelOperation> = new Subject();

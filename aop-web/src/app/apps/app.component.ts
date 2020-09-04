@@ -21,20 +21,22 @@ import { NewVersionDialog } from './new-version.dialog';
 export class AppComponent implements OnInit {
 
     public svnaddr = 'svn://127.0.0.1';
+    private appId: number;
     constructor(public svc: AppsService,
                 public account: AccountService,
                 private route: ActivatedRoute,
                 private router: Router,
                 private alert: MessageNotify,
                 private modal: NgbModal) {
-        let id = Number(this.route.snapshot.paramMap.get('id'));
-        this.svc.setSelectedApp(id);
+        this.appId = Number(this.route.snapshot.paramMap.get('id'));
+        this.svc.setSelectedApp(this.appId);
     }
 
     ngOnInit() {}
 
     onNewVersionBtnClick() {
-        this.modal.open(NewVersionDialog);
+        let ref = this.modal.open(NewVersionDialog);
+        ref.componentInstance.appId = this.appId;
     }
 
     onEditBtnClick() {

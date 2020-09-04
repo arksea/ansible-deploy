@@ -11,6 +11,7 @@ import { Version } from '../app.entity';
     templateUrl: './new-version.dialog.html'
 })
 export class NewVersionDialog {
+    public appId: number;
     constructor(public modal: NgbActiveModal, public svc: AppsService, private alert: MessageNotify) {
     }
 
@@ -22,17 +23,17 @@ export class NewVersionDialog {
     });
 
     create(event: FormDataEvent) {
-        // event.preventDefault();
-        // let ver = new Version();
-        // ver.name = this.createForm.get('name').value;
-        // ver.repository = this.createForm.get('repository').value;
-        // ver.javaOpt = this.createForm.get('javaOpt').value;
-        // ver.revision = this.createForm.get('revision').value;
-        // this.svc.createVersion(this.svc.app.id, ver).subscribe(error => {
-        //     if (!error) {
-        //         this.modal.close('ok');
-        //         this.alert.success('新建版本成功');
-        //     }
-        // });
+        event.preventDefault();
+        let ver = new Version();
+        ver.name = this.createForm.get('name').value;
+        ver.repository = this.createForm.get('repository').value;
+        ver.javaOpt = this.createForm.get('javaOpt').value;
+        ver.revision = this.createForm.get('revision').value;
+        this.svc.createVersion(this.appId, ver).subscribe(error => {
+            if (!error) {
+                this.modal.close('ok');
+                this.alert.success('新建版本成功');
+            }
+        });
     }
 }

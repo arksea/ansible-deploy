@@ -27,7 +27,7 @@ public class Host extends IdEntity {
         this.publicIp = publicIp;
     }
     
-    @Column(name = "private_ip", length = 36, nullable = false)
+    @Column(name = "private_ip", length = 36, nullable = false, unique = true)
     public String getPrivateIp() {
         return privateIp;
     }

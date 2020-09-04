@@ -14,14 +14,19 @@
                     </button>
                 </div>
             </li>
-            <li *ngFor="let v of (svc.app|async)?.versions" class="list-group-item">
+            <li *ngFor="let v of (svc.app|async)?.versions" class="list-group-item py-4">
                 <div class="card">
                     <div class="card-header">
                         <div class="d-flex">
                             <div class="mr-auto pt-2">
                                 <strong>版本: {{v.name}}</strong>
                             </div>
-                            <div>
+                            <div class="pl-1">
+                                <button type="button" class="btn btn-outline-secondary btn-sm"
+                                    [disabled]="account.perm('应用:修改') | async"
+                                    (click)="onEditBtnClick()">添加主机</button>
+                            </div>
+                            <div class="pl-1">
                                 <button type="button" class="btn btn-outline-danger btn-sm"
                                     [disabled]="account.perm('应用:修改') | async"
                                     (click)="onDelBtnClick()">删除</button>

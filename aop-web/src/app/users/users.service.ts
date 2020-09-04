@@ -80,7 +80,7 @@ export class UsersService {
         return ret.pipe(map (
             data => {
                 if (data.code == 0) {
-                    this.usersModel.opDelModel.next(user.id)
+                    this.usersModel.opDelModel.next(user.id);
                     return true;
                 } else {
                     return false;
@@ -95,7 +95,7 @@ export class UsersService {
         return ret.pipe(map (
             data => {
                 if (data.code == 0) {
-                    this.usersModel.opDelModel.next(user.id)
+                    this.usersModel.opDelModel.next(user.id);
                     return true;
                 } else {
                     return false;
@@ -110,7 +110,7 @@ export class UsersService {
         return ret.pipe(map (
             data => {
                 if (data.code == 0) {
-                    this.usersModel.opDelModel.next(user.id)
+                    this.usersModel.opDelModel.next(user.id);
                     return true;
                 } else {
                     return false;

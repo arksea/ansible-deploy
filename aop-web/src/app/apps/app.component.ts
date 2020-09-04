@@ -11,6 +11,7 @@ import { AccountService } from '../account/account.service';
 import { map, flatMap, publishReplay, refCount } from 'rxjs/operators';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { format } from 'url';
+import { NewVersionDialog } from './new-version.dialog';
 
 
 @Component({
@@ -24,7 +25,8 @@ export class AppComponent implements OnInit {
                 public account: AccountService,
                 private route: ActivatedRoute,
                 private router: Router,
-                private alert: MessageNotify) {
+                private alert: MessageNotify,
+                private modal: NgbModal) {
         let id = Number(this.route.snapshot.paramMap.get('id'));
         if (this.svc.app.id != id) {
             this.svc.updateCurrnetAppById(id).subscribe();
@@ -34,7 +36,7 @@ export class AppComponent implements OnInit {
     ngOnInit() {}
 
     onNewVersionBtnClick() {
-        this.router.navigate(['/apps/edit/ver'])
+        this.modal.open(NewVersionDialog);
     }
 
     onEditBtnClick() {

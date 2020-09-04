@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormDataEvent } from '@angular/forms/esm2015';
 import { FormGroup,FormControl,Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -10,7 +10,7 @@ import { MessageNotify } from '../utils/message-notify';
     templateUrl: './new-group.dialog.html'
 })
 export class NewGroupDialog {
-    //@Input() ok: string = '确认'
+
     constructor(public modal: NgbActiveModal, private svc: GroupsService, private alert: MessageNotify) {
     }
 

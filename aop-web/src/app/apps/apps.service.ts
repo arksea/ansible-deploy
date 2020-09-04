@@ -6,6 +6,7 @@ import { HttpUtils } from '../utils/http-utils';
 import { environment } from '../../environments/environment';
 import { map } from 'rxjs/operators';
 import { CrudModel, IModelInfo } from '../utils/crud-model';
+import { Version } from '../app.entity';
 
 // type ChildPermMap = Map<string, Set<string>>;
 
@@ -50,6 +51,7 @@ export class AppsService {
     public sortTypes: Array<SortType> = [{type:"name", order:"asc", desc:"应用名-升序"},
                                          {type:"name", order:"desc",desc:"应用名-降序"}]
     public selectedSortType: BehaviorSubject<SortType> = new BehaviorSubject(this.sortTypes[0])
+    // private opAddVersion: Subject<AddModel<K,T>> = new Subject();
 
     public constructor(private httpUtils: HttpUtils) {
 
@@ -75,9 +77,9 @@ export class AppsService {
                     if (resp.code == 0) {
                         if (app.id == null) {
                             app.id = resp.result;
-                            this.appsModel.opAddModel.next({key: app.id, value: app});
+                            this.appsModel.opSetModel.next(app);
                         } else {
-                            this.appsModel.opUpdateModel.next(app);
+                            this.appsModel.opSetModel.next(app);
                         }
                     }
                     return resp;
@@ -147,6 +149,25 @@ export class AppsService {
                 return '$HOME/';
         }
     }
+
+    public createVersion(appId: number, version: Version): Observable<string> {
+        const url = environment.apiUrl + '/api/apps/' + appId + '/vers';
+        return this.httpUtils.httpPost('新增版本', url, version).pipe(
+            map(response => {
+                    if (response.code === 0) {
+                        // version.id = response.result;
+                        // this.app.versions.
+                        // this.appsModel.opSetModel.next();
+                        // return null;
+                    } else {
+                        return response.error;
+                    }
+                }
+            )
+        );
+    }
+
+
 
     get app(): App {
         return this._currentApp;

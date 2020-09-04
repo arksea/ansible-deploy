@@ -47,7 +47,7 @@ export class GroupsService {
                         group.id = response.result;
                         group.name = name;
                         group.description = description;
-                        this.model.opAddModel.next({key: response.result, value: group});
+                        this.model.opSetModel.next(group);
                         return null;
                     } else {
                         return response.error;

@@ -1,8 +1,10 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
 import net.arksea.ansible.deploy.api.manage.dao.AppDao;
+import net.arksea.ansible.deploy.api.manage.dao.VersionDao;
 import net.arksea.ansible.deploy.api.manage.entity.App;
 import net.arksea.ansible.deploy.api.manage.entity.GroupVar;
+import net.arksea.ansible.deploy.api.manage.entity.Version;
 import net.arksea.restapi.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,6 +21,8 @@ public class AppService {
 
     @Autowired
     private AppDao appDao;
+    @Autowired
+    private VersionDao versionDao;
 
     @Transactional
     public App save(final App app) {
@@ -49,5 +53,14 @@ public class AppService {
 
     public List<App> findByUserId(long userId) {
         return appDao.findByUserId(userId);
+    }
+
+    @Transactional
+    public Version createVersion(long appId, Version version) {
+        App app = new App();
+        app.setId(appId);
+        version.setApp(app);
+        Version saved = versionDao.save(version);
+        return saved;
     }
 }

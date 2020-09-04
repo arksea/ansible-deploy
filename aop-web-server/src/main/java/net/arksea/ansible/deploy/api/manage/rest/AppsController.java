@@ -4,6 +4,7 @@ import net.arksea.ansible.deploy.api.ResultCode;
 import net.arksea.ansible.deploy.api.auth.info.ClientInfo;
 import net.arksea.ansible.deploy.api.auth.service.UserService;
 import net.arksea.ansible.deploy.api.manage.entity.App;
+import net.arksea.ansible.deploy.api.manage.entity.Version;
 import net.arksea.ansible.deploy.api.manage.service.AppService;
 import net.arksea.restapi.BaseResult;
 import net.arksea.restapi.ErrorResult;
@@ -70,6 +71,17 @@ public class AppsController {
         List<App> apps = appService.findByUserId(info.userId);
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         return new RestResult<>(0, apps, reqid);
+    }
+
+    //-------------------------------------------------------------------------
+    @RequiresPermissions("应用:修改")
+    @RequestMapping(path="apps/{appId}/vers", method = RequestMethod.POST, produces = MEDIA_TYPE)
+    public String createVersion(@RequestBody final Version version,
+                                @PathVariable final long appId,
+                              final HttpServletRequest httpRequest) {
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        Version created = appService.createVersion(appId, version);
+        return RestUtils.createResult(ResultCode.SUCCEED, created.getId(), reqid);
     }
 
 }

@@ -13,12 +13,12 @@
                     </div>
                 </div>
             </li>
-            <li class="list-group-item">
+            <li *ngFor="let v of svc.app.versions" class="list-group-item">
                 <div class="card">
                     <div class="card-header">
                         <div class="d-flex">
                             <div class="mr-auto pt-2">
-                                <strong>版本: Online</strong>
+                                <strong>版本: {{v.name}}</strong>
                             </div>
                             <div [hidden]="account.perm('应用:修改') | async">
                                 <button type="button" class="btn btn-outline-danger btn-sm"

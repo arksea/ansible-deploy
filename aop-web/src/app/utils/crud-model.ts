@@ -25,15 +25,13 @@ export interface IModelInfo<K,T> {
 
 export class CrudModel<K,T> {
     // opUpdateModels     ──┬──＞ updates  ===＞ modelMap ──＞ modelList
-    // opUpdateModel      ──┤
+    // opSetModel         ──┤
     // opResetModels      ──┤
-    // opAddModel         ──┤
     // opDelModel         ──┤
     // opUpdateSort       ──┘
     opResetModels: Subject<T[]> = new Subject();
     opUpdateModels: Subject<T[]> = new Subject();
-    opUpdateModel: Subject<T> = new Subject();
-    opAddModel: Subject<AddModel<K,T>> = new Subject();
+    opSetModel: Subject<T> = new Subject();
     opDelModel: Subject<K> = new Subject();
     opUpdateSort: Subject<any> = new Subject();
     updates: Subject<IModelMapOperation<K,T>> = new Subject();
@@ -69,7 +67,7 @@ export class CrudModel<K,T> {
             })
         ).subscribe(this.updates);
 
-        this.opUpdateModel.pipe(
+        this.opSetModel.pipe(
             map(function (value: T): IModelMapOperation<K,T> {
                 return (modelMap: ModelMap<K,T>) => {
                     modelMap.set(mapping.getModelMapKey(value), value);
@@ -92,15 +90,6 @@ export class CrudModel<K,T> {
                 }
             })
         ).subscribe(this.modelList);
-
-        this.opAddModel.pipe(
-            map(function (add: AddModel<K,T>): IModelMapOperation<K,T> {
-                return (modelMap: ModelMap<K,T>) => {
-                    modelMap.set(add.key, add.value);
-                    return modelMap;
-                };
-            })
-        ).subscribe(this.updates);
 
         this.opDelModel.pipe(
             map(function (key: K): IModelMapOperation<K,T> {

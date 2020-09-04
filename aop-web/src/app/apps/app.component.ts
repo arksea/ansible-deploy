@@ -28,9 +28,7 @@ export class AppComponent implements OnInit {
                 private alert: MessageNotify,
                 private modal: NgbModal) {
         let id = Number(this.route.snapshot.paramMap.get('id'));
-        if (this.svc.app.id != id) {
-            this.svc.updateCurrnetAppById(id).subscribe();
-        }
+        this.svc.setSelectedApp(id);
     }
 
     ngOnInit() {}

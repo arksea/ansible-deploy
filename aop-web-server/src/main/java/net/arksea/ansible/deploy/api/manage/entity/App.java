@@ -113,7 +113,7 @@ public class App extends IdEntity {
         this.enableJmx = enableJmx;
     }
 
-    @OneToMany(mappedBy = "app", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "app", fetch = FetchType.EAGER)
     @OrderBy("id")
     public Set<Version> getVersions() {
         return versions;

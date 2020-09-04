@@ -13,6 +13,7 @@ import { AccountModule } from '../account/account.module';
 import { AppsService } from './apps.service';
 import { AppListComponent } from './app-list.component';
 import { AppEditComponent } from './app-edit.component';
+import { AppEditService } from './app-edit.service';
 import { AppComponent } from './app.component';
 import { NewVersionDialog } from './new-version.dialog';
 
@@ -29,7 +30,7 @@ import { NewVersionDialog } from './new-version.dialog';
   entryComponents: [
     NewVersionDialog
   ],
-  providers: [AppsService],
+  providers: [AppsService, AppEditService],
   exports: []
 })
 export class AppsModule { }

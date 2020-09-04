@@ -44,7 +44,7 @@ class SortType {
 export class UsersService {
     private EMETY_SET: Set<string> = new Set();
     private userModelInfo: UsersModelInfo = new UsersModelInfo();
-    public usersModel: CrudModel<number, User> = new CrudModel<number, User>(this.userModelInfo);
+    public usersModel: CrudModel<number, User> = new CrudModel<number, User>(this.userModelInfo, undefined);
     public userList: Subject<User[]> = this.usersModel.modelList;
     public sortTypes: Array<SortType> = [{type:"name", order:"asc", desc:"用户名-正序"},
                                          {type:"name", order:"desc",desc:"用户名-逆序"}]

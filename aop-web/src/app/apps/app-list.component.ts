@@ -37,12 +37,12 @@ export class AppListComponent implements OnInit {
     }
 
     onEditBtnClick(app: App) {
-        this.svc.app = app;
+        this.svc.setSelectedApp(app.id);
         this.router.navigate(['/apps/'+app.id+'/edit'])
     }
 
     onViewBtnClick(app: App) {
-        this.svc.app = app;
+        this.svc.setSelectedApp(app.id);
         this.router.navigate(['/apps', app.id])
     }
 
@@ -63,7 +63,8 @@ export class AppListComponent implements OnInit {
     }
 
     onNewBtnClick() {
-        this.svc.app = this.svc.newTomcatApp();
+        let app = this.svc.newTomcatApp();
+        this.svc.setSelectedApp(app.id);
         this.router.navigate(['/apps/new/edit'])
     }
 

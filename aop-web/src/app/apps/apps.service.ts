@@ -5,7 +5,7 @@ import { ServiceResponse } from '../utils/http-utils';
 import { HttpUtils } from '../utils/http-utils';
 import { environment } from '../../environments/environment';
 import { map } from 'rxjs/operators';
-import { CrudModel, IModelInfo } from '../utils/crud-model';
+import { CrudModel, IModelInfo, IModelMapOperation, ModelMap, ModelData } from '../utils/crud-model';
 import { Version } from '../app.entity';
 
 // type ChildPermMap = Map<string, Set<string>>;
@@ -41,20 +41,36 @@ class SortType {
     desc: string;
 }
 
+class AddVersion {
+    constructor(public appId: number, public version: Version) {}
+}
+
 @Injectable()
 export class AppsService {
     private EMETY_SET: Set<string> = new Set();
-    private _currentApp: App = new App();
+    private currentApp: App = this.newTomcatApp();
     private appsModelInfo: AppsModelInfo = new AppsModelInfo();
-    public appsModel: CrudModel<number, App> = new CrudModel<number, App>(this.appsModelInfo);
+    public appsModel: CrudModel<number, App> = new CrudModel<number, App>(this.appsModelInfo, this.currentApp);
+    private _currentApp: Subject<App> = this.appsModel.modelSelected;
     public appList: Subject<App[]> = this.appsModel.modelList;
     public sortTypes: Array<SortType> = [{type:"name", order:"asc", desc:"应用名-升序"},
                                          {type:"name", order:"desc",desc:"应用名-降序"}]
     public selectedSortType: BehaviorSubject<SortType> = new BehaviorSubject(this.sortTypes[0])
-    // private opAddVersion: Subject<AddModel<K,T>> = new Subject();
+
+    opAddVersion: Subject<AddVersion> = new Subject();
+    opSetCurrentApp: Subject<number> = new Subject();
 
     public constructor(private httpUtils: HttpUtils) {
-
+        this.opAddVersion.pipe(
+            map(function (op: AddVersion): IModelMapOperation<number,App> {
+                return (modelData: ModelData<number,App>) => {
+                    let app = modelData.map.get(op.appId);
+                    app.versions.push(op.version);
+                    modelData.map.set(op.appId, app);
+                    return modelData;
+                }
+            })
+        ).subscribe(this.appsModel.updates);
     }
 
     public getSortDesc(index: number): string {
@@ -105,19 +121,6 @@ export class AppsService {
         )
     }
 
-    public updateCurrnetAppById(id: number): Observable<App> {
-        let url = environment.apiUrl + '/api/apps/'+id;
-        let ret: Observable<ServiceResponse<App>> = this.httpUtils.httpGet('查询应用', url);
-        return ret.pipe(map(
-            resp => {
-                if (resp.code == 0) {
-                    this._currentApp = resp.result;
-                }
-                return this._currentApp;
-            }
-        ));
-    }
-
     public queryUserApps() {
         let url = environment.apiUrl + '/api/user/apps';
         let ret: Observable<ServiceResponse<Array<App>>> = this.httpUtils.httpGet('查询用户应用', url);
@@ -155,10 +158,9 @@ export class AppsService {
         return this.httpUtils.httpPost('新增版本', url, version).pipe(
             map(response => {
                     if (response.code === 0) {
-                        // version.id = response.result;
-                        // this.app.versions.
-                        // this.appsModel.opSetModel.next();
-                        // return null;
+                        version.id = response.result;
+                        this.opAddVersion.next(new AddVersion(appId, version));
+                        return null;
                     } else {
                         return response.error;
                     }
@@ -167,13 +169,19 @@ export class AppsService {
         );
     }
 
+    // get app(): App {
+    //     return this.currentApp;
+    // }
 
+    // set app(app: App) {
+    //     this.currentApp = app;
+    // }
 
-    get app(): App {
+    get app(): Observable<App> {
         return this._currentApp;
     }
 
-    set app(app: App) {
-        this._currentApp = app;
+    public setSelectedApp(appId: number) {
+        this.appsModel.opSetSelected.next(appId);
     }
 }

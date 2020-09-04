@@ -16,23 +16,23 @@ export class NewVersionDialog {
 
     public createForm: FormGroup = new FormGroup({
         name: new FormControl('',[Validators.required, Validators.minLength(2), Validators.maxLength(64)]),
-        repository: new FormControl('',[Validators.maxLength(1000)]),
+        repository: new FormControl('',[Validators.required,Validators.maxLength(1000)]),
         javaOpt: new FormControl('',[Validators.maxLength(1000)]),
         revision: new FormControl('HEAD',[Validators.required,Validators.minLength(1),Validators.maxLength(64)]),
     });
 
     create(event: FormDataEvent) {
-        event.preventDefault();
-        let ver = new Version();
-        ver.name = this.createForm.get('name').value;
-        ver.repository = this.createForm.get('repository').value;
-        ver.javaOpt = this.createForm.get('javaOpt').value;
-        ver.revision = this.createForm.get('revision').value;
-        this.svc.createVersion(this.svc.app.id, ver).subscribe(error => {
-            if (!error) {
-                this.modal.close('ok');
-                this.alert.success('新建版本成功');
-            }
-        });
+        // event.preventDefault();
+        // let ver = new Version();
+        // ver.name = this.createForm.get('name').value;
+        // ver.repository = this.createForm.get('repository').value;
+        // ver.javaOpt = this.createForm.get('javaOpt').value;
+        // ver.revision = this.createForm.get('revision').value;
+        // this.svc.createVersion(this.svc.app.id, ver).subscribe(error => {
+        //     if (!error) {
+        //         this.modal.close('ok');
+        //         this.alert.success('新建版本成功');
+        //     }
+        // });
     }
 }

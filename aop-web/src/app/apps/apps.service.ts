@@ -48,10 +48,9 @@ class AddVersion {
 @Injectable()
 export class AppsService {
     private EMETY_SET: Set<string> = new Set();
-    private currentApp: App = this.newTomcatApp();
     private appsModelInfo: AppsModelInfo = new AppsModelInfo();
-    public appsModel: CrudModel<number, App> = new CrudModel<number, App>(this.appsModelInfo, this.currentApp);
-    private _currentApp: Subject<App> = this.appsModel.modelSelected;
+    public appsModel: CrudModel<number, App> = new CrudModel<number, App>(this.appsModelInfo);
+    private currentApp: Subject<App> = this.appsModel.modelSelected;
     public appList: Subject<App[]> = this.appsModel.modelList;
     public sortTypes: Array<SortType> = [{type:"name", order:"asc", desc:"应用名-升序"},
                                          {type:"name", order:"desc",desc:"应用名-降序"}]
@@ -169,16 +168,8 @@ export class AppsService {
         );
     }
 
-    // get app(): App {
-    //     return this.currentApp;
-    // }
-
-    // set app(app: App) {
-    //     this.currentApp = app;
-    // }
-
     get app(): Observable<App> {
-        return this._currentApp;
+        return this.currentApp;
     }
 
     public setSelectedApp(appId: number) {

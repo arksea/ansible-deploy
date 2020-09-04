@@ -25,9 +25,7 @@
                                 (click)="svc.setSortType(c)">{{c.desc}}</a>
                         </div>
                     </div>
-                    <div [hidden]="account.perm('应用:修改') | async">
-                        <button type="button" class="btn btn-success" (click)="onNewBtnClick()">新建应用</button>
-                    </div>
+                    <button type="button" class="btn btn-success" [disabled]="account.perm('应用:修改') | async" (click)="onNewBtnClick()">新建应用</button>
                 </div>
             </li>
             <li *ngFor="let a of svc.appList | async;index as i;" class="list-group-item">
@@ -36,12 +34,14 @@
                         <a (click)="onViewBtnClick(a)" class="btn btn-link pl-0"><strong>{{a.apptag}}</strong> </a>
                         <p>{{a.description}}</p>
                     </div>
-                    <div class="p-1" [hidden]="account.perm('应用:修改') | async">
+                    <div class="p-1 mt-2">
                         <button type="button" class="btn btn-outline-danger btn-sm"
+                            [disabled]="account.perm('应用:修改') | async"
                             (click)="onDelBtnClick(a)">删除</button>
                     </div>
-                    <div class="p-1" [hidden]="account.perm('应用:修改') | async">
+                    <div class="p-1 mt-2">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
+                            [disabled]="account.perm('应用:修改') | async"
                             (click)="onEditBtnClick(a)">编辑</button>
                     </div>
                 </div>

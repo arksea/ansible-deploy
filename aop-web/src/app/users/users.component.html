@@ -38,10 +38,11 @@
                             <a *ngFor="let c of svc.sortTypes" class="dropdown-item"
                                 (click)="svc.setSortType(c)">{{c.desc}}</a>
                         </div>
-                    </div>
-                    <div [hidden]="account.perm('用户管理:修改') | async">
-                        <button type="button" class="btn btn-success" (click)="newUser()">新建用户</button>
-                    </div>
+                    </div>                    
+                    <button type="button" class="btn btn-success" 
+                        [disabled]="account.perm('用户管理:修改') | async"
+                        (click)="newUser()">新建用户
+                    </button>
                 </div>
             </li>
             <li *ngFor="let u of svc.userList | async;index as i;" class="list-group-item">
@@ -50,15 +51,20 @@
                         <strong>{{u.name}}</strong>
                         <p>{{u.email}}</p>
                     </div>
-                    <div class="p-1" [hidden]="account.perm('用户管理:修改') | async">
-                        <button type="button" class="btn btn-outline-secondary btn-sm">编辑</button>
+                    <div class="p-1">
+                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                            [disabled]="account.perm('用户管理:修改') | async">编辑
+                        </button>
                     </div>
-                    <div class="p-1" [hidden]="account.perm('用户管理:修改') | async">
-                        <button type="button" [hidden]="hiddenUnblockBtn()" class="btn btn-warning btn-sm"
+                    <div class="p-1">
+                        <button type="button" [hidden]="hiddenUnblockBtn()" 
+                            [disabled]="account.perm('用户管理:修改') | async"
+                            class="btn btn-warning btn-sm"
                             (click)="this.onUnblockBtnClick(u)">启用</button>
                     </div>
-                    <div class="p-1" [hidden]="account.perm('用户管理:修改') | async">
+                    <div class="p-1">
                         <button type="button" class="btn btn-danger btn-sm"
+                            [disabled]="account.perm('用户管理:修改') | async"
                             (click)="onDelBtnClick(u)">{{getDelBtnLabel()}}</button>
                     </div>
                 </div>

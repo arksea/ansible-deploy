@@ -44,7 +44,7 @@ class SortType {
 export class UsersService {
     private EMETY_SET: Set<string> = new Set();
     private userModelInfo: UsersModelInfo = new UsersModelInfo();
-    public usersModel: CrudModel<number, User> = new CrudModel<number, User>(this.userModelInfo, undefined);
+    public usersModel: CrudModel<number, User> = new CrudModel<number, User>(this.userModelInfo);
     public userList: Subject<User[]> = this.usersModel.modelList;
     public sortTypes: Array<SortType> = [{type:"name", order:"asc", desc:"用户名-正序"},
                                          {type:"name", order:"desc",desc:"用户名-逆序"}]
@@ -63,27 +63,6 @@ export class UsersService {
         this.userModelInfo.setSortType(cfg.type, cfg.order);
         this.usersModel.opUpdateSort.next(true);        
     }
-
-    // public createGroup(name: string, description: string): Observable<string> {
-    //     let n = encodeURI(name);
-    //     let d = encodeURI(description);
-    //     const url = environment.apiUrl + '/api/groups?name=' + n + '&desc=' + d;
-    //     return this.httpUtils.httpPost('新建组', url, '').pipe(
-    //         map(response => {
-    //                 if (response.code === 0) {
-    //                     let group: User = new User()
-    //                     group.id = response.result;
-    //                     group.name = name;
-    //                     group.description = description;
-    //                     this.model.opAddModel.next({key: response.result, value: group});
-    //                     return null;
-    //                 } else {
-    //                     return response.error;
-    //                 }
-    //             }
-    //         )
-    //     );
-    // }
 
     public getUsers(type: string) {
         let url = environment.apiUrl + '/api/users/' + type;

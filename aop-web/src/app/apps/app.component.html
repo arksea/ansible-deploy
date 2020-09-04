@@ -8,9 +8,10 @@
                 <div class="d-flex">
                     <div class="mr-auto">
                     </div>
-                    <div [hidden]="account.perm('应用:修改') | async">
-                        <button type="button" class="btn btn-success" (click)="onNewVersionBtnClick()">新增版本</button>
-                    </div>
+                    <button type="button" class="btn btn-success" 
+                        [disabled]="account.perm('应用:修改') | async"
+                        (click)="onNewVersionBtnClick()">新增版本
+                    </button>
                 </div>
             </li>
             <li *ngFor="let v of (svc.app|async)?.versions" class="list-group-item">
@@ -20,16 +21,17 @@
                             <div class="mr-auto pt-2">
                                 <strong>版本: {{v.name}}</strong>
                             </div>
-                            <div [hidden]="account.perm('应用:修改') | async">
+                            <div>
                                 <button type="button" class="btn btn-outline-danger btn-sm"
+                                    [disabled]="account.perm('应用:修改') | async"
                                     (click)="onDelBtnClick()">删除</button>
                             </div>
-                            <div class="pl-1" [hidden]="account.perm('应用:修改') | async">
+                            <div class="pl-1">
                                 <button type="button" class="btn btn-outline-secondary btn-sm"
+                                    [disabled]="account.perm('应用:修改') | async"
                                     (click)="onEditBtnClick()">修改</button>
                             </div>
                         </div>
-
                     </div>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">

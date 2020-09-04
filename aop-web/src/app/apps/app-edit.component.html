@@ -71,7 +71,7 @@
         <div class="row form-group">
             <div class="col-lg-12 col-md-12 form-group text-right">
                 <button type="button" class="btn btn-outline-secondary mr-3" (click)="cancel()">取消</button>
-                <button type="submit" class="btn btn-danger" [disabled]="(editSvc.appForm|async).invalid || (editSvc.appForm|async).pristine">保存</button>
+                <button type="submit" class="btn btn-danger" [disabled]="(editSvc.appForm|async).invalid || (editSvc.appForm|async).pristine || (account.perm('应用:修改') | async)">保存</button>
             </div>
         </div>
     </form>

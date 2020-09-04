@@ -30,7 +30,7 @@ class AppGroupModelInfo implements IModelInfo<number, AppGroup> {
 @Injectable()
 export class GroupsService {
     private EMETY_SET: Set<string> = new Set();
-    public model: CrudModel<number, AppGroup> = new CrudModel<number, AppGroup>(new AppGroupModelInfo(), undefined);
+    public model: CrudModel<number, AppGroup> = new CrudModel<number, AppGroup>(new AppGroupModelInfo());
     public groupList: Subject<AppGroup[]> = this.model.modelList;
 
     public constructor(private httpUtils: HttpUtils, private router: Router, private alert: MessageNotify) {

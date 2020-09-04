@@ -34,7 +34,6 @@ export class CrudModel<K,T> {
     // opResetModels      ──┤
     // opDelModel         ──┤
     // opUpdateSort       ──┘
-    defaultValue: T;
     opResetModels: Subject<T[]> = new Subject();
     opUpdateModels: Subject<T[]> = new Subject();
     opSetModel: Subject<T> = new Subject();
@@ -46,9 +45,8 @@ export class CrudModel<K,T> {
     public modelList: Subject<T[]> = new BehaviorSubject<T[]>([]);
     public modelSelected: Subject<T> = new BehaviorSubject<T>(undefined);
 
-    public constructor(mapping: IModelInfo<K,T>, defaultValue: T) {
-        this.defaultValue = defaultValue;
-        this.modelSelected = new BehaviorSubject<T>(defaultValue);
+    public constructor(mapping: IModelInfo<K,T>) {
+        this.modelSelected = new BehaviorSubject<T>(undefined);
         //订阅更新操作
         this.modelData = this.updates.pipe(
             scan((modelData: ModelData<K,T>, op: IModelMapOperation<K,T>) => {
@@ -131,11 +129,7 @@ export class CrudModel<K,T> {
         //
         this.modelData.pipe(
             map((modelData: ModelData<K,T>) => {
-                if (modelData.selected == undefined) {
-                    return this.defaultValue;
-                } else {
-                    return modelData.map.get(modelData.selected);
-                }
+                return modelData.map.get(modelData.selected);
             })
         ).subscribe(this.modelSelected);
     }

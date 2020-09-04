@@ -20,10 +20,11 @@ export class AppEditService {
     // opSaveApp    ──┘                          ├─> deployPath
     //                                           ├─> description
     //                                           └─> deployPathAddon
-    opSetApp: Subject<App> = new Subject();
-    opSaveApp: Subject<any> = new Subject();
-    updates: Subject<IAppEditModelOperation> = new Subject();
-    public model: Observable<AppEditModel>;
+    private updates: Subject<IAppEditModelOperation> = new Subject();
+    private model: Observable<AppEditModel>;
+    
+    public opSetApp: Subject<App> = new Subject();
+    public opSaveApp: Subject<any> = new Subject();
     public deployPathAddon: BehaviorSubject<string> = new BehaviorSubject('');
     public appForm: BehaviorSubject<FormGroup>;
     public apptag: BehaviorSubject<AbstractControl>;

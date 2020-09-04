@@ -23,9 +23,6 @@ export class AppEditComponent implements OnInit {
                 protected modal: NgbModal,
                 private router: Router,
                 private route: ActivatedRoute) {
-    }
-
-    ngOnInit(): void {
         let str = this.route.snapshot.paramMap.get('id');
         if (str == 'new') {
             let app = this.svc.newTomcatApp();
@@ -34,6 +31,9 @@ export class AppEditComponent implements OnInit {
             let id = Number(str);
             this.svc.setSelectedApp(id);
         }
+    }
+
+    ngOnInit(): void {
     }
 
     public save(event: FormDataEvent) {

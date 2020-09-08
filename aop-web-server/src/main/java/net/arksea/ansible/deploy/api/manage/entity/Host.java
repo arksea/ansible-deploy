@@ -16,6 +16,7 @@ public class Host extends IdEntity {
     private String publicIp;//公网IP
     private String privateIp;//内网IP
     private String description;//主机用途描述
+    private boolean enabled;
     private Timestamp createTime; //创建时间
 
     @Column(name = "public_ip", length = 36)
@@ -52,6 +53,15 @@ public class Host extends IdEntity {
 
     public void setCreateTime(Timestamp createTime) {
         this.createTime = createTime;
+    }
+
+    @Column(nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override

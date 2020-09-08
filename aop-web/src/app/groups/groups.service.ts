@@ -32,6 +32,7 @@ export class GroupsService {
     private EMETY_SET: Set<string> = new Set();
     public model: CrudModel<number, AppGroup> = new CrudModel<number, AppGroup>(new AppGroupModelInfo());
     public groupList: Subject<AppGroup[]> = this.model.modelList;
+    private currentGroup: Subject<AppGroup> = this.model.modelSelected;
 
     public constructor(private httpUtils: HttpUtils, private router: Router, private alert: MessageNotify) {
     }
@@ -57,7 +58,7 @@ export class GroupsService {
         );
     }
 
-    public getGroups() {
+    public queryGroups() {
         const url = environment.apiUrl + '/api/groups';
         let ret: Observable<ServiceResponse<Array<AppGroup>>> = this.httpUtils.httpGet('查询组信息', url);
         ret.subscribe(data => {
@@ -80,5 +81,9 @@ export class GroupsService {
                 }
             }
         ));
+    }
+
+    public setSelectedGroup(groupId: number) {
+        this.model.opSetSelected.next(groupId);
     }
 }

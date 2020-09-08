@@ -17,7 +17,6 @@ const routes: Routes = [
       // { path: 'edit/ver', component: VersionEditComponent, canActivate: [AuthGuard] },
     ]
   }
-
 ];
 
 @NgModule({

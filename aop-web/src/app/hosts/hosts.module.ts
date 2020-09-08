@@ -6,13 +6,11 @@ import { VenderModule } from '../vender.module';
 import { NgbPaginationModule, NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { RouterModule } from '@angular/router';
-import { GroupsComponent } from './groups.component';
-import { GroupsRoutingModule } from './groups-routing.module';
-import { GroupListComponent } from './group-list.component';
-import { GroupComponent } from './group.component';
 import { AccountModule } from '../account/account.module';
-import { NewGroupDialog } from './new-group.dialog';
-import { GroupsService } from './groups.service';
+import { HostsRoutingModule } from './hosts-routing.module';
+import { HostsComponent } from './hosts.component';
+import { EditHostDialog } from './edit-host.dialog';
+import { HostsService } from './hosts.service';
 
 @NgModule({
   imports: [
@@ -20,14 +18,14 @@ import { GroupsService } from './groups.service';
     CommonModule, FormsModule, ReactiveFormsModule,
     HttpClientModule,
     VenderModule, NgbPaginationModule, NgbAlertModule, NgbModule,
-    AccountModule, GroupsRoutingModule],
+    AccountModule,HostsRoutingModule],
   declarations: [
-    GroupsComponent,GroupListComponent,GroupComponent,NewGroupDialog
+    HostsComponent, EditHostDialog
   ],
   entryComponents: [
-    NewGroupDialog
+    EditHostDialog
   ],
-  providers: [GroupsService],
+  providers: [HostsService],
   exports: []
 })
-export class GroupsModule { }
+export class HostsModule { }

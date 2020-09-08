@@ -1,9 +1,8 @@
 <app-navbar></app-navbar>
 
 <div id="groups-contain" class="container-xl mt-3">
-    <div id="group-head" class="m-3">
+    <div id="group-head" class="mb-5">
         <h1>用户管理</h1>
-        <div class="mr-auto">提供用户管理功能：添加、禁用、删除、授权等</div>
     </div>
     <div id="group-list">
         <ul class="list-group list-group-flush">
@@ -52,20 +51,20 @@
                         <p>{{u.email}}</p>
                     </div>
                     <div class="p-1">
-                        <button type="button" class="btn btn-outline-secondary btn-sm"
-                            [disabled]="account.perm('用户管理:修改') | async">编辑
-                        </button>
-                    </div>
-                    <div class="p-1">
                         <button type="button" [hidden]="hiddenUnblockBtn()" 
                             [disabled]="account.perm('用户管理:修改') | async"
-                            class="btn btn-warning btn-sm"
+                            class="btn btn-outline-info btn-sm"
                             (click)="this.onUnblockBtnClick(u)">启用</button>
                     </div>
                     <div class="p-1">
-                        <button type="button" class="btn btn-danger btn-sm"
+                        <button type="button" class="btn btn-outline-danger btn-sm"
                             [disabled]="account.perm('用户管理:修改') | async"
                             (click)="onDelBtnClick(u)">{{getDelBtnLabel()}}</button>
+                    </div>
+                    <div class="p-1">
+                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                            [disabled]="account.perm('用户管理:修改') | async">编辑
+                        </button>
                     </div>
                 </div>
             </li>

@@ -1,5 +1,5 @@
-<div id="groups-contain" class="container-xl mt-3">
-    <div id="group-head" class="m-3">
+<div class="container-xl mt-3">
+    <div class="mb-5">
         <h1>我的应用</h1>
     </div>
     <div id="group-list">
@@ -31,15 +31,15 @@
             <li *ngFor="let a of svc.appList | async;index as i;" class="list-group-item">
                 <div class="d-flex mt-2">
                     <div class="mr-auto">
-                        <a (click)="onViewBtnClick(a)" class="btn btn-link pl-0"><strong>{{a.apptag}}</strong> </a>
+                        <a (click)="onViewBtnClick(a)" class="btn btn-link p-0 m-0"><strong>{{a.apptag}}</strong></a>
                         <p>{{a.description}}</p>
                     </div>
-                    <div class="p-1 mt-2">
+                    <div class="p-1 mt-1">
                         <button type="button" class="btn btn-outline-danger btn-sm"
                             [disabled]="account.perm('应用:修改') | async"
                             (click)="onDelBtnClick(a)">删除</button>
                     </div>
-                    <div class="p-1 mt-2">
+                    <div class="p-1 mt-1">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
                             [disabled]="account.perm('应用:修改') | async"
                             (click)="onEditBtnClick(a)">编辑</button>

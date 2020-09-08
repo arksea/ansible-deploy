@@ -21,6 +21,8 @@ import { GroupsModule } from './groups/groups.module';
 import { UsersModule } from './users/users.module';
 //应用管理
 import { AppsModule } from './apps/apps.module';
+//主机管理
+import { HostsModule } from './hosts/hosts.module';
 /////////////////////////////////////////////////////////////////////////////////////
 
 @NgModule({
@@ -37,6 +39,7 @@ import { AppsModule } from './apps/apps.module';
     GroupsModule,
     UsersModule,
     AppsModule,
+    HostsModule,
     //路由
     AppRoutingModule, //主路由必须在最后，以避免屏蔽各子模块自己的路由
   ],

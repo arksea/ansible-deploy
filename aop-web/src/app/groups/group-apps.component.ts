@@ -6,11 +6,10 @@ import { MessageNotify } from '../utils/message-notify';
 import { AccountService } from '../account/account.service';
 
 @Component({
-    selector: 'group',
-    templateUrl: './group.component.html'
+    selector: 'group-apps',
+    templateUrl: './group-apps.component.html'
 })
-export class GroupComponent implements OnInit {
-
+export class GroupAppsComponent implements OnInit {
     groupId: number;
     constructor(public svc: GroupsService,
                 public account: AccountService,
@@ -18,11 +17,7 @@ export class GroupComponent implements OnInit {
                 private router: Router,
                 private alert: MessageNotify,
                 private modal: NgbModal) {
-        this.groupId = Number(this.route.snapshot.paramMap.get('id'));
-        this.svc.setSelectedGroup(this.groupId);
     }
 
-    ngOnInit() {
-        this.router.navigate(['/groups/'+this.groupId+'/members']);
-    }
+    ngOnInit() {}
 }

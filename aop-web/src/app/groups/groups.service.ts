@@ -6,10 +6,9 @@ import { ServiceResponse } from '../utils/http-utils';
 import { HttpUtils } from '../utils/http-utils';
 import { MessageNotify } from "../utils/message-notify";
 import { environment } from '../../environments/environment';
-import { map } from 'rxjs/operators';
 import { CrudModel, IModelInfo } from '../utils/crud-model';
-
-// type ChildPermMap = Map<string, Set<string>>;
+import { debounceTime,distinctUntilChanged,map } from 'rxjs/operators';
+import { HostsService } from '../hosts/hosts.service';
 
 class AppGroupModelInfo implements IModelInfo<number, AppGroup> {
     public getModelMapKey(t: AppGroup): number {
@@ -33,6 +32,22 @@ export class GroupsService {
     public model: CrudModel<number, AppGroup> = new CrudModel<number, AppGroup>(new AppGroupModelInfo());
     public groupList: Subject<AppGroup[]> = this.model.modelList;
     private currentGroup: Subject<AppGroup> = this.model.modelSelected;
+
+
+    hosts: string[] = ['xiaohaixing','liuyawen','fengbin'];
+
+    searchHost = (text: Observable<string>) => {
+        text.pipe(
+            debounceTime(200),
+            distinctUntilChanged(),
+            map( term => {
+                if (term.length < 2) {
+                    return []
+                } else {
+                    return this.hosts.filter(v => v.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10);
+                }
+            })
+    )}
 
     public constructor(private httpUtils: HttpUtils, private router: Router, private alert: MessageNotify) {
     }
@@ -81,6 +96,10 @@ export class GroupsService {
                 }
             }
         ));
+    }
+
+    get group(): Observable<AppGroup> {
+        return this.currentGroup;
     }
 
     public setSelectedGroup(groupId: number) {

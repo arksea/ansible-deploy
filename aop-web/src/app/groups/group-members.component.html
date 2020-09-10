@@ -4,7 +4,7 @@
     </div>
     <div class="mr-4 mb-3">
         <div class="input-group">
-            <input id="typeahead-basic" type="text" class="form-control" [(ngModel)]="model" [ngbTypeahead]="search"/>
+            <input id="typeahead-basic" type="text" class="form-control" [(ngModel)]="model" [ngbTypeahead]="searchUser"/>
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary" type="button"
                     [disabled]="account.perm('组管理:修改') | async" (click)="addMember()">添加</button>

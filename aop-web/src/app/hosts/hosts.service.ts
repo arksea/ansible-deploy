@@ -32,6 +32,7 @@ export class HostsService {
     public model: CrudModel<number, Host> = new CrudModel<number, Host>(new HostsModelInfo());
     public hostList: Subject<Host[]> = this.model.modelList;
 
+
     public constructor(private httpUtils: HttpUtils, private router: Router, private alert: MessageNotify) {
     }
 
@@ -54,6 +55,16 @@ export class HostsService {
 
     public getHosts() {
         const url = environment.apiUrl + '/api/hosts';
+        let ret: Observable<ServiceResponse<Array<Host>>> = this.httpUtils.httpGet('查询主机列表', url);
+        ret.subscribe(data => {
+            if (data.code == 0) {
+                this.model.opResetModels.next(data.result);
+            }
+        });
+    }
+
+    public getHostsNotInGroup() {
+        const url = environment.apiUrl + '/api/hosts/notInGroup';
         let ret: Observable<ServiceResponse<Array<Host>>> = this.httpUtils.httpGet('查询主机列表', url);
         ret.subscribe(data => {
             if (data.code == 0) {

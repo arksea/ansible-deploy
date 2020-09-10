@@ -69,7 +69,7 @@ public class App extends IdEntity {
     }
 
     @ManyToOne
-    @JoinColumn(name = "app_group_id", nullable = false)
+    @JoinColumn(name = "app_group_id")
     @JsonBackReference
     public AppGroup getAppGroup() {
         return appGroup;

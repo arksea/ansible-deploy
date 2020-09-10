@@ -1,6 +1,7 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
 import net.arksea.ansible.deploy.api.manage.dao.HostDao;
+import net.arksea.ansible.deploy.api.manage.entity.App;
 import net.arksea.ansible.deploy.api.manage.entity.Host;
 import net.arksea.restapi.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 /**
  * Create by xiaohaixing on 2020/8/21
@@ -45,5 +47,9 @@ public class HostsService {
         } catch (Exception ex) {
             throw new RestException("删除主机失败", ex);
         }
+    }
+
+    public Iterable<Host> findNotInGroup() {
+        return hostDao.findAllGroupIsNull();
     }
 }

@@ -7,9 +7,10 @@ import { HttpUtils } from '../utils/http-utils';
 import { MessageNotify } from "../utils/message-notify";
 import { environment } from '../../environments/environment';
 import { CrudModel, IModelInfo } from '../utils/crud-model';
-import { debounceTime,distinctUntilChanged,map } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, flatMap } from 'rxjs/operators';
 import { HostsService } from '../hosts/hosts.service';
-
+import { Host } from '../app.entity';
+import { IModelMapOperation, ModelData } from '../utils/crud-model';
 class AppGroupModelInfo implements IModelInfo<number, AppGroup> {
     public getModelMapKey(t: AppGroup): number {
         return t.id;
@@ -32,44 +33,37 @@ export class GroupsService {
     public model: CrudModel<number, AppGroup> = new CrudModel<number, AppGroup>(new AppGroupModelInfo());
     public groupList: Subject<AppGroup[]> = this.model.modelList;
     private currentGroup: Subject<AppGroup> = this.model.modelSelected;
-
-
-    hosts: string[] = ['xiaohaixing','liuyawen','fengbin'];
-
-    searchHost = (text: Observable<string>) => {
-        text.pipe(
-            debounceTime(200),
-            distinctUntilChanged(),
-            map( term => {
-                if (term.length < 2) {
-                    return []
-                } else {
-                    return this.hosts.filter(v => v.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10);
-                }
-            })
-    )}
+    private currentGroupId: number = undefined;
+    public opAddHostToCurrentGroup: Subject<Host> = new Subject();
 
     public constructor(private httpUtils: HttpUtils, private router: Router, private alert: MessageNotify) {
+        this.opAddHostToCurrentGroup.pipe(
+            map(function (host: Host): IModelMapOperation<number,AppGroup> {
+                return (modelData: ModelData<number,AppGroup>) => {
+                    modelData.map.get(modelData.selected).hosts.push(host);
+                    return modelData;
+                }
+            })
+        ).subscribe(this.model.updates);
     }
 
-    public createGroup(name: string, description: string): Observable<string> {
+    public createGroup(name: string, description: string): Observable<boolean> {
         let n = encodeURI(name);
         let d = encodeURI(description);
         const url = environment.apiUrl + '/api/groups?name=' + n + '&desc=' + d;
         return this.httpUtils.httpPost('新建组', url, '').pipe(
             map(response => {
-                    if (response.code === 0) {
-                        let group: AppGroup = new AppGroup()
-                        group.id = response.result;
-                        group.name = name;
-                        group.description = description;
-                        this.model.opSetModel.next(group);
-                        return null;
-                    } else {
-                        return response.error;
-                    }
+                if (response.code === 0) {
+                    let group: AppGroup = new AppGroup()
+                    group.id = response.result;
+                    group.name = name;
+                    group.description = description;
+                    this.model.opSetModel.next(group);
+                    return true;
+                } else {
+                    return false;
                 }
-            )
+            })
         );
     }
 
@@ -86,10 +80,25 @@ export class GroupsService {
     public deleteGroup(group: AppGroup): Observable<boolean> {
         const url = environment.apiUrl + '/api/groups/' + group.id;
         let ret = this.httpUtils.httpDelete('删除组', url);
-        return ret.pipe(map (
+        return ret.pipe(map(
             data => {
                 if (data.code == 0) {
                     this.model.opDelModel.next(group.id)
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        ));
+    }
+
+    public addHost(host: Host): Observable<boolean> {
+        const url = environment.apiUrl + '/api/groups/' + this.currentGroupId + '/hosts/' + host.id;
+        let ret = this.httpUtils.httpPost('向分组添加主机', url, '');
+        return ret.pipe(map(
+            data => {
+                if (data.code == 0) {
+                    this.opAddHostToCurrentGroup.next(host);
                     return true;
                 } else {
                     return false;
@@ -103,6 +112,29 @@ export class GroupsService {
     }
 
     public setSelectedGroup(groupId: number) {
+        this.currentGroupId = groupId;
         this.model.opSetSelected.next(groupId);
+    }
+
+    public search(text: Observable<string>, notFindedDesc: string, textList: Observable<string[]>) {
+        return text.pipe(
+            debounceTime(200),
+            distinctUntilChanged(),
+            flatMap(term => {
+                if (term.length < 2) {
+                    return [];
+                } else {
+                    return textList.pipe(
+                        map(l => {
+                            if (l.length == 0) {
+                                return [notFindedDesc]
+                            } else {
+                                return l.filter(v => v.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10) 
+                            }
+                        })
+                    )
+                }
+            })
+        );
     }
 }

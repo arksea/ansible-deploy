@@ -4,8 +4,10 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { GroupsService } from './groups.service';
 import { MessageNotify } from '../utils/message-notify';
 import { AccountService } from '../account/account.service';
-import { debounceTime,distinctUntilChanged,map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { UsersService } from '../users/users.service';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { map } from 'rxjs/operators';
+
 
 @Component({
     selector: 'group-members',
@@ -13,23 +15,24 @@ import { Observable } from 'rxjs';
 })
 export class GroupMembersComponent implements OnInit {
 
-    public users: string[] = ['xiaohaixing','liuyawen','fengbin'];
     public model: any;
 
-    search = (text$: Observable<string>) =>
-      text$.pipe(
-        debounceTime(200),
-        distinctUntilChanged(),
-        map(term => term.length < 2 ? []
-          : this.users.filter(v => v.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10))
-      )
+    searchUser = (text: Observable<string>) => this.svc.search(text, '', this.usersSvc.userList.pipe(map(users => {
+        let names: string[] = [];
+        for (let u of users) {
+            names.push(u.name)
+        }
+        return names;
+    })));
+
     constructor(public svc: GroupsService,
         public account: AccountService,
+        public usersSvc: UsersService,
         private route: ActivatedRoute,
         private router: Router,
         private alert: MessageNotify,
         private modal: NgbModal) {
-
+            this.usersSvc.getUsers('active');
     }
 
     ngOnInit() { }

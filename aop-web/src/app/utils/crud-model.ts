@@ -29,7 +29,7 @@ export class ModelData<K,T> {
 }
 
 export class CrudModel<K,T> {
-    // opUpdateModels     ──┬──＞ updates  ===＞ modelMap ──＞ modelList
+    // opUpdateModels     ──┬──＞ updates  ===＞ modelData ──＞ modelList
     // opSetModel         ──┤
     // opResetModels      ──┤
     // opDelModel         ──┤

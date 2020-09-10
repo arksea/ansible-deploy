@@ -19,7 +19,7 @@ public class AppGroup extends IdEntity {
     private String description;// 分组描述
     private String avatar;     // 分组头像
     private List<App> apps;     // 分组管理的应用
-    private Set<Host> hosts;   // 分组管理的主机
+    private List<Host> hosts;   // 分组管理的主机
     private Set<User> users;   // 加入分组的用户
     private boolean enabled;   // 默认为true，删除或锁定将设置为false
 
@@ -61,15 +61,13 @@ public class AppGroup extends IdEntity {
         this.apps = apps;
     }
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "dp2_app_group_hosts",
-            joinColumns = @JoinColumn(name = "app_group_id"),
-            inverseJoinColumns = @JoinColumn(name = "host_id"))
-    public Set<Host> getHosts() {
+    @OneToMany(mappedBy = "appGroup",fetch = FetchType.EAGER)
+    @JsonManagedReference
+    public List<Host> getHosts() {
         return hosts;
     }
 
-    public void setHosts(Set<Host> hosts) {
+    public void setHosts(List<Host> hosts) {
         this.hosts = hosts;
     }
 

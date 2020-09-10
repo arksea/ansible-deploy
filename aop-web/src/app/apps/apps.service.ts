@@ -130,6 +130,16 @@ export class AppsService {
         });
     }
 
+    public queryNotInGroupApps() {
+        let url = environment.apiUrl + '/api/apps/notInGroup';
+        let ret: Observable<ServiceResponse<Array<App>>> = this.httpUtils.httpGet('查询所有应用', url);
+        ret.subscribe(data => {
+            if (data.code == 0) {
+                this.appsModel.opResetModels.next(data.result);
+            }
+        });
+    }
+
     public newTomcatApp(): App {
         let app = new App();
         app.apptag = '';

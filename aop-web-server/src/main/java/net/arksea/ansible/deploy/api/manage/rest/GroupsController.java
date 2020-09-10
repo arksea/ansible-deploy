@@ -1,7 +1,6 @@
 package net.arksea.ansible.deploy.api.manage.rest;
 
 import net.arksea.ansible.deploy.api.ResultCode;
-import net.arksea.ansible.deploy.api.auth.entity.User;
 import net.arksea.ansible.deploy.api.manage.entity.AppGroup;
 import net.arksea.ansible.deploy.api.manage.service.GroupsService;
 import net.arksea.restapi.RestResult;
@@ -48,6 +47,16 @@ public class GroupsController {
                               final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         groupsService.deleteAppGroup(groupId);
+        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+    }
+
+    @RequiresPermissions("组管理:修改")
+    @RequestMapping(path="groups/{groupId}/hosts/{hostId}", method = RequestMethod.POST, produces = MEDIA_TYPE)
+    public String addHost(@PathVariable(name="groupId") long groupId,
+                          @PathVariable(name="hostId") long hostId,
+                          final HttpServletRequest httpRequest) {
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        groupsService.addHost(groupId, hostId);
         return RestUtils.createResult(ResultCode.SUCCEED, reqid);
     }
 }

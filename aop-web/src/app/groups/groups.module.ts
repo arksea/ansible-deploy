@@ -16,7 +16,6 @@ import { GroupHostsComponent } from './group-hosts.component';
 import { AccountModule } from '../account/account.module';
 import { NewGroupDialog } from './new-group.dialog';
 import { GroupsService } from './groups.service';
-import { HostsModule } from '../hosts/hosts.module';
 
 @NgModule({
   imports: [
@@ -24,7 +23,7 @@ import { HostsModule } from '../hosts/hosts.module';
     CommonModule, FormsModule, ReactiveFormsModule,
     HttpClientModule,
     VenderModule, NgbPaginationModule, NgbAlertModule, NgbModule,
-    AccountModule, HostsModule, GroupsRoutingModule],
+    AccountModule, GroupsRoutingModule],
   declarations: [
     GroupsComponent,GroupListComponent,
     GroupComponent,GroupMembersComponent,GroupAppsComponent,GroupHostsComponent,

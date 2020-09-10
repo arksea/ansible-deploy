@@ -63,6 +63,15 @@ public class AppsController {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         return new RestResult<>(0, appId, reqid);
     }
+
+    //-------------------------------------------------------------------------
+    @RequiresPermissions("应用:查询")
+    @RequestMapping(path="apps/notInGroup", method = RequestMethod.GET, produces = MEDIA_TYPE)
+    public RestResult<Iterable<App>> getAppsNotInGroup(HttpServletRequest httpRequest) {
+        Iterable<App> apps = appService.findNotInGroup();
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        return new RestResult<>(0, apps, reqid);
+    }
     //-------------------------------------------------------------------------
     @RequiresPermissions("应用:查询")
     @RequestMapping(path="user/apps", method = RequestMethod.GET, produces = MEDIA_TYPE)

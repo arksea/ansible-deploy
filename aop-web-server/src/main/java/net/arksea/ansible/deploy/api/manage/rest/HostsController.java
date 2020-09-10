@@ -1,7 +1,6 @@
 package net.arksea.ansible.deploy.api.manage.rest;
 
 import net.arksea.ansible.deploy.api.ResultCode;
-import net.arksea.ansible.deploy.api.manage.entity.AppGroup;
 import net.arksea.ansible.deploy.api.manage.entity.Host;
 import net.arksea.ansible.deploy.api.manage.service.HostsService;
 import net.arksea.restapi.RestResult;
@@ -35,8 +34,16 @@ public class HostsController {
 
     @RequiresPermissions("组管理:查询")
     @RequestMapping(path="hosts", method = RequestMethod.GET, produces = MEDIA_TYPE)
-    public RestResult<Iterable<Host>> getAppGroups(final HttpServletRequest httpRequest) {
+    public RestResult<Iterable<Host>> getHosts(final HttpServletRequest httpRequest) {
         Iterable<Host> hosts = hostsService.getHosts();
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        return new RestResult<>(0, hosts, reqid);
+    }
+
+    @RequiresPermissions("组管理:查询")
+    @RequestMapping(path="hosts/notInGroup", method = RequestMethod.GET, produces = MEDIA_TYPE)
+    public RestResult<Iterable<Host>> getHostsNotInGroup(final HttpServletRequest httpRequest) {
+        Iterable<Host> hosts = hostsService.findNotInGroup();
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         return new RestResult<>(0, hosts, reqid);
     }

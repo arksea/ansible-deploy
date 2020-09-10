@@ -55,6 +55,10 @@ public class AppService {
         return appDao.findByUserId(userId);
     }
 
+    public List<App> findNotInGroup() {
+        return appDao.findAllGroupIsNull();
+    }
+
     @Transactional
     public Version createVersion(long appId, Version version) {
         App app = new App();

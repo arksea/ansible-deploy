@@ -32,6 +32,7 @@ export class Host {
   publicIp: string;  //公网IP
   privateIp: string; //内网IP
   description: string; //主机用途描述
+  appGroup: AppGroup; //所属分组
   enabled: boolean;  //是否可用状态
   createTime: string;//创建时间
 }

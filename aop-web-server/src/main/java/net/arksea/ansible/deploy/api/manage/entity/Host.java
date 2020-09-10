@@ -1,8 +1,8 @@
 package net.arksea.ansible.deploy.api.manage.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import javax.persistence.*;
 import java.sql.Timestamp;
 
 /**
@@ -16,6 +16,7 @@ public class Host extends IdEntity {
     private String publicIp;//公网IP
     private String privateIp;//内网IP
     private String description;//主机用途描述
+    private AppGroup appGroup;
     private boolean enabled;
     private Timestamp createTime; //创建时间
 
@@ -44,6 +45,17 @@ public class Host extends IdEntity {
 
     public void setDescription(final String description) {
         this.description = description;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "app_group_id")
+    @JsonBackReference
+    public AppGroup getAppGroup() {
+        return appGroup;
+    }
+
+    public void setAppGroup(AppGroup appGroup) {
+        this.appGroup = appGroup;
     }
 
     @Column(nullable = false, columnDefinition = ("TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"))

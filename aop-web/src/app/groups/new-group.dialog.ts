@@ -23,8 +23,8 @@ export class NewGroupDialog {
         event.preventDefault();
         let name = this.createForm.get('name').value;
         let desc = this.createForm.get('description').value;
-        this.svc.createGroup(name, desc).subscribe(error => {
-            if (!error) {
+        this.svc.createGroup(name, desc).subscribe(succeed => {
+            if (succeed) {
                 this.modal.close('ok');
                 this.alert.success('新建组成功');
             }

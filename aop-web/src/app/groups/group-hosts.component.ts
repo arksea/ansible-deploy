@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { GroupsService } from './groups.service';
-import { MessageNotify } from '../utils/message-notify';
 import { AccountService } from '../account/account.service';
-import { debounceTime,distinctUntilChanged,map } from 'rxjs/operators';
-import { Subject, Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { map,flatMap,first } from 'rxjs/operators';
+import { HostsService } from '../hosts/hosts.service';
+import { MessageNotify } from '../utils/message-notify';
 
 @Component({
     selector: 'group-hosts',
@@ -13,36 +12,38 @@ import { Subject, Observable } from 'rxjs';
 })
 export class GroupHostsComponent implements OnInit {
 
-    // public model: any;
-    // //public search = this.svc.searchHost;
+    public model: any;
 
-    // public hosts: string[] = ['xiaohaixing','liuyawen','fengbin'];
-
-    // search = (text: Observable<string>) => {
-    //     text.pipe(
-    //         debounceTime(200),
-    //         distinctUntilChanged(),
-    //         map( term => {
-    //             if (term.length < 2) {
-    //                 return []
-    //             } else {
-    //                 return this.hosts.filter(v => v.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10);
-    //             }
-    //         })
-    // )}
+    searchHost = (text: Observable<string>) => this.svc.search(text, '没有未分组的主机', this.hostSvc.hostList.pipe(map(list => {
+        let names: string[] = [];
+        for (let i of list) {
+            names.push(i.privateIp)
+        }
+        return names;
+    })));
 
     constructor(public svc: GroupsService,
                 public account: AccountService,
-                private route: ActivatedRoute,
-                private router: Router,
-                private alert: MessageNotify,
-                private modal: NgbModal) {
-
+                public hostSvc: HostsService,
+                private alert: MessageNotify) {
+        this.hostSvc.getHostsNotInGroup();
     }
 
-    ngOnInit() {}
+    ngOnInit() { }
 
-    addHost() {
-        
+    addHost(hostIp: string) {
+        this.hostSvc.hostList.pipe(first(),flatMap(list => {
+            for (let h of list) {
+                if (h.privateIp == hostIp) {
+                    return this.svc.addHost(h)
+                }
+            }
+            this.alert.warning('未找到主机:'+hostIp);
+            return of(false);
+        })).subscribe(h => {
+            if (h) {
+                this.alert.info('添加主机成功');
+            }
+        });
     }
 }

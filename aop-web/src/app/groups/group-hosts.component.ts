@@ -5,6 +5,7 @@ import { Observable, of } from 'rxjs';
 import { map,flatMap,first } from 'rxjs/operators';
 import { HostsService } from '../hosts/hosts.service';
 import { MessageNotify } from '../utils/message-notify';
+import { Host } from '../app.entity';
 
 @Component({
     selector: 'group-hosts',
@@ -43,6 +44,14 @@ export class GroupHostsComponent implements OnInit {
         })).subscribe(h => {
             if (h) {
                 this.alert.info('添加主机成功');
+            }
+        });
+    }
+
+    removeHost(host: Host) {
+        return this.svc.removeHost(host).subscribe(h => {
+            if (h) {
+                this.alert.info('移除主机成功');
             }
         });
     }

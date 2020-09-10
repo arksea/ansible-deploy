@@ -34,13 +34,34 @@ export class GroupsService {
     public groupList: Subject<AppGroup[]> = this.model.modelList;
     private currentGroup: Subject<AppGroup> = this.model.modelSelected;
     private currentGroupId: number = undefined;
-    public opAddHostToCurrentGroup: Subject<Host> = new Subject();
+    private opAddHostToCurrentGroup: Subject<Host> = new Subject();
+    private opRemoveHostFromCurrentGroup: Subject<Host> = new Subject();
 
-    public constructor(private httpUtils: HttpUtils, private router: Router, private alert: MessageNotify) {
+    public constructor(private httpUtils: HttpUtils, 
+            private router: Router, 
+            private alert: MessageNotify,
+            private hostsSvc: HostsService) {
         this.opAddHostToCurrentGroup.pipe(
             map(function (host: Host): IModelMapOperation<number,AppGroup> {
                 return (modelData: ModelData<number,AppGroup>) => {
                     modelData.map.get(modelData.selected).hosts.push(host);
+                    return modelData;
+                }
+            })
+        ).subscribe(this.model.updates);
+
+        this.opRemoveHostFromCurrentGroup.pipe(
+            map(function (host: Host): IModelMapOperation<number,AppGroup> {
+                return (modelData: ModelData<number,AppGroup>) => {
+                    let g: AppGroup = modelData.map.get(modelData.selected);
+                    let hosts: Host[] = [];
+                    let old = g.hosts;
+                    for (let h of old) {
+                        if (h.id != host.id) {
+                            hosts.push(h);
+                        }
+                    }
+                    g.hosts = hosts;
                     return modelData;
                 }
             })
@@ -99,6 +120,23 @@ export class GroupsService {
             data => {
                 if (data.code == 0) {
                     this.opAddHostToCurrentGroup.next(host);
+                    this.hostsSvc.model.opDelModel.next(host.id);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        ));
+    }
+
+    public removeHost(host: Host): Observable<boolean> {
+        const url = environment.apiUrl + '/api/groups/' + this.currentGroupId + '/hosts/' + host.id;
+        let ret = this.httpUtils.httpDelete('从分组中移除主机', url);
+        return ret.pipe(map(
+            data => {
+                if (data.code == 0) {
+                    this.opRemoveHostFromCurrentGroup.next(host);
+                    this.hostsSvc.model.opSetModel.next(host);
                     return true;
                 } else {
                     return false;

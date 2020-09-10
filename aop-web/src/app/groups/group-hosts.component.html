@@ -23,7 +23,8 @@
                 </div>
                 <div class="p-1">
                     <button type="button" class="btn btn-outline-secondary btn-sm"
-                        [disabled]="account.perm('组管理:修改') | async">移除
+                        [disabled]="account.perm('组管理:修改') | async"
+                        (click)="removeHost(h)">移除
                     </button>
                 </div>
             </div>

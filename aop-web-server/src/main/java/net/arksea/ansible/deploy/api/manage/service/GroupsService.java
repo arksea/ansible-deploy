@@ -74,4 +74,24 @@ public class GroupsService {
             throw new RestException("向分组添加主机失败", ex);
         }
     }
+
+    @Transactional
+    public void removeHost(long groupId, long hostId) {
+        try {
+            Host host = hostDao.findOne(hostId);
+            AppGroup g = host.getAppGroup();
+            if (g == null) {
+                return;
+            }
+            if (g.getId() != groupId) {
+                throw new ServiceException("主机不属于指定分组");
+            }
+            host.setAppGroup(null);
+            hostDao.save(host);
+        } catch (ServiceException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new RestException("向分组添加主机失败", ex);
+        }
+    }
 }

@@ -7,6 +7,7 @@ import { AccountService } from '../account/account.service';
 import { UsersService } from '../users/users.service';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { User } from '../users/users.entity';
 
 
 @Component({
@@ -37,7 +38,23 @@ export class GroupMembersComponent implements OnInit {
 
     ngOnInit() { }
 
-    addMember() {
+    addMember(name: string) {
+        this.usersSvc.getUserByName(name).subscribe(u => {
+            if (u == null) {
+                this.alert.warning('未找到用户:'+name);
+            } else {
+                this.svc.addMember(u).subscribe(succeed => {
+                    if (succeed)this.alert.info('添加成员成功');
+                })
+            }
+        })
+    }
 
+    removeMember(user: User) {
+        return this.svc.removeMember(user).subscribe(succeed => {
+            if (succeed) {
+                this.alert.info('移除主机成功');
+            }
+        });
     }
 }

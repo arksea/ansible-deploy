@@ -1,5 +1,7 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
+import net.arksea.ansible.deploy.api.auth.dao.UserDao;
+import net.arksea.ansible.deploy.api.auth.entity.User;
 import net.arksea.ansible.deploy.api.manage.dao.AppGroupDao;
 import net.arksea.ansible.deploy.api.manage.dao.HostDao;
 import net.arksea.ansible.deploy.api.manage.entity.AppGroup;
@@ -23,6 +25,8 @@ public class GroupsService {
     @Autowired
     HostDao hostDao;
 
+    @Autowired
+    UserDao userDao;
 
     @Transactional
     public AppGroup createGroup(String name, String description) {
@@ -91,7 +95,27 @@ public class GroupsService {
         } catch (ServiceException ex) {
             throw ex;
         } catch (Exception ex) {
-            throw new RestException("向分组添加主机失败", ex);
+            throw new RestException("从分组移除主机失败", ex);
+        }
+    }
+
+    @Transactional
+    public void addMember(long groupId, long userId) {
+        try {
+            if (appGroupDao.userInGroup(groupId, userId) == 0) {
+                appGroupDao.addUserToGroup(groupId, userId);
+            }
+        } catch (Exception ex) {
+            throw new RestException("向分组添加成员失败", ex);
+        }
+    }
+
+    @Transactional
+    public void removeMember(long groupId, long userId) {
+        try {
+            appGroupDao.removeUserFromGroup(groupId, userId);
+        } catch (Exception ex) {
+            throw new RestException("从分组移除成员失败", ex);
         }
     }
 }

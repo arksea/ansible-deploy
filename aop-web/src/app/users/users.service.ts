@@ -4,7 +4,7 @@ import { User } from './users.entity';
 import { ServiceResponse } from '../utils/http-utils';
 import { HttpUtils } from '../utils/http-utils';
 import { environment } from '../../environments/environment';
-import { map } from 'rxjs/operators';
+import { map, first } from 'rxjs/operators';
 import { CrudModel, IModelInfo } from '../utils/crud-model';
 
 // type ChildPermMap = Map<string, Set<string>>;
@@ -117,5 +117,16 @@ export class UsersService {
                 }
             }
         ));
+    }
+
+    public getUserByName(name: string): Observable<User> {
+        return this.userList.pipe(first(),map(list => {
+            for (let u of list) {
+                if (u.name == name) {
+                    return u;
+                }
+            }
+            return null;
+        }))
     }
 }

@@ -69,4 +69,24 @@ public class GroupsController {
         groupsService.removeHost(groupId, hostId);
         return RestUtils.createResult(ResultCode.SUCCEED, reqid);
     }
+
+    @RequiresPermissions("组管理:修改")
+    @RequestMapping(path="groups/{groupId}/users/{userId}", method = RequestMethod.POST, produces = MEDIA_TYPE)
+    public String addMember(@PathVariable(name="groupId") long groupId,
+                          @PathVariable(name="userId") long userId,
+                          final HttpServletRequest httpRequest) {
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        groupsService.addMember(groupId, userId);
+        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+    }
+
+    @RequiresPermissions("组管理:修改")
+    @RequestMapping(path="groups/{groupId}/users/{userId}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
+    public String removeMember(@PathVariable(name="groupId") long groupId,
+                             @PathVariable(name="userId") long userId,
+                             final HttpServletRequest httpRequest) {
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        groupsService.removeMember(groupId, userId);
+        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+    }
 }

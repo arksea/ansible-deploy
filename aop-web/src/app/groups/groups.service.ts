@@ -11,6 +11,9 @@ import { debounceTime, distinctUntilChanged, map, flatMap } from 'rxjs/operators
 import { HostsService } from '../hosts/hosts.service';
 import { Host } from '../app.entity';
 import { IModelMapOperation, ModelData } from '../utils/crud-model';
+import { User } from '../users/users.entity';
+import { UsersService } from '../users/users.service';
+
 class AppGroupModelInfo implements IModelInfo<number, AppGroup> {
     public getModelMapKey(t: AppGroup): number {
         return t.id;
@@ -36,11 +39,14 @@ export class GroupsService {
     private currentGroupId: number = undefined;
     private opAddHostToCurrentGroup: Subject<Host> = new Subject();
     private opRemoveHostFromCurrentGroup: Subject<Host> = new Subject();
+    private opAddMemberToCurrentGroup: Subject<User> = new Subject();
+    private opRemoveMemberFromCurrentGroup: Subject<User> = new Subject();
 
     public constructor(private httpUtils: HttpUtils, 
             private router: Router, 
             private alert: MessageNotify,
-            private hostsSvc: HostsService) {
+            private hostsSvc: HostsService,
+            private usersSvc: UsersService) {
         this.opAddHostToCurrentGroup.pipe(
             map(function (host: Host): IModelMapOperation<number,AppGroup> {
                 return (modelData: ModelData<number,AppGroup>) => {
@@ -62,6 +68,32 @@ export class GroupsService {
                         }
                     }
                     g.hosts = hosts;
+                    return modelData;
+                }
+            })
+        ).subscribe(this.model.updates);
+
+        this.opAddMemberToCurrentGroup.pipe(
+            map(function (user: User): IModelMapOperation<number,AppGroup> {
+                return (modelData: ModelData<number,AppGroup>) => {
+                    modelData.map.get(modelData.selected).users.push(user);
+                    return modelData;
+                }
+            })
+        ).subscribe(this.model.updates);
+
+        this.opRemoveMemberFromCurrentGroup.pipe(
+            map(function (user: User): IModelMapOperation<number,AppGroup> {
+                return (modelData: ModelData<number,AppGroup>) => {
+                    let g: AppGroup = modelData.map.get(modelData.selected);
+                    let users: User[] = [];
+                    let old = g.users;
+                    for (let u of old) {
+                        if (u.id != user.id) {
+                            users.push(u);
+                        }
+                    }
+                    g.users = users;
                     return modelData;
                 }
             })
@@ -137,6 +169,38 @@ export class GroupsService {
                 if (data.code == 0) {
                     this.opRemoveHostFromCurrentGroup.next(host);
                     this.hostsSvc.model.opSetModel.next(host);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        ));
+    }
+
+    public addMember(user: User): Observable<boolean> {
+        const url = environment.apiUrl + '/api/groups/' + this.currentGroupId + '/users/' + user.id;
+        let ret = this.httpUtils.httpPost('向分组添加成员', url, '');
+        return ret.pipe(map(
+            data => {
+                if (data.code == 0) {
+                    this.opAddMemberToCurrentGroup.next(user);
+                    this.usersSvc.usersModel.opDelModel.next(user.id);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        ));
+    }
+
+    public removeMember(user: User): Observable<boolean> {
+        const url = environment.apiUrl + '/api/groups/' + this.currentGroupId + '/users/' + user.id;
+        let ret = this.httpUtils.httpDelete('从分组中移除成员', url);
+        return ret.pipe(map(
+            data => {
+                if (data.code == 0) {
+                    this.opRemoveMemberFromCurrentGroup.next(user);
+                    this.usersSvc.usersModel.opSetModel.next(user);
                     return true;
                 } else {
                     return false;

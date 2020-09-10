@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject, Observable } from 'rxjs';
+import { Subject, Observable, of } from 'rxjs';
+import { map, first } from 'rxjs/operators';
 import { Host } from '../app.entity';
 import { ServiceResponse } from '../utils/http-utils';
 import { HttpUtils } from '../utils/http-utils';
 import { MessageNotify } from "../utils/message-notify";
 import { environment } from '../../environments/environment';
-import { map } from 'rxjs/operators';
 import { CrudModel, IModelInfo } from '../utils/crud-model';
 
 // type ChildPermMap = Map<string, Set<string>>;
@@ -53,7 +53,7 @@ export class HostsService {
         );
     }
 
-    public getHosts() {
+    public queryHosts() {
         const url = environment.apiUrl + '/api/hosts';
         let ret: Observable<ServiceResponse<Array<Host>>> = this.httpUtils.httpGet('查询主机列表', url);
         ret.subscribe(data => {
@@ -63,7 +63,7 @@ export class HostsService {
         });
     }
 
-    public getHostsNotInGroup() {
+    public queryHostsNotInGroup() {
         const url = environment.apiUrl + '/api/hosts/notInGroup';
         let ret: Observable<ServiceResponse<Array<Host>>> = this.httpUtils.httpGet('查询主机列表', url);
         ret.subscribe(data => {
@@ -71,5 +71,16 @@ export class HostsService {
                 this.model.opResetModels.next(data.result);
             }
         });
+    }
+
+    public getHostByIp(ip: string): Observable<Host> {
+        return this.hostList.pipe(first(),map(list => {
+            for (let h of list) {
+                if (h.privateIp == ip) {
+                    return h;
+                }
+            }
+            return null;
+        }))
     }
 }

@@ -24,7 +24,7 @@ export class HostsComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.svc.getHosts();
+    this.svc.queryHosts();
   }
 
   search(event: FormDataEvent) {

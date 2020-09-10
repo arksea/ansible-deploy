@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { GroupsService } from './groups.service';
 import { AccountService } from '../account/account.service';
-import { Observable, of } from 'rxjs';
-import { map,flatMap,first } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { HostsService } from '../hosts/hosts.service';
 import { MessageNotify } from '../utils/message-notify';
 import { Host } from '../app.entity';
@@ -27,30 +27,26 @@ export class GroupHostsComponent implements OnInit {
                 public account: AccountService,
                 public hostSvc: HostsService,
                 private alert: MessageNotify) {
-        this.hostSvc.getHostsNotInGroup();
+        this.hostSvc.queryHostsNotInGroup();
     }
 
     ngOnInit() { }
 
     addHost(hostIp: string) {
-        this.hostSvc.hostList.pipe(first(),flatMap(list => {
-            for (let h of list) {
-                if (h.privateIp == hostIp) {
-                    return this.svc.addHost(h)
-                }
+        this.hostSvc.getHostByIp(hostIp).subscribe(h => {
+            if (h == null) {
+                this.alert.warning('未找到主机:'+hostIp);
+            } else {
+                this.svc.addHost(h).subscribe(succeed => {
+                    if (succeed)this.alert.info('添加主机成功');
+                })
             }
-            this.alert.warning('未找到主机:'+hostIp);
-            return of(false);
-        })).subscribe(h => {
-            if (h) {
-                this.alert.info('添加主机成功');
-            }
-        });
+        })
     }
 
     removeHost(host: Host) {
-        return this.svc.removeHost(host).subscribe(h => {
-            if (h) {
+        return this.svc.removeHost(host).subscribe(succeed => {
+            if (succeed) {
                 this.alert.info('移除主机成功');
             }
         });

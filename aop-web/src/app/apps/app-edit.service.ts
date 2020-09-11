@@ -125,7 +125,7 @@ export class AppEditService {
         a.apptype = 'tomcat';
         a.deployPath = f.get('deployPath').value;
         a.description = f.get('description').value;
-        a.appGroupId = Number(f.get('appGroup').value);
+        a.appGroupId = Number(f.get('userGroups').value);
         a.enableJmx = f.get('enableJmx').value;
         for (let i of a.vars) {
             let c = f.get('var_' + i.name);
@@ -135,7 +135,7 @@ export class AppEditService {
             resp => {
                 if (resp.code == 0) {
                     alert.success('保存应用成功');
-                    router.navigate(['/apps/' + resp.result]);
+                    router.navigate(['/apps']);
                 } else {
                     alert.error('保存应用失败：' + resp.error);
                 }

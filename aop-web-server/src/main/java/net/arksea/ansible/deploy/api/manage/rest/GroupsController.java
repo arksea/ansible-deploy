@@ -89,4 +89,24 @@ public class GroupsController {
         groupsService.removeMember(groupId, userId);
         return RestUtils.createResult(ResultCode.SUCCEED, reqid);
     }
+
+    @RequiresPermissions("组管理:修改")
+    @RequestMapping(path="groups/{groupId}/apps/{appId}", method = RequestMethod.POST, produces = MEDIA_TYPE)
+    public String addApp(@PathVariable(name="groupId") long groupId,
+                          @PathVariable(name="appId") long appId,
+                          final HttpServletRequest httpRequest) {
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        groupsService.addApp(groupId, appId);
+        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+    }
+
+    @RequiresPermissions("组管理:修改")
+    @RequestMapping(path="groups/{groupId}/apps/{appId}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
+    public String removeApp(@PathVariable(name="groupId") long groupId,
+                             @PathVariable(name="appId") long appId,
+                             final HttpServletRequest httpRequest) {
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        groupsService.removeApp(groupId, appId);
+        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+    }
 }

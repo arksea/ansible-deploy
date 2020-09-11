@@ -4,7 +4,7 @@ import { App } from '../app.entity';
 import { ServiceResponse } from '../utils/http-utils';
 import { HttpUtils } from '../utils/http-utils';
 import { environment } from '../../environments/environment';
-import { map } from 'rxjs/operators';
+import { map, first } from 'rxjs/operators';
 import { CrudModel, IModelInfo, IModelMapOperation, ModelMap, ModelData } from '../utils/crud-model';
 import { Version } from '../app.entity';
 
@@ -184,5 +184,16 @@ export class AppsService {
 
     public setSelectedApp(appId: number) {
         this.appsModel.opSetSelected.next(appId);
+    }
+
+    public getAppByApptag(apptag: string): Observable<App> {
+        return this.appList.pipe(first(),map(list => {
+            for (let a of list) {
+                if (a.apptag == apptag) {
+                    return a;
+                }
+            }
+            return null;
+        }))
     }
 }

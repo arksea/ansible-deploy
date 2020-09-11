@@ -7,6 +7,7 @@ import { AccountService } from '../account/account.service';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { AppsService } from '../apps/apps.service';
+import { App } from '../app.entity';
 
 @Component({
     selector: 'group-apps',
@@ -15,7 +16,7 @@ import { AppsService } from '../apps/apps.service';
 export class GroupAppsComponent implements OnInit {
     public model: any;
 
-    search = (text: Observable<string>) => this.svc.search(text, '没有未分组的应用', this.appSvc.appList.pipe(map(list => {
+    search = (text: Observable<string>) => this.svc.search(text, '没有未分组的应用', this.appsSvc.appList.pipe(map(list => {
         let names: string[] = [];
         for (let i of list) {
             names.push(i.apptag)
@@ -25,15 +26,33 @@ export class GroupAppsComponent implements OnInit {
     constructor(public svc: GroupsService,
                 public account: AccountService,
                 private route: ActivatedRoute,
-                private appSvc: AppsService,
+                private appsSvc: AppsService,
                 private router: Router,
                 private alert: MessageNotify,
                 private modal: NgbModal) {
-        appSvc.queryNotInGroupApps();
+        appsSvc.queryNotInGroupApps();
     }
 
 
     ngOnInit() {}
 
-    add() {}
+    addApp(apptag: string) {
+        this.appsSvc.getAppByApptag(apptag).subscribe(a => {
+            if (a == null) {
+                this.alert.warning('未找到应用:'+apptag);
+            } else {
+                this.svc.addApp(a).subscribe(succeed => {
+                    if (succeed)this.alert.info('添加应用成功');
+                })
+            }
+        })
+    }
+
+    removeApp(app: App) {
+        return this.svc.removeApp(app).subscribe(succeed => {
+            if (succeed) {
+                this.alert.info('移除应用成功');
+            }
+        });
+    }
 }

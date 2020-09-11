@@ -2,8 +2,10 @@ package net.arksea.ansible.deploy.api.manage.service;
 
 import net.arksea.ansible.deploy.api.auth.dao.UserDao;
 import net.arksea.ansible.deploy.api.auth.entity.User;
+import net.arksea.ansible.deploy.api.manage.dao.AppDao;
 import net.arksea.ansible.deploy.api.manage.dao.AppGroupDao;
 import net.arksea.ansible.deploy.api.manage.dao.HostDao;
+import net.arksea.ansible.deploy.api.manage.entity.App;
 import net.arksea.ansible.deploy.api.manage.entity.AppGroup;
 import net.arksea.ansible.deploy.api.manage.entity.Host;
 import net.arksea.restapi.RestException;
@@ -27,6 +29,9 @@ public class GroupsService {
 
     @Autowired
     UserDao userDao;
+
+    @Autowired
+    AppDao appDao;
 
     @Transactional
     public AppGroup createGroup(String name, String description) {
@@ -116,6 +121,45 @@ public class GroupsService {
             appGroupDao.removeUserFromGroup(groupId, userId);
         } catch (Exception ex) {
             throw new RestException("从分组移除成员失败", ex);
+        }
+    }
+
+    @Transactional
+    public void addApp(long groupId, long appId) {
+        try {
+            App app = appDao.findOne(appId);
+            AppGroup g = app.getAppGroup();
+            if (g != null && g.getId() != null) {
+                throw new ServiceException("应用已属于分组："+g.getName());
+            }
+            g = new AppGroup();
+            g.setId(groupId);
+            app.setAppGroup(g);
+            appDao.save(app);
+        } catch (ServiceException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new RestException("向分组添加应用失败", ex);
+        }
+    }
+
+    @Transactional
+    public void removeApp(long groupId, long appId) {
+        try {
+            App app = appDao.findOne(appId);
+            AppGroup g = app.getAppGroup();
+            if (g == null) {
+                return;
+            }
+            if (g.getId() != groupId) {
+                throw new ServiceException("应用不属于指定分组");
+            }
+            app.setAppGroup(null);
+            appDao.save(app);
+        } catch (ServiceException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new RestException("从分组移除应用失败", ex);
         }
     }
 }

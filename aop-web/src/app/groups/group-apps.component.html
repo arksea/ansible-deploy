@@ -1,14 +1,14 @@
 <div class="d-flex border-bottom">
     <div class="mr-auto">
-        <h2>分组: {{(svc.group|async)?.name}}</h2>
+        <h2>{{(svc.group|async)?.name}}</h2>
     </div>
     <div class="mr-4 mb-3">
         <div class="input-group">
-            <input id="typeahead-basic" type="text" class="form-control" [(ngModel)]="model"
+            <input id="typeahead-basic" type="text" class="form-control" [(ngModel)]="model" #apptag
                 [ngbTypeahead]="search" />
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary" type="button" [disabled]="account.perm('组管理:修改') | async"
-                    (click)="add()">添加</button>
+                    (click)="addApp(apptag.value)">添加</button>
             </div>
         </div>
     </div>
@@ -23,7 +23,8 @@
                 </div>
                 <div class="p-1">
                     <button type="button" class="btn btn-outline-secondary btn-sm"
-                        [disabled]="account.perm('组管理:修改') | async">移除
+                        [disabled]="account.perm('组管理:修改') | async"
+                        (click)="removeApp(a)">移除
                     </button>
                 </div>
             </div>

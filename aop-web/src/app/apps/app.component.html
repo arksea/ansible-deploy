@@ -47,18 +47,10 @@
                                     <div class="col-sm-2 text-right"><input type="checkbox"></div>
                             </div>
                         </li>
-                        <li class="list-group-item">
+                        <li *ngFor="let h of v.targetHosts" class="list-group-item">
                             <div class="row">
-                                <div class="col-sm-2">10.79.186.113</div>
-                                <div class="col">flfzct</div>
-                                <div class="col-sm-2">online</div>
-                                <div class="col-sm-2 text-right"><input type="checkbox"></div>
-                            </div>
-                        </li>
-                        <li class="list-group-item">
-                            <div class="row">
-                                <div class="col-sm-2">10.79.186.114</div>
-                                <div class="col">flfzct-tq-web186114</div>
+                                <div class="col-sm-2">{{h.privateIp}}</div>
+                                <div class="col">{{h.description}}</div>
                                 <div class="col-sm-2">online</div>
                                 <div class="col-sm-2 text-right"><input type="checkbox"></div>
                             </div>

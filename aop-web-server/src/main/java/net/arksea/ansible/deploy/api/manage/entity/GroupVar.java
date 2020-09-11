@@ -10,11 +10,11 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "dp2_group_vars",
-        uniqueConstraints = @UniqueConstraint(columnNames = { "app_id", "name" })
+        uniqueConstraints = @UniqueConstraint(columnNames = { "appId", "name" })
 )
 public class GroupVar extends IdEntity {
 
-    private App app; // 所属应用
+    private Long appId; // 所属应用
     private String name;// 变量名
     private String value;// 变量值
     private String inputAddon;// 输入显示的前缀
@@ -22,15 +22,13 @@ public class GroupVar extends IdEntity {
     private Boolean isPort;// 是否端口值，用于主机范围的唯一性判断
     private String inputType;
 
-    @ManyToOne
-    @JoinColumn(name = "app_id", nullable = false)
-    @JsonIgnore
-    public App getApp() {
-        return app;
+    @Column(nullable = false)
+    public Long getAppId() {
+        return appId;
     }
 
-    public void setApp(final App app) {
-        this.app = app;
+    public void setAppId(final Long appId) {
+        this.appId = appId;
     }
 
     @Column(length = 24, nullable = false)

@@ -52,7 +52,6 @@ public class AppGroup extends IdEntity {
     }
 
     @OneToMany(mappedBy = "appGroupId",fetch = FetchType.EAGER)
-    //@JsonManagedReference
     public List<App> getApps() {
         return apps;
     }

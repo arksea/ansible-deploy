@@ -1,6 +1,7 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
 import net.arksea.ansible.deploy.api.manage.dao.AppDao;
+import net.arksea.ansible.deploy.api.manage.dao.GroupVarDao;
 import net.arksea.ansible.deploy.api.manage.dao.VersionDao;
 import net.arksea.ansible.deploy.api.manage.entity.App;
 import net.arksea.ansible.deploy.api.manage.entity.AppGroup;
@@ -24,6 +25,8 @@ public class AppService {
     private AppDao appDao;
     @Autowired
     private VersionDao versionDao;
+    @Autowired
+    GroupVarDao groupVarDao;
 
     @Transactional
     public App save(final App app) {
@@ -34,10 +37,13 @@ public class AppService {
             }
         }
         try {
+            App saved = appDao.save(app);
+            long id = saved.getId();
             for (final GroupVar v : app.getVars()) {
-                v.setApp(app);
+                v.setAppId(id);
+                groupVarDao.save(v);
             }
-            return appDao.save(app);
+            return saved;
         } catch (Exception ex) {
             throw new RestException("保存应用失败", ex);
         }

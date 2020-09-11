@@ -15,11 +15,12 @@ export type IAppEditModelOperation = (data: AppEditModel) => AppEditModel;
 
 @Injectable()
 export class AppEditService {
-    // opSetApp     ──┬──> updates  ───> model ──┬─> appForm
-    //              ──┤                          ├─> apptag
-    // opSaveApp    ──┘                          ├─> deployPath
-    //                                           ├─> description
-    //                                           └─> deployPathAddon
+    //动态表单设置（不同的应用类型有不同的表单）
+    //AppsService.app  ───>  opSetApp     ──┬──> updates  ───> model ──┬─> appForm
+    //                                    ──┤                          ├─> apptag
+    //                       opSaveApp    ──┘                          ├─> deployPath
+    //                                                                 ├─> description
+    //                                                                 └─> deployPathAddon
     private updates: Subject<IAppEditModelOperation> = new Subject();
     private model: Observable<AppEditModel>;
     
@@ -62,7 +63,13 @@ export class AppEditService {
             })
         ).subscribe(this.updates);
 
-        this.svc.app.subscribe(this.opSetApp);
+        this.svc.app.pipe(map(a => {
+            if (a == null) {
+                return this.svc.newTomcatApp();
+            } else {
+                return a;
+            }
+        })).subscribe(this.opSetApp);
 
         let saveFunc = this.save;
         this.opSaveApp.pipe(
@@ -85,7 +92,9 @@ export class AppEditService {
         let tag = new FormControl({ value: app.apptag, disabled: app.id }, [Validators.required, Validators.minLength(4), Validators.maxLength(30)]);
         let deployPath = new FormControl({ value: app.deployPath, disabled: app.id }, [Validators.minLength(4), Validators.maxLength(128)]);
         tag.valueChanges.subscribe(v => deployPath.setValue(v)) //deployPath建议设置为应用短名，所以这里做了变更关联
+        let appGroup = new FormControl('', [Validators.required]);
         let f =  new FormGroup({
+            'appGroup': appGroup,
             'apptag': tag,
             'deployPath': deployPath,
             'enableJmx': new FormControl(app.enableJmx),

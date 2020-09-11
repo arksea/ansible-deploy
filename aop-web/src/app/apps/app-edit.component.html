@@ -1,7 +1,6 @@
 <div id="groups-contain" class="container-xl mt-3">
     <div id="group-head" class="mb-5">
         <h1>应用配置</h1>
-        <div>请在这里配置你的应用，注意不要与目标机器上已部署应用冲突</div>
     </div>
     <ng-template #formInfoIcon>
         <svg width="18" height="18" viewBox="0 0 18 18" class="bi bi-question-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -36,6 +35,14 @@
                     </div>
                     <input type="text" id="deployPath" formControlName="deployPath" class="form-control" placeholder="建议设置为应用短名">
                 </div>
+            </div>
+            <div class="col-lg-6 col-md-6 form-group mb-4">
+                <label for="appGroup">所属分组
+                    <span class="text-danger" *ngIf="(editSvc.apptag|async)?.errors?.required">*</span>
+                </label>
+                <select id="appGroup" name="appGroup" class="form-control" formControlName="appGroup">
+                    <option *ngFor="let g of userGroups" [value]="g.id">{{g.name}}</option>
+                </select>
             </div>
             <div *ngFor="let v of (svc.app|async)?.vars" class="col-lg-6 col-md-6 form-group mb-4">
                 <label for="var_{{v.name}}">{{v.description}}

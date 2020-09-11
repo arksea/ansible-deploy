@@ -18,8 +18,6 @@ export class AppEditComponent implements OnInit {
 
     public groupSelectModel: any;
 
-    public userGroups: AppGroup[] = [];
-
     constructor(public svc: AppsService,
                 public editSvc: AppEditService,
                 public account: AccountService,
@@ -34,15 +32,6 @@ export class AppEditComponent implements OnInit {
             let id = Number(str);
             this.svc.setSelectedApp(id);
         }
-
-        let u = new AppGroup();
-        u.id = 1;
-        u.name = '天气产品线';
-        this.userGroups.push(u);
-        u = new AppGroup();
-        u.id = 2;
-        u.name = '桌面产品线';
-        this.userGroups.push(u);
     }
 
     ngOnInit(): void {

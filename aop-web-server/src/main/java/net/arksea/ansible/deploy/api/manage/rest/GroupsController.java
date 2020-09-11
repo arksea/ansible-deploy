@@ -1,6 +1,7 @@
 package net.arksea.ansible.deploy.api.manage.rest;
 
 import net.arksea.ansible.deploy.api.ResultCode;
+import net.arksea.ansible.deploy.api.auth.service.UserService;
 import net.arksea.ansible.deploy.api.manage.entity.AppGroup;
 import net.arksea.ansible.deploy.api.manage.service.GroupsService;
 import net.arksea.restapi.RestResult;
@@ -22,6 +23,9 @@ public class GroupsController {
 
     @Autowired
     GroupsService groupsService;
+
+    @Autowired
+    UserService userService;
 
     @RequiresPermissions("组管理:修改")
     @RequestMapping(path="groups", method = RequestMethod.POST, produces = MEDIA_TYPE)

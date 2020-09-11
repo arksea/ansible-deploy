@@ -3,6 +3,7 @@ package net.arksea.ansible.deploy.api.manage.service;
 import net.arksea.ansible.deploy.api.manage.dao.AppDao;
 import net.arksea.ansible.deploy.api.manage.dao.VersionDao;
 import net.arksea.ansible.deploy.api.manage.entity.App;
+import net.arksea.ansible.deploy.api.manage.entity.AppGroup;
 import net.arksea.ansible.deploy.api.manage.entity.GroupVar;
 import net.arksea.ansible.deploy.api.manage.entity.Version;
 import net.arksea.restapi.RestException;

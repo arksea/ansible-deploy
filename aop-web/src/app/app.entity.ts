@@ -43,7 +43,7 @@ export class App {
   apptype: string = '';    //应用的类型
   deployPath: string = ''; //应用部署目标路径
   description: string = '';  //应用描述
-  appGroup: AppGroup; //应用所属分组
+  appGroupId: number; //应用所属分组
   vars: Array<GroupVar> = [];// 变量
   enableJmx: boolean = true;
   versions: Array<Version> = [];

@@ -31,6 +31,7 @@ export class AppEditService {
     public apptag: BehaviorSubject<AbstractControl>;
     public deployPath: BehaviorSubject<AbstractControl>;
     public description: BehaviorSubject<AbstractControl>;
+    public userGroups: BehaviorSubject<AbstractControl>;
 
     public constructor(private svc: AppsService,protected alert: MessageNotify,private router: Router) {
         let app = svc.newTomcatApp();
@@ -38,6 +39,7 @@ export class AppEditService {
         this.apptag = new BehaviorSubject(form.get('apptag'));
         this.deployPath = new BehaviorSubject(form.get('deployPath'));
         this.description = new BehaviorSubject(form.get('description'));
+        this.userGroups = new BehaviorSubject(form.get('userGroups'));
         this.appForm = new BehaviorSubject(form);
         //订阅更新操作
         this.model = this.updates.pipe(
@@ -84,6 +86,7 @@ export class AppEditService {
         this.model.pipe(map(model => model.appForm.get('apptag'))).subscribe(this.apptag);
         this.model.pipe(map(model => model.appForm.get('deployPath'))).subscribe(this.deployPath);
         this.model.pipe(map(model => model.appForm.get('description'))).subscribe(this.description);
+        this.model.pipe(map(model => model.appForm.get('userGroups'))).subscribe(this.userGroups);
         this.model.pipe(map(model => model.appForm)).subscribe(this.appForm);
         this.model.pipe(map(model => model.deployPathAddon)).subscribe(this.deployPathAddon);
     }
@@ -92,9 +95,9 @@ export class AppEditService {
         let tag = new FormControl({ value: app.apptag, disabled: app.id }, [Validators.required, Validators.minLength(4), Validators.maxLength(30)]);
         let deployPath = new FormControl({ value: app.deployPath, disabled: app.id }, [Validators.minLength(4), Validators.maxLength(128)]);
         tag.valueChanges.subscribe(v => deployPath.setValue(v)) //deployPath建议设置为应用短名，所以这里做了变更关联
-        let appGroup = new FormControl('', [Validators.required]);
+        let userGroups = new FormControl(app.appGroupId, [Validators.required]);
         let f =  new FormGroup({
-            'appGroup': appGroup,
+            'userGroups': userGroups,
             'apptag': tag,
             'deployPath': deployPath,
             'enableJmx': new FormControl(app.enableJmx),
@@ -122,10 +125,7 @@ export class AppEditService {
         a.apptype = 'tomcat';
         a.deployPath = f.get('deployPath').value;
         a.description = f.get('description').value;
-        let g = new AppGroup();
-        g.id = 1;
-        g.name = "天气";
-        a.appGroup = g;
+        a.appGroupId = Number(f.get('appGroup').value);
         a.enableJmx = f.get('enableJmx').value;
         for (let i of a.vars) {
             let c = f.get('var_' + i.name);

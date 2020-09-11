@@ -51,8 +51,8 @@ public class AppGroup extends IdEntity {
         this.description = description;
     }
 
-    @OneToMany(mappedBy = "appGroup",fetch = FetchType.EAGER)
-    @JsonManagedReference
+    @OneToMany(mappedBy = "appGroupId",fetch = FetchType.EAGER)
+    //@JsonManagedReference
     public List<App> getApps() {
         return apps;
     }

@@ -38,10 +38,11 @@
             </div>
             <div class="col-lg-6 col-md-6 form-group mb-4">
                 <label for="appGroup">所属分组
-                    <span class="text-danger" *ngIf="(editSvc.apptag|async)?.errors?.required">*</span>
+                    <span class="text-danger" *ngIf="(editSvc.userGroups|async)?.errors?.required">*</span>
+                    <span class="text-danger" *ngIf="(editSvc.userGroups|async)?.errors?.minlength">(长度大于1)</span>
                 </label>
-                <select id="appGroup" name="appGroup" class="form-control" formControlName="appGroup">
-                    <option *ngFor="let g of userGroups" [value]="g.id">{{g.name}}</option>
+                <select id="appGroup" name="appGroup" class="form-control" formControlName="userGroups">
+                    <option *ngFor="let g of (svc.userGroups|async)" [value]="g.id">{{g.name}}</option>
                 </select>
             </div>
             <div *ngFor="let v of (svc.app|async)?.vars" class="col-lg-6 col-md-6 form-group mb-4">

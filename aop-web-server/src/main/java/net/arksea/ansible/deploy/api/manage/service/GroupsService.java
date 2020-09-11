@@ -1,7 +1,6 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
 import net.arksea.ansible.deploy.api.auth.dao.UserDao;
-import net.arksea.ansible.deploy.api.auth.entity.User;
 import net.arksea.ansible.deploy.api.manage.dao.AppDao;
 import net.arksea.ansible.deploy.api.manage.dao.AppGroupDao;
 import net.arksea.ansible.deploy.api.manage.dao.HostDao;
@@ -12,8 +11,8 @@ import net.arksea.restapi.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
-
 import javax.transaction.Transactional;
+
 
 /**
  * Create by xiaohaixing on 2020/8/21
@@ -50,7 +49,15 @@ public class GroupsService {
 
     public Iterable<AppGroup> getAppGroups() {
         try {
-            return appGroupDao.findAllByEnabled(true);
+            return appGroupDao.findAll();
+        } catch (Exception ex) {
+            throw new RestException("查询组信息失败", ex);
+        }
+    }
+
+    public Iterable<AppGroup> getUserGroups(long userId) {
+        try {
+            return appGroupDao.findByUserId(userId);
         } catch (Exception ex) {
             throw new RestException("查询组信息失败", ex);
         }
@@ -128,13 +135,10 @@ public class GroupsService {
     public void addApp(long groupId, long appId) {
         try {
             App app = appDao.findOne(appId);
-            AppGroup g = app.getAppGroup();
-            if (g != null && g.getId() != null) {
-                throw new ServiceException("应用已属于分组："+g.getName());
+            if (app.getAppGroupId() != null) {
+                throw new ServiceException("应用已属于分组："+app.getAppGroupId());
             }
-            g = new AppGroup();
-            g.setId(groupId);
-            app.setAppGroup(g);
+            app.setAppGroupId(groupId);
             appDao.save(app);
         } catch (ServiceException ex) {
             throw ex;
@@ -147,14 +151,13 @@ public class GroupsService {
     public void removeApp(long groupId, long appId) {
         try {
             App app = appDao.findOne(appId);
-            AppGroup g = app.getAppGroup();
-            if (g == null) {
+            if (app.getAppGroupId() == null) {
                 return;
             }
-            if (g.getId() != groupId) {
+            if (app.getAppGroupId() != groupId) {
                 throw new ServiceException("应用不属于指定分组");
             }
-            app.setAppGroup(null);
+            app.setAppGroupId(null);
             appDao.save(app);
         } catch (ServiceException ex) {
             throw ex;

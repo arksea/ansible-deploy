@@ -272,6 +272,8 @@ export class GroupsService {
         ));
     }
 
+    
+
     get group(): Observable<AppGroup> {
         return this.currentGroup;
     }

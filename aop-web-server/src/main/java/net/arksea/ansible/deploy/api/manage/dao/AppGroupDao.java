@@ -22,4 +22,7 @@ public interface AppGroupDao extends CrudRepository<AppGroup, Long> {
 
     @Query(nativeQuery = true, value="select count(1) from dp2_app_group_users r where r.app_group_id=?1 and r.user_id=?2")
     long userInGroup(long groupId, long userId);
+
+    @Query(nativeQuery = true, value="select g.* from dp2_app_group g,dp2_app_group_users r where r.user_id=?1 and r.app_group_id = g.id")
+    Iterable<AppGroup> findByUserId(long userId);
 }

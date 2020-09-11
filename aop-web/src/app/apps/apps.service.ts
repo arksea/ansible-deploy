@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject, BehaviorSubject, Observable } from 'rxjs';
-import { App } from '../app.entity';
+import { App, AppGroup } from '../app.entity';
 import { ServiceResponse } from '../utils/http-utils';
 import { HttpUtils } from '../utils/http-utils';
 import { environment } from '../../environments/environment';
@@ -48,6 +48,7 @@ class AddVersion {
 @Injectable()
 export class AppsService {
     private EMETY_SET: Set<string> = new Set();
+    public userGroups: Subject<AppGroup[]> = new BehaviorSubject([]);
     private appsModelInfo: AppsModelInfo = new AppsModelInfo();
     public appsModel: CrudModel<number, App> = new CrudModel<number, App>(this.appsModelInfo);
     private currentApp: Subject<App> = this.appsModel.modelSelected;
@@ -122,10 +123,15 @@ export class AppsService {
 
     public queryUserApps() {
         let url = environment.apiUrl + '/api/user/apps';
-        let ret: Observable<ServiceResponse<Array<App>>> = this.httpUtils.httpGet('查询用户应用', url);
-        ret.subscribe(data => {
+        this.httpUtils.httpGet('查询用户应用', url).subscribe(data => {
             if (data.code == 0) {
                 this.appsModel.opResetModels.next(data.result);
+            }
+        });
+        url = environment.apiUrl + '/api/user/groups';
+        this.httpUtils.httpGet('查询用户的分组', url).subscribe(data => {
+            if (data.code == 0) {
+                this.userGroups.next(data.result);
             }
         });
     }

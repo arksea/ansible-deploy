@@ -21,7 +21,7 @@ public class App extends IdEntity {
     private String apptype;    //应用的类型
     private String deployPath; //应用部署目标路径
     private String description;  //应用描述
-    private AppGroup appGroup;
+    private Long appGroupId;
     private Set<GroupVar> vars;// 变量
     private Set<Port> ports;
     private boolean enableJmx;
@@ -68,15 +68,13 @@ public class App extends IdEntity {
         this.description = description;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "app_group_id")
-    @JsonBackReference
-    public AppGroup getAppGroup() {
-        return appGroup;
+    @Column
+    public Long getAppGroupId() {
+        return appGroupId;
     }
 
-    public void setAppGroup(AppGroup appGroup) {
-        this.appGroup = appGroup;
+    public void setAppGroupId(Long appGroupId) {
+        this.appGroupId = appGroupId;
     }
 
     @OneToMany(mappedBy = "app", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)

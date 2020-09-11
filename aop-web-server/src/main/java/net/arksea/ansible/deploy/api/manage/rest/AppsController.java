@@ -1,8 +1,6 @@
 package net.arksea.ansible.deploy.api.manage.rest;
 
 import net.arksea.ansible.deploy.api.ResultCode;
-import net.arksea.ansible.deploy.api.auth.info.ClientInfo;
-import net.arksea.ansible.deploy.api.auth.service.UserService;
 import net.arksea.ansible.deploy.api.manage.entity.App;
 import net.arksea.ansible.deploy.api.manage.entity.Version;
 import net.arksea.ansible.deploy.api.manage.service.AppService;
@@ -15,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  * Create by xiaohaixing on 2020/8/28
@@ -26,9 +23,6 @@ public class AppsController {
 
     @Autowired
     AppService appService;
-
-    @Autowired
-    UserService userService;
 
     @Autowired
 
@@ -54,7 +48,6 @@ public class AppsController {
             return new RestResult<>(0, app, reqid);
         }
     }
-
     //-------------------------------------------------------------------------
     @RequiresPermissions("应用:修改")
     @RequestMapping(path="apps/{appId}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
@@ -72,16 +65,6 @@ public class AppsController {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         return new RestResult<>(0, apps, reqid);
     }
-    //-------------------------------------------------------------------------
-    @RequiresPermissions("应用:查询")
-    @RequestMapping(path="user/apps", method = RequestMethod.GET, produces = MEDIA_TYPE)
-    public RestResult<List<App>> getUserApps(HttpServletRequest httpRequest) {
-        ClientInfo info = userService.getClientInfo(httpRequest);
-        List<App> apps = appService.findByUserId(info.userId);
-        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        return new RestResult<>(0, apps, reqid);
-    }
-
     //-------------------------------------------------------------------------
     @RequiresPermissions("应用:修改")
     @RequestMapping(path="apps/{appId}/vers", method = RequestMethod.POST, produces = MEDIA_TYPE)

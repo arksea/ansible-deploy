@@ -5,8 +5,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.List;
-
 public interface HostDao extends CrudRepository<Host, Long> {
     @Modifying
     @Query("update Host h set h.enabled = false where h.id = ?1")
@@ -14,8 +12,8 @@ public interface HostDao extends CrudRepository<Host, Long> {
 
     Iterable<Host> findAllByEnabled(boolean enabled);
 
-    @Query("select h from Host h where h.appGroupId is null")
-    Iterable<Host> findAllGroupIsNull();
+//    @Query("select h from Host h where h.appGroupId is null")
+//    Iterable<Host> findAllGroupIsNull();
 
-
+    Iterable<Host> findByAppGroupId(Long appGroupId);
 }

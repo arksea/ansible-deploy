@@ -27,7 +27,6 @@ export class AppEditComponent implements OnInit {
                 private route: ActivatedRoute) {
         let str = this.route.snapshot.paramMap.get('id');
         if (str == 'new') {
-            this.editSvc.opSetApp.next(this.svc.newTomcatApp());
         } else {
             let id = Number(str);
             this.svc.getAppById(id).subscribe(this.editSvc.opSetApp);

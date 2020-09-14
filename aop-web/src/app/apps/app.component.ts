@@ -12,6 +12,9 @@ import { map, flatMap, publishReplay, refCount } from 'rxjs/operators';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { format } from 'url';
 import { NewVersionDialog } from './new-version.dialog';
+import { HostsService } from '../hosts/hosts.service';
+import { AddHostDialog } from './add-host.dialog';
+import { Version } from '../app.entity';
 
 
 @Component({
@@ -21,9 +24,11 @@ import { NewVersionDialog } from './new-version.dialog';
 export class AppComponent implements OnInit {
 
     public svnaddr = 'svn://127.0.0.1';
-    appId: number;
+    appId: number = undefined;
+    groupId: number = undefined;
     app: Observable<App>;
     constructor(private svc: AppsService,
+                private hostSvc: HostsService,
                 public account: AccountService,
                 private route: ActivatedRoute,
                 private router: Router,
@@ -34,6 +39,8 @@ export class AppComponent implements OnInit {
             if (a == null) {
                 this.alert.warning("没有查询到应用("+this.appId+")，已跳转到应用列表");
                 this.router.navigate(["/apps"]);
+            } else {
+                this.groupId = a.appGroupId;
             }
             return a;
         }));
@@ -53,5 +60,20 @@ export class AppComponent implements OnInit {
 
     onDelBtnClick() {
 
+    }
+
+    onAddHostBtnClick(version: Version) {
+        if (this.groupId) {
+            this.hostSvc.getHostsInGroup(this.groupId).subscribe(
+                ret => {
+                    if (ret.code == 0) {
+                        let ref = this.modal.open(AddHostDialog);
+                        ref.componentInstance.setParams(version, ret.result);
+                    }
+                }
+            )
+        } else {
+            this.alert.warning("应用还未加入分组，不能配置部署主机");
+        }
     }
 }

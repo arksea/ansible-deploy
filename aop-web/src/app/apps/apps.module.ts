@@ -16,6 +16,7 @@ import { AppEditComponent } from './app-edit.component';
 import { AppEditService } from './app-edit.service';
 import { AppComponent } from './app.component';
 import { NewVersionDialog } from './new-version.dialog';
+import { AddHostDialog } from './add-host.dialog';
 
 @NgModule({
   imports: [
@@ -25,10 +26,10 @@ import { NewVersionDialog } from './new-version.dialog';
     VenderModule, NgbPaginationModule, NgbAlertModule, NgbModule,
     AccountModule, AppsRoutingModule],
   declarations: [
-    AppsComponent, AppListComponent, AppEditComponent, AppComponent, NewVersionDialog
+    AppsComponent, AppListComponent, AppEditComponent, AppComponent, NewVersionDialog, AddHostDialog
   ],
   entryComponents: [
-    NewVersionDialog
+    NewVersionDialog, AddHostDialog
   ],
   providers: [AppsService, AppEditService],
   exports: []

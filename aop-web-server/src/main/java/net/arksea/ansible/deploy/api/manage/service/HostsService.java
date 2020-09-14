@@ -49,7 +49,11 @@ public class HostsService {
         }
     }
 
-    public Iterable<Host> findNotInGroup() {
-        return hostDao.findAllGroupIsNull();
+    public Iterable<Host> getNotInGroup() {
+        return hostDao.findByAppGroupId(null);
+    }
+
+    public Iterable<Host> getInGroup(Long groupId) {
+        return hostDao.findByAppGroupId(groupId);
     }
 }

@@ -182,6 +182,20 @@ export class AppsService {
         );
     }
 
+    public addHostsToVersion(versionId: number, hosts: number[]): Observable<string> {
+        const url = environment.apiUrl + '/api/versions/' + versionId + '/hosts';
+        return this.httpUtils.httpPost('版本新增部署主机', url, hosts).pipe(
+            map(response => {
+                    if (response.code === 0) {
+                        return null;
+                    } else {
+                        return response.error;
+                    }
+                }
+            )
+        );
+    }
+
     public getAppByApptag(apptag: string): Observable<App> {
         return this.appList.pipe(first(),map(list => {
             for (let a of list) {

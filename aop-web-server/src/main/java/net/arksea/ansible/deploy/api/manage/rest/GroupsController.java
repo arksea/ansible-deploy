@@ -45,6 +45,15 @@ public class GroupsController {
         return new RestResult<>(0, groups, reqid);
     }
 
+    @RequiresPermissions("组管理:查询")
+    @RequestMapping(path="groups/{groupId}", method = RequestMethod.GET, produces = MEDIA_TYPE)
+    public RestResult<AppGroup> getAppGroups(@PathVariable(name="groupId") long groupId,
+                                             final HttpServletRequest httpRequest) {
+        AppGroup group = groupsService.getAppGroupById(groupId);
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        return new RestResult<>(0, group, reqid);
+    }
+
     @RequiresPermissions("组管理:修改")
     @RequestMapping(path="groups/{groupId}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
     public String deleteGroup(@PathVariable(name="groupId") long groupId,

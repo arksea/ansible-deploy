@@ -1,0 +1,25 @@
+<form (ngSubmit)="onSubmit()" [formGroup]="formGroup">
+    <div class="modal-body">
+        <h3 class="modal-title" id="modal-title">请选择版本 <strong>'{{version.name}}'</strong> 要添加的主机</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>IP地址</th>
+                    <th>描述</th>
+                    <th>选择</th>
+                </tr>
+            </thead>
+            <tbody formArrayName="hosts">
+                <tr *ngFor="let t of hosts; let i=index">
+                    <td>{{t.privateIp}}</td>
+                    <td>{{t.description}}</td>
+                    <td><input type="checkbox" [formControlName]="i"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')">取消</button>
+        <button type="submit" class="btn btn-danger" [disabled]="!formGroup.valid">确认</button>
+    </div>
+</form>

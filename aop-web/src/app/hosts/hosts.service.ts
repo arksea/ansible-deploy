@@ -83,4 +83,9 @@ export class HostsService {
             return null;
         }))
     }
+
+    public getHostsInGroup(groupId: number): Observable<ServiceResponse<Array<Host>>> {
+        const url = environment.apiUrl + '/api/hosts?groupId='+groupId;
+        return this.httpUtils.httpGet('查询主机列表', url);
+    }
 }

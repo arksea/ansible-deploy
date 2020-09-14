@@ -16,11 +16,11 @@ export type IAppEditModelOperation = (data: AppEditModel) => AppEditModel;
 @Injectable()
 export class AppEditService {
     //动态表单设置（不同的应用类型有不同的表单）
-    //AppsService.app  ───>  opSetApp     ──┬──> updates  ───> model ──┬─> appForm
-    //                                    ──┤                          ├─> apptag
-    //                       opSaveApp    ──┘                          ├─> deployPath
-    //                                                                 ├─> description
-    //                                                                 └─> deployPathAddon
+    //AppsService.getAppById  ───>  opSetApp     ──┬──> updates  ───> model ──┬─> appForm
+    //                                           ──┤                          ├─> apptag
+    //                              opSaveApp    ──┘                          ├─> deployPath
+    //                                                                        ├─> description
+    //                                                                        └─> deployPathAddon
     private updates: Subject<IAppEditModelOperation> = new Subject();
     private model: Observable<AppEditModel>;
     

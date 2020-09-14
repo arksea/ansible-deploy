@@ -14,6 +14,8 @@ public interface HostDao extends CrudRepository<Host, Long> {
 
     Iterable<Host> findAllByEnabled(boolean enabled);
 
-    @Query("select h from Host h where h.appGroup is null")
+    @Query("select h from Host h where h.appGroupId is null")
     Iterable<Host> findAllGroupIsNull();
+
+
 }

@@ -21,15 +21,22 @@ import { NewVersionDialog } from './new-version.dialog';
 export class AppComponent implements OnInit {
 
     public svnaddr = 'svn://127.0.0.1';
-    private appId: number;
-    constructor(public svc: AppsService,
+    appId: number;
+    app: Observable<App>;
+    constructor(private svc: AppsService,
                 public account: AccountService,
                 private route: ActivatedRoute,
                 private router: Router,
-                private alert: MessageNotify,
-                private modal: NgbModal) {
+                private modal: NgbModal,
+                private alert: MessageNotify) {
         this.appId = Number(this.route.snapshot.paramMap.get('id'));
-        this.svc.setSelectedApp(this.appId);
+        this.app = this.svc.getAppById(this.appId).pipe(map(a => {
+            if (a == null) {
+                this.alert.warning("没有查询到应用("+this.appId+")，已跳转到应用列表");
+                this.router.navigate(["/apps"]);
+            }
+            return a;
+        }));
     }
 
     ngOnInit() {}
@@ -37,6 +44,7 @@ export class AppComponent implements OnInit {
     onNewVersionBtnClick() {
         let ref = this.modal.open(NewVersionDialog);
         ref.componentInstance.appId = this.appId;
+        ref.componentInstance.app = this.app;
     }
 
     onEditBtnClick() {

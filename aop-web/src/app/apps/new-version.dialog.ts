@@ -2,9 +2,10 @@ import { Component } from '@angular/core';
 import { FormDataEvent } from '@angular/forms/esm2015';
 import { FormGroup,FormControl,Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { Observable } from 'rxjs';
 import { AppsService } from './apps.service';
 import { MessageNotify } from '../utils/message-notify';
-import { Version } from '../app.entity';
+import { App, Version } from '../app.entity';
 
 @Component({
     selector: 'new-version-dialog',
@@ -12,6 +13,7 @@ import { Version } from '../app.entity';
 })
 export class NewVersionDialog {
     public appId: number;
+    public app: Observable<App>;
     constructor(public modal: NgbActiveModal, public svc: AppsService, private alert: MessageNotify) {
     }
 

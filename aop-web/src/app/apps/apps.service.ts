@@ -51,14 +51,12 @@ export class AppsService {
     public userGroups: Subject<AppGroup[]> = new BehaviorSubject([]);
     private appsModelInfo: AppsModelInfo = new AppsModelInfo();
     public appsModel: CrudModel<number, App> = new CrudModel<number, App>(this.appsModelInfo);
-    private currentApp: Subject<App> = this.appsModel.modelSelected;
     public appList: Subject<App[]> = this.appsModel.modelList;
     public sortTypes: Array<SortType> = [{type:"name", order:"asc", desc:"应用名-升序"},
                                          {type:"name", order:"desc",desc:"应用名-降序"}]
     public selectedSortType: BehaviorSubject<SortType> = new BehaviorSubject(this.sortTypes[0])
 
     opAddVersion: Subject<AddVersion> = new Subject();
-    opSetCurrentApp: Subject<number> = new Subject();
 
     public constructor(private httpUtils: HttpUtils) {
         this.opAddVersion.pipe(
@@ -184,14 +182,6 @@ export class AppsService {
         );
     }
 
-    get app(): Observable<App> {
-        return this.currentApp;
-    }
-
-    public setSelectedApp(appId: number) {
-        this.appsModel.opSetSelected.next(appId);
-    }
-
     public getAppByApptag(apptag: string): Observable<App> {
         return this.appList.pipe(first(),map(list => {
             for (let a of list) {
@@ -200,6 +190,18 @@ export class AppsService {
                 }
             }
             return null;
+        }))
+    }
+
+    public getAppById(appId: number): Observable<App> {
+        return this.appsModel.modelData.pipe(first(),map(data => {
+            return data.map.get(appId)
+        }))
+    }
+
+    public getSelectedApp(): Observable<App> {
+        return this.appsModel.modelData.pipe(first(),map(data => {
+            return data.map.get(data.selected);
         }))
     }
 }

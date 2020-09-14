@@ -161,6 +161,11 @@ export class GroupsService {
         });
     }
 
+    public getGroupById(id: number): Observable<ServiceResponse<AppGroup>> {
+        const url = environment.apiUrl + '/api/groups/'+id;
+        return this.httpUtils.httpGet('查询组信息', url);
+    }
+
     public deleteGroup(group: AppGroup): Observable<boolean> {
         const url = environment.apiUrl + '/api/groups/' + group.id;
         let ret = this.httpUtils.httpDelete('删除组', url);

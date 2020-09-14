@@ -60,8 +60,7 @@ public class AppGroup extends IdEntity {
         this.apps = apps;
     }
 
-    @OneToMany(mappedBy = "appGroup",fetch = FetchType.EAGER)
-    @JsonManagedReference
+    @OneToMany(mappedBy = "appGroupId",fetch = FetchType.EAGER)
     public List<Host> getHosts() {
         return hosts;
     }

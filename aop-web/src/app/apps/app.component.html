@@ -1,6 +1,6 @@
 <div id="app-contain" class="container-xl mt-3">
     <div id="app-head" class="mb-5">
-        <h1>{{(svc.app|async)?.apptag}} - {{(svc.app|async)?.description}}</h1>
+        <h1>{{(app|async)?.apptag}} - {{(app|async)?.description}}</h1>
     </div>
     <div id="group-list">
         <ul class="list-group list-group-flush">
@@ -14,7 +14,7 @@
                     </button>
                 </div>
             </li>
-            <li *ngFor="let v of (svc.app|async)?.versions" class="list-group-item py-4">
+            <li *ngFor="let v of (app|async)?.versions" class="list-group-item py-4">
                 <div class="card">
                     <div class="card-header">
                         <div class="d-flex">

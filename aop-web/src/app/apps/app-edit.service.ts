@@ -32,6 +32,7 @@ export class AppEditService {
     public deployPath: BehaviorSubject<AbstractControl>;
     public description: BehaviorSubject<AbstractControl>;
     public userGroups: BehaviorSubject<AbstractControl>;
+    public app: BehaviorSubject<App>;
 
     public constructor(private svc: AppsService,protected alert: MessageNotify,private router: Router) {
         let app = svc.newTomcatApp();
@@ -41,6 +42,7 @@ export class AppEditService {
         this.description = new BehaviorSubject(form.get('description'));
         this.userGroups = new BehaviorSubject(form.get('userGroups'));
         this.appForm = new BehaviorSubject(form);
+        this.app = new BehaviorSubject(app);
         //订阅更新操作
         this.model = this.updates.pipe(
             scan((model: AppEditModel, op: IAppEditModelOperation) => {
@@ -65,14 +67,6 @@ export class AppEditService {
             })
         ).subscribe(this.updates);
 
-        this.svc.app.pipe(map(a => {
-            if (a == null) {
-                return this.svc.newTomcatApp();
-            } else {
-                return a;
-            }
-        })).subscribe(this.opSetApp);
-
         let saveFunc = this.save;
         this.opSaveApp.pipe(
             map(function (_: any): IAppEditModelOperation {
@@ -83,6 +77,7 @@ export class AppEditService {
             })
         ).subscribe(this.updates);
         
+        this.model.pipe(map(model => model.app)).subscribe(this.app);
         this.model.pipe(map(model => model.appForm.get('apptag'))).subscribe(this.apptag);
         this.model.pipe(map(model => model.appForm.get('deployPath'))).subscribe(this.deployPath);
         this.model.pipe(map(model => model.appForm.get('description'))).subscribe(this.description);

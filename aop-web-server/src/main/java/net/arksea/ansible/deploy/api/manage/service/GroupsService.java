@@ -55,6 +55,14 @@ public class GroupsService {
         }
     }
 
+    public AppGroup getAppGroupById(long id) {
+        try {
+            return appGroupDao.findOne(id);
+        } catch (Exception ex) {
+            throw new RestException("查询组信息失败", ex);
+        }
+    }
+
     public Iterable<AppGroup> getUserGroups(long userId) {
         try {
             return appGroupDao.findByUserId(userId);
@@ -76,13 +84,10 @@ public class GroupsService {
     public void addHost(long groupId, long hostId) {
         try {
             Host host = hostDao.findOne(hostId);
-            AppGroup g = host.getAppGroup();
-            if (g != null && g.getId() != null) {
-                throw new ServiceException("主机已分配给分组："+g.getName());
+            if (host.getAppGroupId() != null) {
+                throw new ServiceException("主机已分配给分组："+groupId);
             }
-            g = new AppGroup();
-            g.setId(groupId);
-            host.setAppGroup(g);
+            host.setAppGroupId(groupId);
             hostDao.save(host);
         } catch (ServiceException ex) {
             throw ex;
@@ -95,14 +100,13 @@ public class GroupsService {
     public void removeHost(long groupId, long hostId) {
         try {
             Host host = hostDao.findOne(hostId);
-            AppGroup g = host.getAppGroup();
-            if (g == null) {
+            if (host.getAppGroupId() == null) {
                 return;
             }
-            if (g.getId() != groupId) {
+            if (host.getAppGroupId() != groupId) {
                 throw new ServiceException("主机不属于指定分组");
             }
-            host.setAppGroup(null);
+            host.setAppGroupId(null);
             hostDao.save(host);
         } catch (ServiceException ex) {
             throw ex;

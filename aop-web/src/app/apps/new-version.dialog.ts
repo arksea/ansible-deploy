@@ -13,7 +13,7 @@ import { App, Version } from '../app.entity';
 })
 export class NewVersionDialog {
     public appId: number;
-    public app: Observable<App>;
+    public app: App;
     constructor(public modal: NgbActiveModal, public svc: AppsService, private alert: MessageNotify) {
     }
 
@@ -31,8 +31,9 @@ export class NewVersionDialog {
         ver.repository = this.createForm.get('repository').value;
         ver.javaOpt = this.createForm.get('javaOpt').value;
         ver.revision = this.createForm.get('revision').value;
-        this.svc.createVersion(this.appId, ver).subscribe(error => {
-            if (!error) {
+        this.svc.createVersion(this.appId, ver).subscribe(id => {
+            if (id) {
+                ver.id = id;
                 this.modal.close('ok');
                 this.alert.success('新建版本成功');
             }

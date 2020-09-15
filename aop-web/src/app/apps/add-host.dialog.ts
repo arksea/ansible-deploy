@@ -4,7 +4,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { MessageNotify } from '../utils/message-notify';
 import { Subject, BehaviorSubject } from 'rxjs';
 import { AppsService } from './apps.service';
-import { Host, Version } from '../app.entity';
+import { Host, Version, App } from '../app.entity';
 import { FormGroup, FormArray, FormControl } from '@angular/forms';
 
 @Component({
@@ -13,17 +13,22 @@ import { FormGroup, FormArray, FormControl } from '@angular/forms';
 })
 export class AddHostDialog {
 
+    app: App;
     version: Version;
     hosts: Host[];
     public formArray: FormArray = new FormArray([]);
     public formGroup: FormGroup = new FormGroup({hosts: this.formArray});
 
-    public setParams(version: Version, hosts: Host[]) {
+    public setParams(app: App, version: Version, hosts: Host[]) {
+        console.info("v.id="+version.id+",v.name="+version.name+",v.targetHosts.length="+version.targetHosts.length+",hosts.length="+hosts.length);
         this.version = version;
+        this.app = app;
         this.hosts = hosts.filter((h,i,array)=> {
-            for (let t of version.targetHosts) { //过滤已添加的主机
-                if (t.id == h.id) {
-                    return false;
+            for (let v of app.versions) {
+                for (let t of v.targetHosts) { //过滤应用在所有版本中已添加的主机
+                    if (t.id == h.id) {
+                        return false;
+                    }
                 }
             }
             return true;

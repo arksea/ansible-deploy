@@ -1,6 +1,6 @@
 <form (submit)="create($event)" [formGroup]="createForm">
     <div class="modal-header">
-    <h3 class="modal-title" id="modal-title"><strong>应用'{{(app|async).apptag}}' :</strong> 新增版本</h3>
+    <h3 class="modal-title" id="modal-title"><strong>应用'{{app.apptag}}' :</strong> 新增版本</h3>
     </div>
     <div class="modal-body">
         <div class="form-group">
@@ -11,7 +11,7 @@
             <label for="repository">SVN地址</label>
             <div class="input-group">
                 <div class="input-group-prepend">
-                    <span class="input-group-text">svn://deploy-svn/{{(app|async).apptag}}/</span>
+                    <span class="input-group-text">svn://deploy-svn/{{app.apptag}}/</span>
                 </div>
                 <input type="text" class="form-control" id="repository" formControlName="repository">
             </div>

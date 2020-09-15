@@ -56,19 +56,19 @@ export class AppsService {
                                          {type:"name", order:"desc",desc:"应用名-降序"}]
     public selectedSortType: BehaviorSubject<SortType> = new BehaviorSubject(this.sortTypes[0])
 
-    opAddVersion: Subject<AddVersion> = new Subject();
+    //opAddVersion: Subject<AddVersion> = new Subject();
 
     public constructor(private httpUtils: HttpUtils) {
-        this.opAddVersion.pipe(
-            map(function (op: AddVersion): IModelMapOperation<number,App> {
-                return (modelData: ModelData<number,App>) => {
-                    let app = modelData.map.get(op.appId);
-                    app.versions.push(op.version);
-                    modelData.map.set(op.appId, app);
-                    return modelData;
-                }
-            })
-        ).subscribe(this.appsModel.updates);
+        // this.opAddVersion.pipe(
+        //     map(function (op: AddVersion): IModelMapOperation<number,App> {
+        //         return (modelData: ModelData<number,App>) => {
+        //             let app = modelData.map.get(op.appId);
+        //             app.versions.push(op.version);
+        //             modelData.map.set(op.appId, app);
+        //             return modelData;
+        //         }
+        //     })
+        // ).subscribe(this.appsModel.updates);
     }
 
     public getSortDesc(index: number): string {
@@ -166,16 +166,14 @@ export class AppsService {
         }
     }
 
-    public createVersion(appId: number, version: Version): Observable<string> {
+    public createVersion(appId: number, version: Version): Observable<number> {
         const url = environment.apiUrl + '/api/apps/' + appId + '/vers';
         return this.httpUtils.httpPost('新增版本', url, version).pipe(
             map(response => {
                     if (response.code === 0) {
-                        version.id = response.result;
-                        this.opAddVersion.next(new AddVersion(appId, version));
-                        return null;
+                        return response.result;
                     } else {
-                        return response.error;
+                        return undefined;
                     }
                 }
             )

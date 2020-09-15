@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
     public svnaddr = 'svn://127.0.0.1';
     appId: number = undefined;
     groupId: number = undefined;
-    app: Observable<App>;
+    app: App;
     constructor(private svc: AppsService,
                 private hostSvc: HostsService,
                 public account: AccountService,
@@ -35,15 +35,15 @@ export class AppComponent implements OnInit {
                 private modal: NgbModal,
                 private alert: MessageNotify) {
         this.appId = Number(this.route.snapshot.paramMap.get('id'));
-        this.app = this.svc.getAppById(this.appId).pipe(map(a => {
+        this.svc.getAppById(this.appId).subscribe(a => {
             if (a == null) {
                 this.alert.warning("没有查询到应用("+this.appId+")，已跳转到应用列表");
                 this.router.navigate(["/apps"]);
             } else {
                 this.groupId = a.appGroupId;
+                this.app = a;
             }
-            return a;
-        }));
+        });
     }
 
     ngOnInit() {}
@@ -68,7 +68,7 @@ export class AppComponent implements OnInit {
                 ret => {
                     if (ret.code == 0) {
                         let ref = this.modal.open(AddHostDialog);
-                        ref.componentInstance.setParams(version, ret.result);
+                        ref.componentInstance.setParams(this.app, version, ret.result);
                     }
                 }
             )

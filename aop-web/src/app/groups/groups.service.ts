@@ -152,13 +152,17 @@ export class GroupsService {
     }
 
     public queryGroups() {
-        const url = environment.apiUrl + '/api/groups';
-        let ret: Observable<ServiceResponse<Array<AppGroup>>> = this.httpUtils.httpGet('查询组信息', url);
+        let ret = this.getGroups();
         ret.subscribe(data => {
             if (data.code == 0) {
                 this.model.opResetModels.next(data.result);
             }
         });
+    }
+
+    public getGroups(): Observable<ServiceResponse<Array<AppGroup>>> {
+        const url = environment.apiUrl + '/api/groups';
+        return this.httpUtils.httpGet('查询组信息', url);
     }
 
     public getGroupById(id: number): Observable<ServiceResponse<AppGroup>> {

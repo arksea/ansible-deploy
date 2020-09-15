@@ -32,8 +32,9 @@ export class HostsService {
     public model: CrudModel<number, Host> = new CrudModel<number, Host>(new HostsModelInfo());
     public hostList: Subject<Host[]> = this.model.modelList;
 
-
-    public constructor(private httpUtils: HttpUtils, private router: Router, private alert: MessageNotify) {
+    public constructor(private httpUtils: HttpUtils, 
+        private router: Router, 
+        private alert: MessageNotify) {
     }
 
     public saveHost(host: Host): Observable<string> {

@@ -24,7 +24,7 @@ export class Version {
   repository: string
   javaOpt: string;
   revision: string;
-  targetHosts: Array<Host>;
+  targetHosts: Array<Host> = [];
 }
 
 export class Host {

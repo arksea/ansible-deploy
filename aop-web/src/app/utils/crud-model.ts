@@ -39,11 +39,11 @@ export class CrudModel<K,T> {
     opSetModel: Subject<T> = new Subject();
     opDelModel: Subject<K> = new Subject();
     opUpdateSort: Subject<any> = new Subject();
-    opSetSelected: Subject<K> = new Subject();
+    private opSetSelected: Subject<K> = new Subject();
     updates: Subject<IModelMapOperation<K,T>> = new Subject();
     public modelData: Observable<ModelData<K,T>>;
     public modelList: Subject<T[]> = new BehaviorSubject<T[]>([]);
-    public modelSelected: Subject<T> = new BehaviorSubject<T>(undefined);
+    private modelSelected: Subject<T> = new BehaviorSubject<T>(undefined);
 
     public constructor(mapping: IModelInfo<K,T>) {
         this.modelSelected = new BehaviorSubject<T>(undefined);

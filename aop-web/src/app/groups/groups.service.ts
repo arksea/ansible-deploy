@@ -37,7 +37,7 @@ export class GroupsService {
     private EMETY_SET: Set<string> = new Set();
     public model: CrudModel<number, AppGroup> = new CrudModel<number, AppGroup>(new AppGroupModelInfo());
     public groupList: Subject<AppGroup[]> = this.model.modelList;
-    private currentGroup: Subject<AppGroup> = this.model.modelSelected;
+    //private currentGroup: Subject<AppGroup> = this.model.modelSelected;
     private currentGroupId: number = undefined;
     private opAddHostToCurrentGroup: Subject<Host> = new Subject();
     private opRemoveHostFromCurrentGroup: Subject<Host> = new Subject();
@@ -292,10 +292,6 @@ export class GroupsService {
                 }
             }
         ));
-    }
-
-    get group(): Observable<AppGroup> {
-        return this.currentGroup;
     }
 
     public setSelectedGroup(groupId: number) {

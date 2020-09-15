@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { HostsService } from '../hosts/hosts.service';
 import { MessageNotify } from '../utils/message-notify';
-import { Host } from '../app.entity';
+import { Host, AppGroup } from '../app.entity';
 
 @Component({
     selector: 'group-hosts',
@@ -14,6 +14,8 @@ import { Host } from '../app.entity';
 export class GroupHostsComponent implements OnInit {
 
     public model: any;
+    public group: Observable<AppGroup>;
+    
 
     searchHost = (text: Observable<string>) => this.svc.search(text, '没有未分组的主机', this.hostSvc.hostList.pipe(map(list => {
         let names: string[] = [];
@@ -28,6 +30,7 @@ export class GroupHostsComponent implements OnInit {
                 public hostSvc: HostsService,
                 private alert: MessageNotify) {
         this.hostSvc.queryHostsNotInGroup();
+        this.group = this.svc.model.selected
     }
 
     ngOnInit() { }

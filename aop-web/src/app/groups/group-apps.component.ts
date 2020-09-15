@@ -4,7 +4,7 @@ import { MessageNotify } from '../utils/message-notify';
 import { AccountService } from '../account/account.service';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { App } from '../app.entity';
+import { App, AppGroup } from '../app.entity';
 
 @Component({
     selector: 'group-apps',
@@ -14,6 +14,7 @@ export class GroupAppsComponent implements OnInit {
     public model: any;
 
     public notInGroupApp: App[] = [];
+    public group: Observable<AppGroup>;
 
     search = (text: Observable<string>) => 
         this.svc.search(text, '没有未分组的应用', this.svc.queryNotInGroupApps().pipe(map(list => {
@@ -28,6 +29,7 @@ export class GroupAppsComponent implements OnInit {
     constructor(public svc: GroupsService,
                 public account: AccountService,
                 private alert: MessageNotify) {
+        this.group = this.svc.model.selected
     }
 
     ngOnInit() {}

@@ -41,10 +41,6 @@ class SortType {
     desc: string;
 }
 
-class AddVersion {
-    constructor(public appId: number, public version: Version) {}
-}
-
 @Injectable()
 export class AppsService {
     private EMETY_SET: Set<string> = new Set();
@@ -116,16 +112,6 @@ export class AppsService {
         });
     }
 
-    public queryNotInGroupApps() {
-        let url = environment.apiUrl + '/api/apps/notInGroup';
-        let ret: Observable<ServiceResponse<Array<App>>> = this.httpUtils.httpGet('查询所有应用', url);
-        ret.subscribe(data => {
-            if (data.code == 0) {
-                this.appsModel.opResetModels.next(data.result);
-            }
-        });
-    }
-
     public newTomcatApp(): App {
         let app = new App();
         app.apptag = '';
@@ -135,17 +121,13 @@ export class AppsService {
         app.enableJmx = true;
         app.vars = [{id:null,description: '域名', value: 'localhost', name:'domain', inputAddon: '', isPort: false, inputType: 'text'},
                     {id:null,description: 'ContextPath, URL路径', value: '', name:'context_path', inputAddon: 'http://domain/', isPort: false, inputType: 'text'}]
-        app.versions = [];
+        let ver = new Version();
+        ver.name = 'Online';
+        ver.repository = 'trunk';
+        ver.revision = 'HEAD';
+        ver.javaOpt = '-Dfile.encoding=utf-8'
+        app.versions = [ver];
         return app;
-    }
-
-    public deployPathAddon(apptype: string) {
-        switch (apptype) {
-            case 'tomcat':
-                return '$HOME/tomcat/webapps/';
-            default:
-                return '$HOME/';
-        }
     }
 
     public createVersion(appId: number, version: Version): Observable<number> {

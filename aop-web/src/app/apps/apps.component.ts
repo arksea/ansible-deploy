@@ -8,9 +8,9 @@ import { AppsService } from './apps.service';
 export class AppsComponent implements OnInit {
 
     constructor(private svc: AppsService) {
+        this.svc.queryUserApps();
     }
 
     ngOnInit(): void {
-        this.svc.queryUserApps();
     }
 }

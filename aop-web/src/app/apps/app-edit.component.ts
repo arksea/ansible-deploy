@@ -1,13 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { FormDataEvent } from '@angular/forms/esm2015';
 import { FormGroup, FormControl, AbstractControl, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Observable } from 'rxjs';
 import { AppsService } from './apps.service';
 import { MessageNotify } from '../utils/message-notify';
 import { App,AppGroup } from '../app.entity';
 import { AccountService } from '../account/account.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
+import { NewVersionDialog } from './new-version.dialog';
+import { HostsService } from '../hosts/hosts.service';
+import { AddHostDialog } from './add-host.dialog';
+import { Version } from '../app.entity';
 
 
 @Component({
@@ -24,6 +27,7 @@ export class AppEditComponent implements OnInit {
     public userGroups: Observable<AppGroup[]>;
 
     constructor(private svc: AppsService,
+                private hostSvc: HostsService,
                 public account: AccountService,
                 protected alert: MessageNotify,
                 protected modal: NgbModal,
@@ -54,7 +58,6 @@ export class AppEditComponent implements OnInit {
 
     ngOnInit(): void {
     }
-
 
     public makeFormGroup(app: App): FormGroup {
         let tag = new FormControl({ value: app.apptag, disabled: app.id }, [Validators.required, Validators.minLength(4), Validators.maxLength(30)]);
@@ -108,6 +111,35 @@ export class AppEditComponent implements OnInit {
                 }
             }
         )
+    }
+
+
+    onNewVersionBtnClick() {
+        let ref = this.modal.open(NewVersionDialog);
+        ref.componentInstance.app = this.app;
+    }
+
+    onAddHostBtnClick(version: Version) {
+        if (this.app.appGroupId) {
+            this.hostSvc.getHostsInGroup(this.app.appGroupId).subscribe(
+                ret => {
+                    if (ret.code == 0) {
+                        let ref = this.modal.open(AddHostDialog);
+                        ref.componentInstance.setParams(this.app, version, ret.result);
+                    }
+                }
+            )
+        } else {
+            this.alert.warning("应用还未加入分组，不能配置部署主机");
+        }
+    }
+
+    onEditBtnClick() {
+
+    }
+
+    onDelBtnClick() {
+
     }
 
     public cancel() {

@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject, Observable } from 'rxjs';
+import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import { AppGroup } from '../app.entity';
 import { ServiceResponse } from '../utils/http-utils';
 import { HttpUtils } from '../utils/http-utils';
 import { MessageNotify } from "../utils/message-notify";
 import { environment } from '../../environments/environment';
 import { CrudModel, IModelInfo } from '../utils/crud-model';
-import { debounceTime, distinctUntilChanged, map, flatMap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, flatMap, first } from 'rxjs/operators';
 import { HostsService } from '../hosts/hosts.service';
 import { Host } from '../app.entity';
 import { IModelMapOperation, ModelData } from '../utils/crud-model';
@@ -52,6 +52,7 @@ export class GroupsService {
             private hostsSvc: HostsService,
             private usersSvc: UsersService,
             private appsSvc: AppsService) {
+        this.queryNotInGroupApps();
         this.opAddHostToCurrentGroup.pipe(
             map(function (host: Host): IModelMapOperation<number,AppGroup> {
                 return (modelData: ModelData<number,AppGroup>) => {
@@ -158,6 +159,18 @@ export class GroupsService {
                 this.model.opResetModels.next(data.result);
             }
         });
+    }
+
+    public queryNotInGroupApps(): Observable<App[]> {
+        let url = environment.apiUrl + '/api/apps/notInGroup';
+        let ret: Observable<ServiceResponse<Array<App>>> = this.httpUtils.httpGet('查询未分组应用', url);
+        return ret.pipe(map(data => {
+            if (data.code == 0) {
+                return data.result;
+            } else {
+                return [];
+            }
+        }));
     }
 
     public getGroups(): Observable<ServiceResponse<Array<AppGroup>>> {
@@ -281,15 +294,13 @@ export class GroupsService {
         ));
     }
 
-    
-
     get group(): Observable<AppGroup> {
         return this.currentGroup;
     }
 
     public setSelectedGroup(groupId: number) {
         this.currentGroupId = groupId;
-        this.model.opSetSelected.next(groupId);
+        this.model.setSelected(groupId);
     }
 
     public search(text: Observable<string>, notFindedDesc: string, textList: Observable<string[]>) {

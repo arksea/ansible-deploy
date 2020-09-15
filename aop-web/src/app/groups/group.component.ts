@@ -20,9 +20,10 @@ export class GroupComponent implements OnInit {
                 private modal: NgbModal) {
         this.groupId = Number(this.route.snapshot.paramMap.get('id'));
         this.svc.setSelectedGroup(this.groupId);
+        this.router.navigate(['/groups/'+this.groupId+'/members']);
     }
 
     ngOnInit() {
-        this.router.navigate(['/groups/'+this.groupId+'/members']);
+
     }
 }

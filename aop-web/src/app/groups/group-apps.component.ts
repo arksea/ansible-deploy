@@ -1,12 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { GroupsService } from './groups.service';
 import { MessageNotify } from '../utils/message-notify';
 import { AccountService } from '../account/account.service';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { AppsService } from '../apps/apps.service';
 import { App } from '../app.entity';
 
 @Component({
@@ -16,36 +13,35 @@ import { App } from '../app.entity';
 export class GroupAppsComponent implements OnInit {
     public model: any;
 
-    search = (text: Observable<string>) => this.svc.search(text, '没有未分组的应用', this.appsSvc.appList.pipe(map(list => {
-        let names: string[] = [];
-        for (let i of list) {
-            names.push(i.apptag)
-        }
-        return names;
-    })));
+    public notInGroupApp: App[] = [];
+
+    search = (text: Observable<string>) => 
+        this.svc.search(text, '没有未分组的应用', this.svc.queryNotInGroupApps().pipe(map(list => {
+            this.notInGroupApp = list;
+            let names: string[] = [];
+            for (let i of list) {
+                names.push(i.apptag)
+            }
+            return names;
+        })));
+
     constructor(public svc: GroupsService,
                 public account: AccountService,
-                private route: ActivatedRoute,
-                private appsSvc: AppsService,
-                private router: Router,
-                private alert: MessageNotify,
-                private modal: NgbModal) {
-        appsSvc.queryNotInGroupApps();
+                private alert: MessageNotify) {
     }
-
 
     ngOnInit() {}
 
     addApp(apptag: string) {
-        this.appsSvc.getAppByApptag(apptag).subscribe(a => {
-            if (a == null) {
-                this.alert.warning('未找到应用:'+apptag);
-            } else {
+        for (let a of this.notInGroupApp) {
+            if (a.apptag = apptag) {
                 this.svc.addApp(a).subscribe(succeed => {
                     if (succeed)this.alert.info('添加应用成功');
                 })
+                return;
             }
-        })
+        }
+        this.alert.warning('未找到应用:'+apptag);
     }
 
     removeApp(app: App) {

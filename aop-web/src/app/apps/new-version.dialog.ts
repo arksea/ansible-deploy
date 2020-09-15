@@ -30,12 +30,19 @@ export class NewVersionDialog {
         ver.repository = this.createForm.get('repository').value;
         ver.javaOpt = this.createForm.get('javaOpt').value;
         ver.revision = this.createForm.get('revision').value;
-        this.svc.createVersion(this.app.id, ver).subscribe(id => {
-            if (id) {
-                ver.id = id;
-                this.modal.close('ok');
-                this.alert.success('新建版本成功');
-            }
-        });
+        if (this.app.id) {
+            this.svc.createVersion(this.app.id, ver).subscribe(id => {
+                if (id) {
+                    ver.id = id;
+                    this.app.versions.push(ver);
+                    this.modal.close('ok');
+                    this.alert.success('新建版本成功');
+                }
+            });
+        } else {
+            this.app.versions.push(ver);
+            this.modal.close('ok');
+        }
+
     }
 }

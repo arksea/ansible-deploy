@@ -1,20 +1,20 @@
 <div class="d-flex border-bottom">
     <div class="mr-auto">
-        <h2>{{(svc.group|async)?.name}}</h2>
+        <h2>{{(group|async)?.name}}</h2>
     </div>
     <div class="mr-4 mb-3">
         <div class="input-group">
             <input id="typeahead-basic" type="text" class="form-control" [(ngModel)]="model" [ngbTypeahead]="searchUser" #user/>
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary" type="button"
-                    [disabled]="account.perm('组管理:修改') | async" (click)="addMember(user.value)">添加</button>
+                    [disabled]="perm('组管理:修改') | async" (click)="addMember(user.value)">添加</button>
             </div>
         </div>
     </div>
 </div>
 
 <ul class="list-group list-group-flush">
-    <li *ngFor="let u of (svc.group|async)?.users;index as i;" class="list-group-item">
+    <li *ngFor="let u of (group|async)?.users;index as i;" class="list-group-item">
         <div class="d-flex">
             <div class="mr-auto">
                 <strong>{{u.name}}</strong>
@@ -22,7 +22,7 @@
             </div>
             <div class="p-1">
                 <button type="button" class="btn btn-outline-secondary btn-sm"
-                    [disabled]="account.perm('组管理:修改') | async"
+                    [disabled]="perm('组管理:修改') | async"
                     (click)="removeMember(u)">移除
                 </button>
             </div>

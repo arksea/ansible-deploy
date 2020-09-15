@@ -1,5 +1,5 @@
 import { Subject, BehaviorSubject, Observable } from 'rxjs';
-import { scan, map, publishReplay, refCount } from 'rxjs/operators';
+import { scan, map, publishReplay, refCount, first } from 'rxjs/operators';
 import * as _ from 'lodash';
 
 export type ModelMap<K,T> = Map<K,T>;
@@ -132,5 +132,13 @@ export class CrudModel<K,T> {
                 return modelData.map.get(modelData.selected);
             })
         ).subscribe(this.modelSelected);
+    }
+
+    public setSelected(key: K) {
+        this.opSetSelected.next(key);
+    }
+
+    public get selected(): Observable<T> {
+        return this.modelSelected;
     }
 }

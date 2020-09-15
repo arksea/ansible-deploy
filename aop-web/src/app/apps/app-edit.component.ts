@@ -11,6 +11,7 @@ import { NewVersionDialog } from './new-version.dialog';
 import { HostsService } from '../hosts/hosts.service';
 import { AddHostDialog } from './add-host.dialog';
 import { Version } from '../app.entity';
+import { ConfirmDialog } from '../utils/confirm.dialog';
 
 
 @Component({
@@ -138,8 +139,20 @@ export class AppEditComponent implements OnInit {
 
     }
 
-    onDelBtnClick() {
-
+    onDeleteVersionBtnClick(version: Version) {
+        let ref = this.modal.open(ConfirmDialog);
+        ref.componentInstance.title = "删除版本: "+version.name;
+        ref.componentInstance.message = "确认要删除吗?"
+        ref.result.then(result => {
+          if (result == "ok") {
+            this.svc.deleteVersionById(version.id).subscribe(success => {
+                if (success) {
+                    this.app.versions = this.app.versions.filter((v,i,a) => v.id != version.id)
+                    this.alert.success("已删除");
+                }
+            });
+          }
+        }, resaon => {})
     }
 
     public cancel() {

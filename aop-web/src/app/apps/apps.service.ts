@@ -130,6 +130,20 @@ export class AppsService {
         return app;
     }
 
+    public deleteVersionById(versionId: number): Observable<boolean> {
+        const url = environment.apiUrl + '/api/versions/' + versionId;
+        return this.httpUtils.httpDelete('删除版本', url).pipe(
+            map(response => {
+                    if (response.code === 0) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            )
+        );
+    }
+
     public createVersion(appId: number, version: Version): Observable<number> {
         const url = environment.apiUrl + '/api/apps/' + appId + '/vers';
         return this.httpUtils.httpPost('新增版本', url, version).pipe(

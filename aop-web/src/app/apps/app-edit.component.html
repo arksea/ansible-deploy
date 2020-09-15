@@ -108,7 +108,7 @@
                         </div>
                         <div class="pl-1">
                             <button type="button" class="btn btn-outline-danger btn-sm"
-                                [disabled]="account.perm('应用:修改') | async" (click)="onDelBtnClick()">删除</button>
+                                [disabled]="account.perm('应用:修改') | async" (click)="onDeleteVersionBtnClick(v)">删除</button>
                         </div>
                         <div class="pl-1">
                             <button type="button" class="btn btn-outline-secondary btn-sm"

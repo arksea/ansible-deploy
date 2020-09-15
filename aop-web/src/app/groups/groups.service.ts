@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { Subject, Observable, BehaviorSubject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { AppGroup } from '../app.entity';
 import { ServiceResponse } from '../utils/http-utils';
 import { HttpUtils } from '../utils/http-utils';
-import { MessageNotify } from "../utils/message-notify";
 import { environment } from '../../environments/environment';
 import { CrudModel, IModelInfo } from '../utils/crud-model';
 import { debounceTime, distinctUntilChanged, map, flatMap, first } from 'rxjs/operators';
@@ -34,10 +32,9 @@ class AppGroupModelInfo implements IModelInfo<number, AppGroup> {
 
 @Injectable()
 export class GroupsService {
-    private EMETY_SET: Set<string> = new Set();
+
     public model: CrudModel<number, AppGroup> = new CrudModel<number, AppGroup>(new AppGroupModelInfo());
     public groupList: Subject<AppGroup[]> = this.model.modelList;
-    //private currentGroup: Subject<AppGroup> = this.model.modelSelected;
     private currentGroupId: number = undefined;
     private opAddHostToCurrentGroup: Subject<Host> = new Subject();
     private opRemoveHostFromCurrentGroup: Subject<Host> = new Subject();
@@ -47,8 +44,6 @@ export class GroupsService {
     private opRemoveAppFromCurrentGroup: Subject<App> = new Subject();
 
     public constructor(private httpUtils: HttpUtils, 
-            private router: Router, 
-            private alert: MessageNotify,
             private hostsSvc: HostsService,
             private usersSvc: UsersService,
             private appsSvc: AppsService) {

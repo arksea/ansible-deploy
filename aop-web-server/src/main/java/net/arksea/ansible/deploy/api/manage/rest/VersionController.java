@@ -36,4 +36,12 @@ public class VersionController {
         versionService.addHosts(verId, hosts);
         return RestUtils.createResult(ResultCode.SUCCEED, reqid);
     }
+
+    @RequestMapping(path="versions/{verId}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
+    public String delete(@PathVariable("verId") final long verId,
+                           final HttpServletRequest httpRequest) {
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        versionService.deleteById(verId);
+        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+    }
 }

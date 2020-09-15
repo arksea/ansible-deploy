@@ -48,6 +48,7 @@ export class App {
   enableJmx: boolean = true;
   versions: Array<Version> = [];
   createTime: string; //创建时间
+  deleted: boolean;
 }
 
 export class AppGroup {

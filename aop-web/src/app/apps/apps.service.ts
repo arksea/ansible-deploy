@@ -56,19 +56,7 @@ export class AppsService {
                                          {type:"name", order:"desc",desc:"应用名-降序"}]
     public selectedSortType: BehaviorSubject<SortType> = new BehaviorSubject(this.sortTypes[0])
 
-    //opAddVersion: Subject<AddVersion> = new Subject();
-
     public constructor(private httpUtils: HttpUtils) {
-        // this.opAddVersion.pipe(
-        //     map(function (op: AddVersion): IModelMapOperation<number,App> {
-        //         return (modelData: ModelData<number,App>) => {
-        //             let app = modelData.map.get(op.appId);
-        //             app.versions.push(op.version);
-        //             modelData.map.set(op.appId, app);
-        //             return modelData;
-        //         }
-        //     })
-        // ).subscribe(this.appsModel.updates);
     }
 
     public getSortDesc(index: number): string {
@@ -82,34 +70,28 @@ export class AppsService {
         this.appsModel.opUpdateSort.next(true);        
     }
 
-    public saveApp(app: App): Observable<ServiceResponse<number>> {
+    public saveApp(app: App): Observable<number> {
         let url = environment.apiUrl + '/api/apps';
         let ret: Observable<ServiceResponse<number>> = this.httpUtils.httpPost('保存应用', url, app);
         return ret.pipe(
             map (
                 resp => {
                     if (resp.code == 0) {
-                        if (app.id == null) {
-                            app.id = resp.result;
-                            this.appsModel.opSetModel.next(app);
-                        } else {
-                            this.appsModel.opSetModel.next(app);
-                        }
+                        return resp.result;
                     }
-                    return resp;
+                    return undefined;
                 }
             )
         )
     }
 
-    public deleteApp(appId: number): Observable<boolean> {
-        let url = environment.apiUrl + '/api/apps/' + appId;
-        let ret: Observable<ServiceResponse<number>> = this.httpUtils.httpDelete('删除应用', url);
+    public updateDeleted(appId: number, deleted: boolean): Observable<boolean> {
+        let url = environment.apiUrl + '/api/apps/' + appId + '/deleted';
+        let ret: Observable<ServiceResponse<number>> = this.httpUtils.httpPut('修改应用删除状态', url, deleted);
         return ret.pipe(
             map (
                 resp => {
                     if (resp.code == 0) {
-                        this.appsModel.opDelModel.next(appId);
                         return true;
                     } else {
                         return false;

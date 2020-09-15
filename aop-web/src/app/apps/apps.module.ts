@@ -13,7 +13,6 @@ import { AccountModule } from '../account/account.module';
 import { AppsService } from './apps.service';
 import { AppListComponent } from './app-list.component';
 import { AppEditComponent } from './app-edit.component';
-import { AppEditService } from './app-edit.service';
 import { AppComponent } from './app.component';
 import { NewVersionDialog } from './new-version.dialog';
 import { AddHostDialog } from './add-host.dialog';
@@ -31,7 +30,7 @@ import { AddHostDialog } from './add-host.dialog';
   entryComponents: [
     NewVersionDialog, AddHostDialog
   ],
-  providers: [AppsService, AppEditService],
+  providers: [AppsService],
   exports: []
 })
 export class AppsModule { }

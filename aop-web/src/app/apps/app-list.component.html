@@ -31,13 +31,17 @@
             <li *ngFor="let a of svc.appList | async;index as i;" class="list-group-item">
                 <div class="d-flex mt-2">
                     <div class="mr-auto">
-                        <a (click)="onViewBtnClick(a)" class="btn btn-link p-0 m-0"><strong>{{a.apptag}}</strong></a>
+                        <a (click)="onViewBtnClick(a)" class="btn btn-link p-0 m-0">
+                            <strong>{{a.apptag}}</strong>
+                            <span [hidden]="!a.deleted" class="text-danger"> (待删除)</span>
+                        </a>
                         <p>{{a.description}}</p>
                     </div>
                     <div class="p-1 mt-1">
-                        <button type="button" class="btn btn-outline-danger btn-sm"
+                        <button type="button" class="btn btn-sm"
+                            [class] = "a.deleted?'btn-outline-success':'btn-outline-danger'"
                             [disabled]="account.perm('应用:修改') | async"
-                            (click)="onDelBtnClick(a)">删除</button>
+                            (click)="onDelBtnClick(a)">{{a.deleted?'恢复':'删除'}}</button>
                     </div>
                     <div class="p-1 mt-1">
                         <button type="button" class="btn btn-outline-secondary btn-sm"

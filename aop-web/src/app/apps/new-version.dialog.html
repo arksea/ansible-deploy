@@ -1,4 +1,4 @@
-<form (submit)="create($event)" [formGroup]="createForm">
+<form (ngSubmit)="save()" [formGroup]="form">
     <div class="modal-header">
     <h3 class="modal-title" id="modal-title"><strong>应用'{{app.apptag}}' :</strong> 新增版本</h3>
     </div>
@@ -27,6 +27,6 @@
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')">取消</button>
-        <button type="submit" class="btn btn-danger" [disabled]="!createForm.valid">确认</button>
+        <button type="submit" class="btn btn-danger" [disabled]="!form.valid">确认</button>
     </div>
 </form>

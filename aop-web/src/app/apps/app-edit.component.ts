@@ -101,11 +101,10 @@ export class AppEditComponent implements OnInit {
             i.value = c.value;
         }
         this.svc.saveApp(a).subscribe(
-            id => {
-                if (id) {
-                    a.id = id;
+            app => {
+                if (app) {
                     if (this.isNewAction) {
-                        this.svc.appsModel.opSetModel.next(a);
+                        this.svc.appsModel.opSetModel.next(app);
                     }
                     this.alert.success('保存应用成功');
                     this.router.navigate(['/apps']);
@@ -117,12 +116,13 @@ export class AppEditComponent implements OnInit {
 
     onNewVersionBtnClick() {
         let ref = this.modal.open(NewVersionDialog);
+        this.app.apptag = this.apptag.value;
         ref.componentInstance.app = this.app;
     }
 
     onAddHostBtnClick(version: Version) {
-        if (this.app.appGroupId) {
-            this.hostSvc.getHostsInGroup(this.app.appGroupId).subscribe(
+        if (this.appGroupId.value) {
+            this.hostSvc.getHostsInGroup(this.appGroupId.value).subscribe(
                 ret => {
                     if (ret.code == 0) {
                         let ref = this.modal.open(AddHostDialog);
@@ -135,40 +135,50 @@ export class AppEditComponent implements OnInit {
         }
     }
 
-    onEditBtnClick() {
-
+    onEditBtnClick(version: Version) {
+        let ref = this.modal.open(NewVersionDialog);
+        ref.componentInstance.app = this.app;
+        ref.componentInstance.version = version;
     }
 
     onDeleteVersionBtnClick(version: Version) {
-        let ref = this.modal.open(ConfirmDialog);
-        ref.componentInstance.title = "删除版本: "+version.name;
-        ref.componentInstance.message = "确认要删除吗?"
-        ref.result.then(result => {
-          if (result == "ok") {
-            this.svc.deleteVersionById(version.id).subscribe(success => {
-                if (success) {
-                    this.app.versions = this.app.versions.filter((v,i,a) => v.id != version.id)
-                    this.alert.success("已删除");
-                }
-            });
-          }
-        }, resaon => {})
+        if (this.isNewAction) { //未保存的新建应用
+            this.app.versions = this.app.versions.filter((v,i,a) => v.name != version.name)
+        } else {
+            let ref = this.modal.open(ConfirmDialog);
+            ref.componentInstance.title = "删除版本: "+version.name;
+            ref.componentInstance.message = "确认要删除吗?"
+            ref.result.then(result => {
+            if (result == "ok") {
+                this.svc.deleteVersionById(version.id).subscribe(success => {
+                    if (success) {
+                        this.app.versions = this.app.versions.filter((v,i,a) => v.id != version.id)
+                        this.alert.success("已删除");
+                    }
+                });
+            }
+            }, resaon => {})
+        }
     }
 
     onDeleteHostBtnClick(host: Host, version: Version) {
-        let ref = this.modal.open(ConfirmDialog);
-        ref.componentInstance.title = "从版本中移除主机: "+host.privateIp;
-        ref.componentInstance.message = "确认要移除吗?"
-        ref.result.then(result => {
-          if (result == "ok") {
-            this.svc.removeHostFromVersion(version.id, host.id).subscribe(success => {
-                if (success) {
-                    version.targetHosts = version.targetHosts.filter((h,i,a) => h.id != host.id)
-                    this.alert.success("已移除");
+        if (this.isNewAction) { //未保存的新建应用
+            version.targetHosts = version.targetHosts.filter((h,i,a) => h.id != host.id)
+        } else {
+            let ref = this.modal.open(ConfirmDialog);
+            ref.componentInstance.title = "从版本中移除主机: "+host.privateIp;
+            ref.componentInstance.message = "确认要移除吗?"
+            ref.result.then(result => {
+                if (result == "ok") {
+                    this.svc.removeHostFromVersion(version.id, host.id).subscribe(success => {
+                        if (success) {
+                            version.targetHosts = version.targetHosts.filter((h,i,a) => h.id != host.id)
+                            this.alert.success("已移除");
+                        }
+                    });
                 }
-            });
-          }
-        }, resaon => {})
+            }, resaon => {})
+        }
     }
 
     public cancel() {

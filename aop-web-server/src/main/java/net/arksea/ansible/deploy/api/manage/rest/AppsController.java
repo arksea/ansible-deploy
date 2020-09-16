@@ -4,6 +4,7 @@ import net.arksea.ansible.deploy.api.ResultCode;
 import net.arksea.ansible.deploy.api.manage.entity.App;
 import net.arksea.ansible.deploy.api.manage.entity.Version;
 import net.arksea.ansible.deploy.api.manage.service.AppService;
+import net.arksea.ansible.deploy.api.manage.service.VersionService;
 import net.arksea.restapi.BaseResult;
 import net.arksea.restapi.ErrorResult;
 import net.arksea.restapi.RestResult;
@@ -25,6 +26,9 @@ public class AppsController {
     AppService appService;
 
     @Autowired
+    VersionService versionService;
+
+    @Autowired
 
     private static final String MEDIA_TYPE = "application/json; charset=UTF-8";
 
@@ -33,7 +37,7 @@ public class AppsController {
     public String save(@RequestBody final App app,final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         App stored = appService.save(app);
-        return RestUtils.createResult(ResultCode.SUCCEED, stored.getId(), reqid);
+        return RestUtils.createResult(ResultCode.SUCCEED, stored, reqid);
     }
 
     //-------------------------------------------------------------------------
@@ -67,14 +71,5 @@ public class AppsController {
         return new RestResult<>(0, apps, reqid);
     }
     //-------------------------------------------------------------------------
-    @RequiresPermissions("应用:修改")
-    @RequestMapping(path="apps/{appId}/vers", method = RequestMethod.POST, produces = MEDIA_TYPE)
-    public String createVersion(@RequestBody final Version version,
-                                @PathVariable final long appId,
-                              final HttpServletRequest httpRequest) {
-        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        Version created = appService.createVersion(appId, version);
-        return RestUtils.createResult(ResultCode.SUCCEED, created.getId(), reqid);
-    }
 
 }

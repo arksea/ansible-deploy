@@ -8,10 +8,6 @@
                 <div class="d-flex">
                     <div class="mr-auto">
                     </div>
-                    <button type="button" class="btn btn-success" 
-                        [disabled]="account.perm('应用:修改') | async"
-                        (click)="onNewVersionBtnClick()">新增版本
-                    </button>
                 </div>
             </li>
             <li *ngFor="let v of app?.versions" class="list-group-item py-4">
@@ -21,20 +17,32 @@
                             <div class="mr-auto pt-2">
                                 <strong>版本: {{v.name}}</strong>
                             </div>
-                            <div class="pl-1">
-                                <button type="button" class="btn btn-outline-secondary btn-sm"
-                                    [disabled]="account.perm('应用:修改') | async"
-                                    (click)="onAddHostBtnClick(v)">添加主机</button>
+
+                            <div class="dropdown pl-1">
+                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown"
+                                        [disabled]="account.perm('应用:部署') | async">
+                                    其他操作
+                                </button>
+                                <div class="dropdown-menu">
+                                    <button class="dropdown-item" type="button" [disabled]="account.perm('应用:部署') | async">安装</button>
+                                    <button class="dropdown-item" type="button" [disabled]="account.perm('应用:部署') | async">配置</button>
+                                    <button class="dropdown-item" type="button" [disabled]="account.perm('应用:部署') | async">停止</button>
+                                    <button class="dropdown-item" type="button" [disabled]="account.perm('应用:部署') | async">重启</button>
+                                    <button class="dropdown-item" type="button" [disabled]="account.perm('应用:部署') | async">启动</button>
+                                </div>
                             </div>
+
                             <div class="pl-1">
                                 <button type="button" class="btn btn-outline-danger btn-sm"
-                                    [disabled]="account.perm('应用:修改') | async"
-                                    (click)="onDelBtnClick()">删除</button>
+                                    [disabled]="account.perm('应用:部署') | async">下线</button>
                             </div>
                             <div class="pl-1">
-                                <button type="button" class="btn btn-outline-secondary btn-sm"
-                                    [disabled]="account.perm('应用:修改') | async"
-                                    (click)="onEditBtnClick()">修改</button>
+                                <button type="button" class="btn btn-outline-info btn-sm"
+                                    [disabled]="account.perm('应用:部署') | async">发布</button>
+                            </div>
+                            <div class="pl-1">
+                                <button type="button" class="btn btn-outline-success btn-sm"
+                                    [disabled]="account.perm('应用:部署') | async">上线</button>
                             </div>
                         </div>
                     </div>

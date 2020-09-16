@@ -119,13 +119,13 @@
                         </div>
                         <div class="pl-1">
                             <button type="button" class="btn btn-outline-secondary btn-sm"
-                                [disabled]="account.perm('应用:修改') | async" (click)="onEditBtnClick()">修改</button>
+                                [disabled]="account.perm('应用:修改') | async" (click)="onEditBtnClick(v)">修改</button>
                         </div>
                     </div>
                 </div>
                 <div class="card-bordy">
                     <ul class="mt-3">
-                        <li>SVN地址：svn://svn-server/{{app.apptag}}/{{v.repository}}</li>
+                        <li>SVN地址：svn://svn-server/{{apptag.value}}/{{v.repository}}</li>
                         <li>Revistion：{{v.revision}}</li>
                         <li>JAVA附加参数: {{v.javaOpt}}</li>
                     </ul>

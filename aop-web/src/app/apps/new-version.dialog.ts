@@ -12,35 +12,52 @@ import { App, Version } from '../app.entity';
     templateUrl: './new-version.dialog.html'
 })
 export class NewVersionDialog {
-    public app: App;
+    app: App;
+    private _version: Version;
+    private isNewAction: boolean;
     constructor(public modal: NgbActiveModal, public svc: AppsService, private alert: MessageNotify) {
+        this.version = new Version();
+        this.isNewAction = true;
     }
 
-    public createForm: FormGroup = new FormGroup({
-        name: new FormControl('',[Validators.required, Validators.minLength(2), Validators.maxLength(64)]),
-        repository: new FormControl('',[Validators.required,Validators.maxLength(1000)]),
-        javaOpt: new FormControl('',[Validators.maxLength(1000)]),
-        revision: new FormControl('HEAD',[Validators.required,Validators.minLength(1),Validators.maxLength(64)]),
-    });
+    public form: FormGroup;
 
-    create(event: FormDataEvent) {
+    set version(ver: Version) {
+        this._version = ver;
+        this.isNewAction = false;
+        this.form = new FormGroup({
+            name: new FormControl(ver.name,[Validators.required, Validators.minLength(2), Validators.maxLength(64)]),
+            repository: new FormControl(ver.repository,[Validators.required,Validators.maxLength(1000)]),
+            javaOpt: new FormControl(ver.javaOpt,[Validators.maxLength(1000)]),
+            revision: new FormControl(ver.revision,[Validators.required,Validators.minLength(1),Validators.maxLength(64)]),
+        });
+    }
+
+    save() {
         event.preventDefault();
-        let ver = new Version();
-        ver.name = this.createForm.get('name').value;
-        ver.repository = this.createForm.get('repository').value;
-        ver.javaOpt = this.createForm.get('javaOpt').value;
-        ver.revision = this.createForm.get('revision').value;
+        let ver = this._version;
+        ver.name = this.form.get('name').value;
+        ver.repository = this.form.get('repository').value;
+        ver.javaOpt = this.form.get('javaOpt').value;
+        ver.revision = this.form.get('revision').value;
         if (this.app.id) {
-            this.svc.createVersion(this.app.id, ver).subscribe(id => {
+            if (!ver.appId) {
+                ver.appId = this.app.id;
+            }
+            this.svc.saveVersion(ver).subscribe(id => {
                 if (id) {
-                    ver.id = id;
-                    this.app.versions.push(ver);
+                    if (this.isNewAction) {
+                        ver.id = id;
+                        this.app.versions.push(ver);
+                    }
                     this.modal.close('ok');
-                    this.alert.success('新建版本成功');
+                    this.alert.success('保存成功');
                 }
             });
-        } else {
-            this.app.versions.push(ver);
+        } else { //未保存的新建应用
+            if (this.isNewAction) {
+                this.app.versions.push(ver);
+            }
             this.modal.close('ok');
         }
 

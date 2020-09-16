@@ -1,6 +1,7 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
 import net.arksea.ansible.deploy.api.manage.dao.VersionDao;
+import net.arksea.ansible.deploy.api.manage.entity.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,5 +31,11 @@ public class VersionService {
     @Transactional
     public void removeHostFromVersion(long versionId, long hostId) {
         versionDao.removeHost(versionId, hostId);
+    }
+
+    @org.springframework.transaction.annotation.Transactional
+    public Version saveVersion(Version version) {
+        Version saved = versionDao.save(version);
+        return saved;
     }
 }

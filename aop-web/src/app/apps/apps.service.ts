@@ -66,10 +66,9 @@ export class AppsService {
         this.appsModel.opUpdateSort.next(true);        
     }
 
-    public saveApp(app: App): Observable<number> {
+    public saveApp(app: App): Observable<App> {
         let url = environment.apiUrl + '/api/apps';
-        let ret: Observable<ServiceResponse<number>> = this.httpUtils.httpPost('保存应用', url, app);
-        return ret.pipe(
+        return this.httpUtils.httpPost('保存应用', url, app).pipe(
             map (
                 resp => {
                     if (resp.code == 0) {
@@ -144,9 +143,9 @@ export class AppsService {
         );
     }
 
-    public createVersion(appId: number, version: Version): Observable<number> {
-        const url = environment.apiUrl + '/api/apps/' + appId + '/vers';
-        return this.httpUtils.httpPost('新增版本', url, version).pipe(
+    public saveVersion(version: Version): Observable<number> {
+        const url = environment.apiUrl + '/api/versions';
+        return this.httpUtils.httpPost('保存版本', url, version).pipe(
             map(response => {
                     if (response.code === 0) {
                         return response.result;

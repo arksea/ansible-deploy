@@ -70,10 +70,4 @@ public class AppService {
         return appDao.findAllGroupIsNull();
     }
 
-    @Transactional
-    public Version createVersion(long appId, Version version) {
-        version.setAppId(appId);
-        Version saved = versionDao.save(version);
-        return saved;
-    }
 }

@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "dp2_app_version")
+@Table(name = "dp2_app_version", uniqueConstraints = @UniqueConstraint(columnNames = { "appId", "name" }))
 public class Version extends IdEntity {
     private String name;
 
@@ -71,7 +71,7 @@ public class Version extends IdEntity {
     }
 
     @NotBlank
-    @Column(nullable = false, columnDefinition = "varchar(64) NOT NULL DEFAULT '主版本'")
+    @Column(nullable = false, length = 64)
     public String getName() {
         return name;
     }

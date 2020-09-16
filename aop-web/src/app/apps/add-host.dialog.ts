@@ -20,7 +20,6 @@ export class AddHostDialog {
     public formGroup: FormGroup = new FormGroup({hosts: this.formArray});
 
     public setParams(app: App, version: Version, hosts: Host[]) {
-        console.info("v.id="+version.id+",v.name="+version.name+",v.targetHosts.length="+version.targetHosts.length+",hosts.length="+hosts.length);
         this.version = version;
         this.app = app;
         this.hosts = hosts.filter((h,i,array)=> {
@@ -39,7 +38,7 @@ export class AddHostDialog {
     constructor(public modal: NgbActiveModal, public svc: AppsService, private alert: MessageNotify) {
     }
 
-    onSubmit() {
+    save() {
         let idList: number[] = [];
         let addHosts: Host[] = [];
         for (let i in this.hosts) {
@@ -49,12 +48,17 @@ export class AddHostDialog {
                 addHosts.push(h);
             }
         }
-        this.svc.addHostsToVersion(this.version.id, idList).subscribe(error => {
-            if (!error) {
-                addHosts.forEach(h => this.version.targetHosts.push(h));
-                this.modal.close('ok');
-                this.alert.info("新增主机成功");
-            }
-        })
+        if (this.app.id) {
+            this.svc.addHostsToVersion(this.version.id, idList).subscribe(error => {
+                if (!error) {
+                    addHosts.forEach(h => this.version.targetHosts.push(h));
+                    this.modal.close('ok');
+                    this.alert.info("新增主机成功");
+                }
+            })
+        } else { //未保存的新建应用
+            addHosts.forEach(h => this.version.targetHosts.push(h));
+            this.modal.close('ok');
+        }
     }
 }

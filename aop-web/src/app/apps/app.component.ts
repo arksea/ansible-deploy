@@ -38,32 +38,4 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit() {}
-
-    onNewVersionBtnClick() {
-        let ref = this.modal.open(NewVersionDialog);
-        ref.componentInstance.app = this.app;
-    }
-
-    onEditBtnClick() {
-
-    }
-
-    onDelBtnClick() {
-
-    }
-
-    onAddHostBtnClick(version: Version) {
-        if (this.app.appGroupId) {
-            this.hostSvc.getHostsInGroup(this.app.appGroupId).subscribe(
-                ret => {
-                    if (ret.code == 0) {
-                        let ref = this.modal.open(AddHostDialog);
-                        ref.componentInstance.setParams(this.app, version, ret.result);
-                    }
-                }
-            )
-        } else {
-            this.alert.warning("应用还未加入分组，不能配置部署主机");
-        }
-    }
 }

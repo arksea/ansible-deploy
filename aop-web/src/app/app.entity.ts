@@ -19,12 +19,12 @@ export class Port {
 }
 
 export class Version {
-  id: number;
-  appId: number;
-  name: string
-  repository: string
-  javaOpt: string;
-  revision: string;
+  id: number = undefined;
+  appId: number = undefined;
+  name: string = '';
+  repository: string = '';
+  javaOpt: string = '';
+  revision: string = 'HEAD';
   targetHosts: Array<Host> = [];
 }
 

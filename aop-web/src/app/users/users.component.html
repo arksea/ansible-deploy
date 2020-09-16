@@ -17,17 +17,12 @@
                             </div>
                         </form>
                     </div>
-                    <div class="pr-4">
-                        <ul class="nav nav-pills">
-                            <li class="nav-item">
-                                <a class="nav-link" routerLinkActive="active" [routerLink]="['/users/active']">活跃的账号</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" routerLinkActive="active"
-                                    [routerLink]="['/users/blocked']">禁用的账号</a>
-                            </li>
-                        </ul>
+
+                    <div class="btn-group pr-4" role="group">
+                        <button type="button" class="btn btn-light" routerLinkActive="active" [routerLink]="['/users/active']">活跃的账号</button>
+                        <button type="button" class="btn btn-light" routerLinkActive="active" [routerLink]="['/users/blocked']">禁用的账号</button>
                     </div>
+
                     <div class="pr-2 dropdown">
                         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

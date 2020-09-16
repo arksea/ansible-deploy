@@ -1,8 +1,10 @@
 package net.arksea.ansible.deploy.api.manage.rest;
 
 import net.arksea.ansible.deploy.api.ResultCode;
+import net.arksea.ansible.deploy.api.manage.entity.Version;
 import net.arksea.ansible.deploy.api.manage.service.VersionService;
 import net.arksea.restapi.RestUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,5 +47,14 @@ public class VersionController {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         versionService.deleteById(verId);
         return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+    }
+
+    @RequiresPermissions("应用:修改")
+    @RequestMapping(path="versions", method = RequestMethod.POST, produces = MEDIA_TYPE)
+    public String createVersion(@RequestBody final Version version,
+                                final HttpServletRequest httpRequest) {
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        Version created = versionService.saveVersion(version);
+        return RestUtils.createResult(ResultCode.SUCCEED, created.getId(), reqid);
     }
 }

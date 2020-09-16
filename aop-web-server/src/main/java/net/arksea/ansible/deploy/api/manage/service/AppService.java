@@ -43,6 +43,10 @@ public class AppService {
                 v.setAppId(id);
                 groupVarDao.save(v);
             }
+            for (final Version v : app.getVersions()) {
+                v.setAppId(id);
+                versionDao.save(v);
+            }
             return saved;
         } catch (Exception ex) {
             throw new RestException("保存应用失败", ex);
@@ -68,9 +72,7 @@ public class AppService {
 
     @Transactional
     public Version createVersion(long appId, Version version) {
-        App app = new App();
-        app.setId(appId);
-        version.setApp(app);
+        version.setAppId(appId);
         Version saved = versionDao.save(version);
         return saved;
     }

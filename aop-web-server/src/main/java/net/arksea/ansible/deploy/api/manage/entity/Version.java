@@ -1,6 +1,5 @@
 package net.arksea.ansible.deploy.api.manage.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
@@ -19,7 +18,7 @@ public class Version extends IdEntity {
 
     private Set<Host> targetHosts;
 
-    private App app;
+    private long appId;
 
     @NotBlank
     @Column(name = "repo_path", length = 1024, nullable = false)
@@ -50,15 +49,13 @@ public class Version extends IdEntity {
         this.revision = revision;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "app_id", nullable = false)
-    @JsonIgnore
-    public App getApp() {
-        return app;
+    @Column(nullable = false)
+    public long getAppId() {
+        return appId;
     }
 
-    public void setApp(final App app) {
-        this.app = app;
+    public void setAppId(final long appId) {
+        this.appId = appId;
     }
 
     @ManyToMany(fetch = FetchType.EAGER)

@@ -21,10 +21,12 @@ public class VersionController {
     @Autowired
     VersionService versionService;
 
-
-    @RequestMapping(path="versions/{verId}/hosts/{hostId}", method = RequestMethod.POST, produces = MEDIA_TYPE)
-    public String addHost(final HttpServletRequest httpRequest) {
+    @RequestMapping(path="versions/{verId}/hosts/{hostId}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
+    public String deleteHost(@PathVariable("verId") final long verId,
+                             @PathVariable("hostId") final long hostId,
+                             final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        versionService.removeHostFromVersion(verId, hostId);
         return RestUtils.createResult(ResultCode.SUCCEED, reqid);
     }
 

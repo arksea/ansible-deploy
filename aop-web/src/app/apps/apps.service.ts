@@ -172,6 +172,11 @@ export class AppsService {
         );
     }
 
+    public removeHostFromVersion(versionId: number, hostId: number): Observable<boolean> {
+        const url = environment.apiUrl + '/api/versions/' + versionId + '/hosts/' + hostId;
+        return this.httpUtils.httpDelete('版本新增部署主机', url).pipe(map(r =>  r.code === 0));
+    }
+
     public getAppByApptag(apptag: string): Observable<App> {
         return this.appList.pipe(first(),map(list => {
             for (let a of list) {

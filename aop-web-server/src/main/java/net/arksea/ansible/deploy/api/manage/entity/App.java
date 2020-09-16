@@ -111,7 +111,7 @@ public class App extends IdEntity {
         this.enableJmx = enableJmx;
     }
 
-    @OneToMany(mappedBy = "app", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "appId", fetch = FetchType.EAGER)
     @OrderBy("id")
     public Set<Version> getVersions() {
         return versions;

@@ -26,4 +26,9 @@ public class VersionService {
     public void deleteById(long versiongId) {
         versionDao.delete(versiongId);
     }
+
+    @Transactional
+    public void removeHostFromVersion(long versionId, long hostId) {
+        versionDao.removeHost(versionId, hostId);
+    }
 }

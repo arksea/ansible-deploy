@@ -29,7 +29,7 @@ export class AppComponent implements OnInit {
         let appId = Number(this.route.snapshot.paramMap.get('id'));
         this.svc.getAppById(appId).subscribe(a => {
             if (a == null) {
-                this.alert.warning("没有查询到应用("+appId+")，已跳转到应用列表");
+                this.alert.warning("应用不存在或无权限(id="+appId+")");
                 this.router.navigate(["/apps"]);
             } else {
                 this.app = a;

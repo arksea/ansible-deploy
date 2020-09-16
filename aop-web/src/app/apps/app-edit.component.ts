@@ -4,7 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 import { AppsService } from './apps.service';
 import { MessageNotify } from '../utils/message-notify';
-import { App,AppGroup } from '../app.entity';
+import { App,AppGroup, Host } from '../app.entity';
 import { AccountService } from '../account/account.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NewVersionDialog } from './new-version.dialog';
@@ -46,7 +46,7 @@ export class AppEditComponent implements OnInit {
             let appId = Number(str);
             this.svc.getAppById(appId).subscribe(a => {
                 if (a == null) {
-                    this.alert.warning("没有查询到应用("+appId+")，已跳转到应用列表");
+                    this.alert.warning("应用不存在或无权限(id="+appId+")");
                     this.router.navigate(["/apps"]);
                 } else {
                     this.app = a;
@@ -149,6 +149,22 @@ export class AppEditComponent implements OnInit {
                 if (success) {
                     this.app.versions = this.app.versions.filter((v,i,a) => v.id != version.id)
                     this.alert.success("已删除");
+                }
+            });
+          }
+        }, resaon => {})
+    }
+
+    onDeleteHostBtnClick(host: Host, version: Version) {
+        let ref = this.modal.open(ConfirmDialog);
+        ref.componentInstance.title = "从版本中移除主机: "+host.privateIp;
+        ref.componentInstance.message = "确认要移除吗?"
+        ref.result.then(result => {
+          if (result == "ok") {
+            this.svc.removeHostFromVersion(version.id, host.id).subscribe(success => {
+                if (success) {
+                    version.targetHosts = version.targetHosts.filter((h,i,a) => h.id != host.id)
+                    this.alert.success("已移除");
                 }
             });
           }

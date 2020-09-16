@@ -20,6 +20,7 @@ export class Port {
 
 export class Version {
   id: number;
+  appId: number;
   name: string
   repository: string
   javaOpt: string;

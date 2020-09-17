@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
  * Created by xiaohaixing on 2020/04/29.
  */
 @RestController
-@RequestMapping(value = "/api")
+@RequestMapping(value = "/api/hosts")
 public class HostsController {
     private static final String MEDIA_TYPE = "application/json; charset=UTF-8";
 
@@ -24,7 +24,7 @@ public class HostsController {
     HostsService hostsService;
 
     @RequiresPermissions("组管理:修改")
-    @RequestMapping(path="hosts", method = RequestMethod.POST, produces = MEDIA_TYPE)
+    @RequestMapping(method = RequestMethod.POST, produces = MEDIA_TYPE)
     public String saveHost(@RequestBody final Host host,
                               final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
@@ -33,7 +33,7 @@ public class HostsController {
     }
 
     @RequiresPermissions("组管理:查询")
-    @RequestMapping(path="hosts", method = RequestMethod.GET, produces = MEDIA_TYPE)
+    @RequestMapping(method = RequestMethod.GET, produces = MEDIA_TYPE)
     public RestResult<Iterable<Host>> getHosts(
             @RequestParam(value="groupId",required = false) final Long groupId,
             final HttpServletRequest httpRequest) {
@@ -43,7 +43,7 @@ public class HostsController {
     }
 
     @RequiresPermissions("组管理:查询")
-    @RequestMapping(path="hosts/notInGroup", method = RequestMethod.GET, produces = MEDIA_TYPE)
+    @RequestMapping(path="notInGroup", method = RequestMethod.GET, produces = MEDIA_TYPE)
     public RestResult<Iterable<Host>> getHostsNotInGroup(final HttpServletRequest httpRequest) {
         Iterable<Host> hosts = hostsService.getNotInGroup();
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
@@ -51,7 +51,7 @@ public class HostsController {
     }
 
     @RequiresPermissions("组管理:修改")
-    @RequestMapping(path="hosts/{hostId}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
+    @RequestMapping(path="{hostId}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
     public String deleteHost(@PathVariable(name="hostId") long hostId,
                               final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");

@@ -28,8 +28,6 @@ public class AppsController {
     @Autowired
     VersionService versionService;
 
-    @Autowired
-
     private static final String MEDIA_TYPE = "application/json; charset=UTF-8";
 
     @RequiresPermissions("应用:修改")

@@ -5,10 +5,8 @@ import { ServiceResponse } from '../utils/http-utils';
 import { HttpUtils } from '../utils/http-utils';
 import { environment } from '../../environments/environment';
 import { map, first } from 'rxjs/operators';
-import { CrudModel, IModelInfo, IModelMapOperation, ModelMap, ModelData } from '../utils/crud-model';
+import { CrudModel, IModelInfo } from '../utils/crud-model';
 import { Version } from '../app.entity';
-
-// type ChildPermMap = Map<string, Set<string>>;
 
 class AppsModelInfo implements IModelInfo<number, App> {
     private sortType: string;
@@ -118,8 +116,8 @@ export class AppsService {
         app.deployPath = '';
         app.description = '';
         app.enableJmx = true;
-        app.vars = [{id:null,description: '域名', value: 'localhost', name:'domain', inputAddon: '', isPort: false, inputType: 'text'},
-                    {id:null,description: 'ContextPath, URL路径', value: '', name:'context_path', inputAddon: 'http://domain/', isPort: false, inputType: 'text'}]
+        app.vars = [{id:null,value: 'localhost', name:'domain', isPort: false},
+                    {id:null,value: '', name:'context_path', isPort: false}]
         let ver = new Version();
         ver.name = 'Online';
         ver.repository = 'trunk';

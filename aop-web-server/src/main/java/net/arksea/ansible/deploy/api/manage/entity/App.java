@@ -1,6 +1,5 @@
 package net.arksea.ansible.deploy.api.manage.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.NotBlank;
@@ -8,7 +7,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
-import java.util.Set;
+import java.util.List;
 
 /**
  *
@@ -22,10 +21,10 @@ public class App extends IdEntity {
     private String deployPath; //应用部署目标路径
     private String description;  //应用描述
     private Long appGroupId;
-    private Set<GroupVar> vars;// 变量
-    private Set<Port> ports;
+    private List<GroupVar> vars;// 变量
+    private List<Port> ports;
     private boolean enableJmx;
-    private Set<Version> versions;
+    private List<Version> versions;
     private Timestamp createTime; //创建时间
     private boolean deleted; //是否标记为删除状态，系统将定时删除标记为删除状态的记录
 
@@ -49,7 +48,7 @@ public class App extends IdEntity {
         this.apptype = apptype;
     }
 
-    @Column(nullable = false, columnDefinition = "varchar(128) DEFAULT ''")
+    @Column(nullable = false, length = 128)
     public String getDeployPath() {
         return deployPath;
     }
@@ -59,7 +58,7 @@ public class App extends IdEntity {
     }
 
     @NotNull
-    @Column(length = 255, nullable = false)
+    @Column(length = 128, nullable = false)
     public String getDescription() {
         return description;
     }
@@ -79,21 +78,21 @@ public class App extends IdEntity {
 
     @OneToMany(mappedBy = "appId", fetch = FetchType.EAGER, orphanRemoval = true)
     @OnDelete(action = OnDeleteAction.CASCADE) //在数据库层面进行级联删除操作（生成库表时定义的外键会加 ON DELETE CASCADE修饰词）
-    public Set<GroupVar> getVars() {
+    public List<GroupVar> getVars() {
         return vars;
     }
 
-    public void setVars(final Set<GroupVar> vars) {
+    public void setVars(final List<GroupVar> vars) {
         this.vars = vars;
     }
 
-    @OneToMany(mappedBy = "app", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "appId", fetch = FetchType.EAGER)
     @OrderBy("value")
-    public Set<Port> getPorts() {
+    public List<Port> getPorts() {
         return ports;
     }
 
-    public void setPorts(final Set<Port> ports) {
+    public void setPorts(final List<Port> ports) {
         this.ports = ports;
     }
 
@@ -102,7 +101,7 @@ public class App extends IdEntity {
         return apptag;
     }
 
-    @Column(nullable = false, columnDefinition = "TINYINT NOT NULL DEFAULT 1")
+    @Column(nullable = false, columnDefinition = "TINYINT(1) NOT NULL DEFAULT 1")
     public boolean isEnableJmx() {
         return enableJmx;
     }
@@ -113,11 +112,11 @@ public class App extends IdEntity {
 
     @OneToMany(mappedBy = "appId", fetch = FetchType.EAGER)
     @OrderBy("id")
-    public Set<Version> getVersions() {
+    public List<Version> getVersions() {
         return versions;
     }
 
-    public void setVersions(final Set<Version> versions) {
+    public void setVersions(final List<Version> versions) {
         this.versions = versions;
     }
 
@@ -130,7 +129,7 @@ public class App extends IdEntity {
         this.createTime = createTime;
     }
 
-    @Column(nullable = false, columnDefinition = "TINYINT NOT NULL DEFAULT 1")
+    @Column(nullable = false, columnDefinition = "TINYINT(1) NOT NULL DEFAULT 0")
     public boolean isDeleted() {
         return deleted;
     }

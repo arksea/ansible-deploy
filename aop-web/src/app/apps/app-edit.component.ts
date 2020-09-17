@@ -4,7 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 import { AppsService } from './apps.service';
 import { MessageNotify } from '../utils/message-notify';
-import { App,AppGroup, Host } from '../app.entity';
+import { App,AppGroup, Host, GroupVar } from '../app.entity';
 import { AccountService } from '../account/account.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NewVersionDialog } from './new-version.dialog';
@@ -178,6 +178,35 @@ export class AppEditComponent implements OnInit {
                     });
                 }
             }, resaon => {})
+        }
+    }
+
+    getVarDesc(variable: GroupVar): string {
+        switch(variable.name) {
+            case 'domain':
+                return 'Tomcat 域名';
+            case 'context_path':
+                return 'Tomcat ContextPath (URL路径)';
+            default:
+                return '';
+        }
+    }
+
+    getInputAddon(variable: GroupVar): string {
+        switch(variable.name) {
+            case 'domain':
+                return '';
+            case 'context_path':
+                return 'http://domain:port/';
+            default:
+                return '';
+        }
+    }
+
+    getInputType(variable: GroupVar): string {
+        switch(variable.name) {
+            default:
+                return 'text';
         }
     }
 

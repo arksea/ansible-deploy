@@ -4,18 +4,16 @@ export class GroupVar {
   id: number;
   name: string; // 变量名
   value: string;// 变量值
-  description: string; // 参数描述
-  inputAddon: string;// 输入显示的前缀
   isPort: boolean;// 是否端口值，用于主机范围的唯一性判断
-  inputType: string;
 }
 
 export class Port {
   id: number;
-  type: number;
-  name: string;
+  sectionId: number;
+  typeId: number;
   value: number;
-  enable: number;
+  enabled: number;
+  appId: number;
 }
 
 export class Version {
@@ -66,4 +64,18 @@ export class AppGroup {
       this.hosts = [];
       this.users = [];
   }
+}
+
+export class PortSection {
+  id: number;
+  typeId: number;
+  minValue: number;
+  maxValue: number;
+}
+
+export class PortType {
+  id: number;
+  name: string;
+  description: string = '';
+  sections: PortSection[] = [];
 }

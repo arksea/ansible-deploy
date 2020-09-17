@@ -1,43 +1,36 @@
 package net.arksea.ansible.deploy.api.manage.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 
 @Entity
 @Table(name = "dp2_port")
 public class Port extends IdEntity {
 
-    /** type */
-    private int type;
-    /** name */
-    private String name;
-    /** value */
+    private long sectionId;
+    private int typeId;
     private int value;
-    /** enable */
-    private int enable;
-    /** app */
-    private App app;
+    private boolean enabled;
+    private long appId;
 
-    @Column(name = "type", nullable = false)
-    public int getType() {
-        return type;
+    @Column(nullable = false)
+    public long getSectionId() {
+        return sectionId;
     }
 
-    public void setType(final int type) {
-        this.type = type;
+    public void setSectionId(final long sectionId) {
+        this.sectionId = sectionId;
     }
 
-    @Column(name = "name", length = 50, nullable = false)
-    public String getName() {
-        return name;
+    @Column(nullable = false, columnDefinition = "TINYINT UNSIGNED")
+    public int getTypeId() {
+        return typeId;
     }
 
-    public void setName(final String name) {
-        this.name = name;
+    public void setTypeId(int typeId) {
+        this.typeId = typeId;
     }
 
-    @Column(name = "value", nullable = false)
+    @Column(nullable = false, unique = true, columnDefinition = "INT UNSIGNED")
     public int getValue() {
         return value;
     }
@@ -46,24 +39,22 @@ public class Port extends IdEntity {
         this.value = value;
     }
 
-    @Column(name = "enable", nullable = false)
-    public int getEnable() {
-        return enable;
+    @Column(nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
+    public boolean getEnabled() {
+        return enabled;
     }
 
-    public void setEnable(final int enable) {
-        this.enable = enable;
+    public void setEnabled(final boolean enabled) {
+        this.enabled = enabled;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "app_id", nullable = false)
-    @JsonIgnore
-    public App getApp() {
-        return app;
+    @Column
+    public long getAppId() {
+        return appId;
     }
 
-    public void setApp(final App app) {
-        this.app = app;
+    public void setAppId(final long appId) {
+        this.appId = appId;
     }
 
 }

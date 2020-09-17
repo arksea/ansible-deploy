@@ -23,6 +23,8 @@ import { UsersModule } from './users/users.module';
 import { AppsModule } from './apps/apps.module';
 //主机管理
 import { HostsModule } from './hosts/hosts.module';
+//端口管理
+import { PortsModule } from './ports/ports.module';
 /////////////////////////////////////////////////////////////////////////////////////
 
 @NgModule({
@@ -40,6 +42,7 @@ import { HostsModule } from './hosts/hosts.module';
     UsersModule,
     AppsModule,
     HostsModule,
+    PortsModule,
     //路由
     AppRoutingModule, //主路由必须在最后，以避免屏蔽各子模块自己的路由
   ],

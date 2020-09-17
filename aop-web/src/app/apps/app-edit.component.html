@@ -62,14 +62,14 @@
                 </select>
             </div>
             <div *ngFor="let v of app.vars" class="col-lg-6 col-md-6 form-group mb-4">
-                <label for="var_{{v.name}}">{{v.description}}
+                <label for="var_{{v.name}}">{{getVarDesc(v)}}
                     <span class="text-danger" *ngIf="appForm.get('var_'+v.name)?.invalid">(长度0至128)</span>
                 </label>
                 <div class="input-group">
-                    <div class="input-group-prepend" *ngIf="v.inputAddon.length > 0">
-                        <span class="input-group-text">{{v.inputAddon}}</span>
+                    <div class="input-group-prepend" *ngIf="getInputAddon(v).length > 0">
+                        <span class="input-group-text">{{getInputAddon(v)}}</span>
                     </div>
-                    <input [type]="v.inputType" id="var_{{v.name}}" formControlName="var_{{v.name}}"
+                    <input [type]="getInputType(v)" id="var_{{v.name}}" formControlName="var_{{v.name}}"
                         class="form-control" [placeholder]="v.isPort?'保存时自动分配':''">
                 </div>
             </div>

@@ -9,7 +9,6 @@ export class GroupVar {
 
 export class Port {
   id: number;
-  sectionId: number;
   typeId: number;
   value: number;
   enabled: number;
@@ -67,15 +66,15 @@ export class AppGroup {
 }
 
 export class PortSection {
-  id: number;
-  typeId: number;
+  id: number = undefined;
+  type: PortType;
   minValue: number;
   maxValue: number;
+
 }
 
 export class PortType {
   id: number;
   name: string;
   description: string = '';
-  sections: PortSection[] = [];
 }

@@ -6,20 +6,10 @@ import javax.persistence.*;
 @Table(name = "dp2_port")
 public class Port extends IdEntity {
 
-    private long sectionId;
     private int typeId;
     private int value;
     private boolean enabled;
-    private long appId;
-
-    @Column(nullable = false)
-    public long getSectionId() {
-        return sectionId;
-    }
-
-    public void setSectionId(final long sectionId) {
-        this.sectionId = sectionId;
-    }
+    private Long appId;
 
     @Column(nullable = false, columnDefinition = "TINYINT UNSIGNED")
     public int getTypeId() {
@@ -49,11 +39,11 @@ public class Port extends IdEntity {
     }
 
     @Column
-    public long getAppId() {
+    public Long getAppId() {
         return appId;
     }
 
-    public void setAppId(final long appId) {
+    public void setAppId(final Long appId) {
         this.appId = appId;
     }
 

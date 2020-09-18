@@ -4,4 +4,28 @@
     <div class="mb-5">
         <h1>端口管理</h1>
     </div>
+
+    <div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <div class="d-flex">
+                    <div class="mr-auto mt-2">
+                        <span class="badge badge-secondary mr-2 p-2">HTTP 20 / 80</span>
+                        <span class="badge badge-secondary mr-2 p-2">通用 10 / 90</span>
+                    </div>
+                    <button type="button" class="btn btn-success" (click)="newSection()"
+                        [disabled]="account.perm('端口管理:修改') | async">分配区间
+                    </button>
+                </div>
+            </li>
+            <li *ngFor="let s of svc.sectionList | async;index as i;" class="list-group-item">
+                <div class="d-flex mt-2">
+                    <div class="mr-auto">
+                        <strong>{{s.type.name}} : </strong> <span>{{s.minValue}} ~ {{s.maxValue}}</span>
+                        <p>{{s.type.description}}</p>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
 </div>

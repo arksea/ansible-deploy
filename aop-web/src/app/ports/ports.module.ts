@@ -9,7 +9,8 @@ import { RouterModule } from '@angular/router';
 import { AccountModule } from '../account/account.module';
 import { PortsRoutingModule } from './ports-routing.module';
 import { PortsComponent } from './ports.component';
-
+import { PortsService } from './ports.service';
+import { EditSectionDialog } from './edit-section.dialog';
 
 @NgModule({
   imports: [
@@ -19,11 +20,12 @@ import { PortsComponent } from './ports.component';
     VenderModule, NgbPaginationModule, NgbAlertModule, NgbModule,
     AccountModule,PortsRoutingModule],
   declarations: [
-    PortsComponent
+    PortsComponent, EditSectionDialog
   ],
   entryComponents: [
+    EditSectionDialog
   ],
-  providers: [],
+  providers: [PortsService],
   exports: []
 })
 export class PortsModule { }

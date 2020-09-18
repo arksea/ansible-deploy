@@ -1,7 +1,6 @@
 package net.arksea.ansible.deploy.api.manage.entity;
 
 import javax.persistence.*;
-import java.util.List;
 
 /**
  * Create by xiaohaixing on 2020/9/17
@@ -12,7 +11,6 @@ public class PortType {
     private int id;
     private String name;
     private String description;
-    private List<PortSection> sections;
 
     @Id
     @Column(nullable = false, columnDefinition = "TINYINT UNSIGNED")
@@ -42,13 +40,4 @@ public class PortType {
         this.description = description;
     }
 
-    @OneToMany(mappedBy = "typeId", fetch = FetchType.EAGER)
-    @OrderBy("minValue")
-    public List<PortSection> getSections() {
-        return sections;
-    }
-
-    public void setSections(List<PortSection> sections) {
-        this.sections = sections;
-    }
 }

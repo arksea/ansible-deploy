@@ -8,17 +8,18 @@ import javax.persistence.*;
 @Entity
 @Table(name = "dp2_port_section")
 public class PortSection extends IdEntity {
-    private int typeId;
+    private PortType type;
     private int minValue; //min =< port.value =< max
     private int maxValue;
 
-    @Column(nullable = false, columnDefinition = "TINYINT UNSIGNED")
-    public int getTypeId() {
-        return typeId;
+    @ManyToOne
+    @JoinColumn(name="type_id",nullable = false)
+    public PortType getType() {
+        return type;
     }
 
-    public void setTypeId(int typeId) {
-        this.typeId = typeId;
+    public void setType(PortType type) {
+        this.type = type;
     }
 
     @Column(nullable = false, columnDefinition = "INT UNSIGNED")

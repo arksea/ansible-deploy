@@ -11,6 +11,7 @@ public class PortType {
     private int id;
     private String name;
     private String description;
+    private PortsStat stat;
 
     @Id
     @Column(nullable = false, columnDefinition = "TINYINT UNSIGNED")
@@ -40,4 +41,13 @@ public class PortType {
         this.description = description;
     }
 
+    @OneToOne
+    @PrimaryKeyJoinColumn
+    public PortsStat getStat() {
+        return stat;
+    }
+
+    public void setStat(PortsStat stat) {
+        this.stat = stat;
+    }
 }

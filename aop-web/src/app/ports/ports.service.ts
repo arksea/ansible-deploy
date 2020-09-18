@@ -37,12 +37,16 @@ export class PortsService {
             this.queryPortTypes();
     }
 
+    private update() {
+        this.querySections();
+        this.queryPortTypes();
+    }
     public savePortSection(section: PortSection): Observable<boolean> {
         const url = environment.apiUrl + '/api/ports/sections';
         return this.httpUtils.httpPut('保存端口区间', url, section).pipe(
             map(response => {
                     if (response.code === 0) {
-                        this.querySections();
+                        this.update();
                         return true;
                     } else {
                         return false;
@@ -67,7 +71,7 @@ export class PortsService {
         let ret: Observable<ServiceResponse<boolean>> = this.httpUtils.httpDelete('删除端口区间', url);
         return ret.pipe(map(data => {
             if (data.code == 0) {
-                this.model.opDelModel.next(section.id);
+                this.update();
                 return true;
             } else {
                 return false;

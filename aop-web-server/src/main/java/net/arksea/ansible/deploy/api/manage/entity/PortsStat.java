@@ -13,7 +13,6 @@ public class PortsStat {
     private int restCount;
 
     @Id
-    @JoinColumn(table="dp2_port_type", name="type_id", nullable = false)
     public int getTypeId() {
         return typeId;
     }

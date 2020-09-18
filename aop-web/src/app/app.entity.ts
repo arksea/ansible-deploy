@@ -73,8 +73,15 @@ export class PortSection {
 
 }
 
+export class PortsStat {
+  typeId: number;
+  allCount: number;
+  restCount: number;
+}
+
 export class PortType {
   id: number;
   name: string;
   description: string = '';
+  stat: PortsStat;
 }

@@ -1,7 +1,7 @@
 <app-navbar></app-navbar>
 
 <div class="container-xl mt-3">
-    <div class="mb-5">
+    <div class="ml-3 mb-5">
         <h1>端口管理</h1>
     </div>
 
@@ -10,9 +10,10 @@
             <li class="list-group-item">
                 <div class="d-flex">
                     <div class="mr-auto mt-2">
-                        <span class="badge badge-secondary mr-2 p-2">HTTP 20</span>
-                        <span class="badge badge-secondary mr-2 p-2">通用 10</span>
-                        <span class="badge badge-secondary mr-2 p-2">应用 30</span>
+                        <span *ngFor="let t of svc.portTypes" class="badge badge-secondary mr-2 p-2"
+                              title="总数：{{t.stat?t.stat.allCount:0}} 个，剩余：{{t.stat?t.stat.restCount:0}} 个">
+                            {{t.name}} {{t.stat?t.stat.restCount:0}}
+                        </span>
                     </div>
                     <button type="button" class="btn btn-success" (click)="newSection()"
                         [disabled]="account.perm('端口管理:修改') | async">分配区间

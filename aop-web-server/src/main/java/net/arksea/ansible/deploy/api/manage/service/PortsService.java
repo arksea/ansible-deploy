@@ -34,11 +34,12 @@ public class PortsService {
     @Transactional
     public PortSection addPortSection(PortSection s) {
         if (s.getId() != null) {
-            throw new RuntimeException("端口区间分配后不能修改");
+            throw new RuntimeException("修改端口区间有专用的方法，不能调用添加方法");
         }
         if (portDao.countByRange(s.getMinValue(), s.getMaxValue()) > 0) {
-            throw new RuntimeException("此端口区间包含部分已分配端口");
+            throw new RuntimeException("要分配的区间与现有区间重叠");
         }
+        //添加端口
         for (int i=s.getMinValue(); i<=s.getMaxValue(); ++i) {
             Port p = new Port();
             p.setEnabled(true);
@@ -46,6 +47,7 @@ public class PortsService {
             p.setValue(i);
             portDao.save(p);
         }
+        //修改统计
         int typeId = s.getType().getId();
         PortsStat stat = portsStatDao.findByTypeId(typeId);
         if (stat == null) {
@@ -58,29 +60,139 @@ public class PortsService {
         stat.setAllCount(stat.getAllCount() + count);
         stat.setRestCount(stat.getRestCount() + count);
         portsStatDao.save(stat);
-
+        //判断是否合并连续区间
         List<PortSection> sections = portSectionDao.findByTypeId(typeId);
         PortSection left = null;
         PortSection right = null;
-        for (PortSection old : sections) { //合并连续的区间
+        for (PortSection old : sections) {
             if (old.getMinValue() == s.getMaxValue()+1) {
                 right = old;
             } else if (old.getMaxValue() == s.getMinValue()-1) {
                 left = old;
             }
         }
-        if (right == null && left == null) {
+        if (right == null && left == null) { //左右皆无连接
             return portSectionDao.save(s);
-        } else if (left == null) {
+        } else if (left == null) { //与右边连接
             right.setMinValue(s.getMinValue());
             return portSectionDao.save(right);
-        } else if (right == null) {
+        } else if (right == null) {//与左边连接
             left.setMaxValue(s.getMaxValue());
             return portSectionDao.save(left);
-        } else {
+        } else { //连接左右区间
             left.setMaxValue(right.getMaxValue());
             portSectionDao.delete(right.getId());
             return portSectionDao.save(left);
+        }
+    }
+
+    @Transactional
+    public PortSection modifyPortSection(PortSection s) {
+        if (s.getId() == null) {
+            throw new RuntimeException("添加端口区间有专用的方法，不能调用修改方法");
+        }
+        PortSection old = portSectionDao.findOne(s.getId());
+        boolean leftExp = false; //是否向左扩展
+        boolean rifthExp = false; //是否向左扩展
+        //判断是否冲突
+        if (s.getMinValue() < old.getMinValue()) { //向左扩展
+            int l = s.getMinValue();
+            int r = old.getMinValue() - 1;
+            leftExp = true;
+            if (portDao.countByRange(l, r) > 0) {
+                throw new RuntimeException("要扩展的区间与其他区间重叠");
+            }
+        } else if (s.getMinValue() > old.getMinValue()) {//左边收缩
+            int l = old.getMinValue();
+            int r = s.getMinValue()-1;
+            long count = portDao.countHasUsedByRange(l,r);
+            if (count > 0) {
+                throw new RuntimeException("要收缩的区间包含已使用端口");
+            }
+        }
+        if (s.getMaxValue() > old.getMaxValue()) {//向右扩展
+            int l = old.getMaxValue() + 1;
+            int r = s.getMaxValue();
+            rifthExp = true;
+            if (portDao.countByRange(l, r) > 0) {
+                throw new RuntimeException("要扩展的区间与其他区间重叠");
+            }
+        } else if (s.getMaxValue() < old.getMaxValue()) {//右边收缩
+            int l = s.getMaxValue() + 1;
+            int r = old.getMaxValue();
+            long count = portDao.countHasUsedByRange(l,r);
+            if (count > 0) {
+                throw new RuntimeException("要收缩的区间包含已使用端口");
+            }
+        }
+        //添加端口
+        if (s.getMinValue() < old.getMinValue()) { //向左扩展
+            int l = s.getMinValue();
+            int r = old.getMinValue()-1;
+            for (int i=l;i<=r;++i) {
+                Port p = new Port();
+                p.setEnabled(true);
+                p.setTypeId(s.getType().getId());
+                p.setValue(i);
+                portDao.save(p);
+            }
+        } else if (s.getMinValue() > old.getMinValue()) {//左边收缩
+            int l = old.getMinValue();
+            int r = s.getMinValue()-1;
+            portDao.deleteByRange(l,r);
+        }
+        if (s.getMaxValue() > old.getMaxValue()) {//向右扩展
+            int l = old.getMaxValue()+1;
+            int r = s.getMaxValue();
+            for (int i=l;i<=r;++i) {
+                Port p = new Port();
+                p.setEnabled(true);
+                p.setTypeId(s.getType().getId());
+                p.setValue(i);
+                portDao.save(p);
+            }
+        } else if (s.getMaxValue() < old.getMaxValue()) {//右边收缩
+            int l = s.getMaxValue()+1;
+            int r = old.getMaxValue();
+            portDao.deleteByRange(l,r);
+        }
+        //修改统计
+        int typeId = s.getType().getId();
+        PortsStat stat = portsStatDao.findByTypeId(typeId);
+        int count = s.getMaxValue() - s.getMinValue() - (old.getMaxValue() - old.getMinValue());
+        stat.setAllCount(stat.getAllCount() + count);
+        stat.setRestCount(stat.getRestCount() + count);
+        portsStatDao.save(stat);
+        //判断是否合并连续区间
+        List<PortSection> sections = portSectionDao.findByTypeId(typeId);
+        PortSection left = null;
+        PortSection right = null;
+        for (PortSection o : sections) {
+            if (o.getId().equals(s.getId())) {//不和自己比较
+                continue;
+            }
+            if (o.getMinValue() == s.getMaxValue()+1) {
+                right = o;
+            } else if (o.getMaxValue() == s.getMinValue()-1) {
+                left = o;
+            }
+        }
+        if (right == null && left == null) { //左右皆无连接
+            return portSectionDao.save(s);
+        } else if (left == null) { //与右边连接
+            s.setMaxValue(right.getMaxValue());
+            portSectionDao.delete(right.getId());
+            return portSectionDao.save(s);
+        } else if (right == null) {//与左边连接
+            s.setMinValue(left.getMinValue());
+            portSectionDao.delete(left.getId());
+            return portSectionDao.save(s);
+        } else { //连接左右区间
+            s.setMinValue(left.getMinValue());
+            s.setMaxValue(right.getMaxValue());
+            portSectionDao.delete(left.getId());
+            portSectionDao.delete(right.getId());
+            return portSectionDao.save(s);
         }
     }
 

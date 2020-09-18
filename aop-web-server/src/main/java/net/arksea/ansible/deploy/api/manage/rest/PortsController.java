@@ -27,7 +27,12 @@ public class PortsController {
     public RestResult<PortSection> savePortSection(@RequestBody final PortSection portSection,
                                   final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        PortSection saved = portsService.addPortSection(portSection);
+        PortSection saved;
+        if (portSection.getId() == null) {
+            saved = portsService.addPortSection(portSection);
+        } else {
+            saved = portsService.modifyPortSection(portSection);
+        }
         return new RestResult<>(ResultCode.SUCCEED, saved, reqid);
     }
 

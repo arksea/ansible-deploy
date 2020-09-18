@@ -42,7 +42,7 @@ export class PortsService {
         return this.httpUtils.httpPut('保存端口区间', url, section).pipe(
             map(response => {
                     if (response.code === 0) {
-                        this.model.opSetModel.next(response.result);
+                        this.querySections();
                         return true;
                     } else {
                         return false;

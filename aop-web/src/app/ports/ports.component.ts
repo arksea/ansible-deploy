@@ -41,7 +41,8 @@ export class PortsComponent implements OnInit {
     }
 
     editSection(section: PortSection) {
-
+        let ref = this.modal.open(EditSectionDialog);
+        ref.componentInstance.setSection(section);
     }
 
     deleteSection(section: PortSection) {
@@ -57,7 +58,5 @@ export class PortsComponent implements OnInit {
                 });
             }
         }, resaon => { })
-
-
     }
 }

@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { FormGroup,FormControl,Validators } from '@angular/forms';
+import { FormGroup,FormControl,Validators,ValidatorFn,AbstractControl,ValidationErrors } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { PortsService } from './ports.service';
 import { MessageNotify } from '../utils/message-notify';
-import { PortSection, PortType } from '../app.entity';
+import { PortSection } from '../app.entity';
 
 
 @Component({
@@ -20,7 +20,7 @@ export class EditSectionDialog {
             min: new FormControl(8000,[Validators.required,Validators.max(65535),Validators.min(1000)]),
             max: new FormControl(8100,[Validators.required,Validators.max(65535),Validators.min(1000)]),
             type: new FormControl({value:1, disabled:this.isEditAction}, [Validators.required])
-        });
+        }, { validators: this.portRangeValidator });
     }
 
     public setSection(section: PortSection) {
@@ -29,15 +29,24 @@ export class EditSectionDialog {
         this.title = this.isEditAction ? '修改端口区间' : '分配端口区间';
         this.min.setValue(section.minValue);
         this.max.setValue(section.maxValue);
-        this.type.setValue(section.type.id);
+        this.form.setControl('type', new FormControl({value:section.type.id, disabled:this.isEditAction}, [Validators.required]));
     }
 
+    portRangeValidator: ValidatorFn = (form: FormGroup): ValidationErrors | null => {
+        const min = form.get('min');
+        const max = form.get('max');
+        const error = Number(max.value) < Number(min.value);       
+        return error ? { 'portRange': true } : null;
+    };
+
     save() {
-        this.section.minValue = this.min.value;
-        this.section.maxValue = this.max.value;
+        let s = new PortSection();
+        s.id = this.section.id;
+        s.minValue = this.min.value;
+        s.maxValue = this.max.value;
         let typeId = this.type.value;
-        this.section.type = this.svc.portTypesMap[typeId];
-        this.svc.savePortSection(this.section).subscribe(succeed => {
+        s.type = this.svc.portTypesMap[typeId];
+        this.svc.savePortSection(s).subscribe(succeed => {
             if (succeed) {
                 this.modal.close('ok');
                 this.alert.success('保存成功');

@@ -91,4 +91,15 @@ public class PortsService {
         return portSectionDao.findAll();
     }
 
+    @Transactional
+    public void deletePortSection(long id) {
+        PortSection s = portSectionDao.findOne(id);
+        long count = portDao.countHasUsedByRange(s.getMinValue(),s.getMaxValue());
+        if (count > 0) {
+            throw new RuntimeException("此端口区间包含"+count+"个已使用端口，不能删除");
+        }
+        portDao.deleteByRange(s.getMinValue(),s.getMaxValue());
+        portSectionDao.delete(id);
+    }
+
 }

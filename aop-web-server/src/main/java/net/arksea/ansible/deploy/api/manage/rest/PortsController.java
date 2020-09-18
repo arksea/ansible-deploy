@@ -5,7 +5,6 @@ import net.arksea.ansible.deploy.api.manage.entity.PortSection;
 import net.arksea.ansible.deploy.api.manage.entity.PortType;
 import net.arksea.ansible.deploy.api.manage.service.PortsService;
 import net.arksea.restapi.RestResult;
-import net.arksea.restapi.RestUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +29,16 @@ public class PortsController {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         PortSection saved = portsService.addPortSection(portSection);
         return new RestResult<>(ResultCode.SUCCEED, saved, reqid);
+    }
+
+    @RequiresPermissions("端口管理:修改")
+    @RequestMapping(path = "sections/{id}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
+    public RestResult<Boolean> deletePortSection(
+            @PathVariable("id") long id,
+            final HttpServletRequest httpRequest) {
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        portsService.deletePortSection(id);
+        return new RestResult<>(ResultCode.SUCCEED, true, reqid);
     }
 
     @RequiresPermissions("端口管理:查询")

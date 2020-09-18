@@ -39,7 +39,7 @@ export class PortsService {
 
     public savePortSection(section: PortSection): Observable<boolean> {
         const url = environment.apiUrl + '/api/ports/sections';
-        return this.httpUtils.httpPut('保存端口分配信息', url, section).pipe(
+        return this.httpUtils.httpPut('保存端口区间', url, section).pipe(
             map(response => {
                     if (response.code === 0) {
                         this.model.opSetModel.next(response.result);
@@ -54,12 +54,25 @@ export class PortsService {
 
     public querySections() {
         const url = environment.apiUrl + '/api/ports/sections';
-        let ret: Observable<ServiceResponse<Array<PortSection>>> = this.httpUtils.httpGet('查询端口分配列表', url);
+        let ret: Observable<ServiceResponse<Array<PortSection>>> = this.httpUtils.httpGet('查询端口区间', url);
         ret.subscribe(data => {
             if (data.code == 0) {
                 this.model.opResetModels.next(data.result);
             }
         });
+    }
+
+    public deleteSection(section: PortSection): Observable<boolean> {
+        const url = environment.apiUrl + '/api/ports/sections/'+section.id;
+        let ret: Observable<ServiceResponse<boolean>> = this.httpUtils.httpDelete('删除端口区间', url);
+        return ret.pipe(map(data => {
+            if (data.code == 0) {
+                this.model.opDelModel.next(section.id);
+                return true;
+            } else {
+                return false;
+            }
+        }));
     }
 
     private queryPortTypes() {

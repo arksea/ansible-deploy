@@ -196,6 +196,15 @@ public class PortsService {
         }
     }
 
+    @Transactional
+    public void savePortTypes(List<PortType> types) {
+        if (portTypeDao.count() == 0) {
+            for (PortType t: types) {
+                portTypeDao.save(t);
+            }
+        }
+    }
+
     public Iterable<PortType> getPortTypes() {
         return portTypeDao.findAll();
     }

@@ -13,6 +13,7 @@ public class PortsStat {
     private int restCount;
 
     @Id
+    @Column(nullable = false, columnDefinition = "TINYINT UNSIGNED")
     public int getTypeId() {
         return typeId;
     }

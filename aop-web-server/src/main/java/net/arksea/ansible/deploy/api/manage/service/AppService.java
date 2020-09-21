@@ -2,11 +2,9 @@ package net.arksea.ansible.deploy.api.manage.service;
 
 import net.arksea.ansible.deploy.api.manage.dao.AppDao;
 import net.arksea.ansible.deploy.api.manage.dao.GroupVarDao;
+import net.arksea.ansible.deploy.api.manage.dao.PortDao;
 import net.arksea.ansible.deploy.api.manage.dao.VersionDao;
-import net.arksea.ansible.deploy.api.manage.entity.App;
-import net.arksea.ansible.deploy.api.manage.entity.AppGroup;
-import net.arksea.ansible.deploy.api.manage.entity.GroupVar;
-import net.arksea.ansible.deploy.api.manage.entity.Version;
+import net.arksea.ansible.deploy.api.manage.entity.*;
 import net.arksea.restapi.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,10 +25,13 @@ public class AppService {
     private VersionDao versionDao;
     @Autowired
     GroupVarDao groupVarDao;
+    @Autowired
+    PortDao portDao;
 
     @Transactional
     public App save(final App app) {
-        if (app.getId() == null) {
+        final boolean isNewAction = app.getId() == null;
+        if (isNewAction) {
             App a = appDao.findByApptag(app.getApptag());
             if (a != null) {
                 throw new RestException("应用名重复");
@@ -38,18 +39,45 @@ public class AppService {
         }
         try {
             App saved = appDao.save(app);
+            if (isNewAction) {//分配端口
+                setPortsAndVars(saved);
+            }
             long id = saved.getId();
             for (final GroupVar v : app.getVars()) {
                 v.setAppId(id);
                 groupVarDao.save(v);
             }
-            for (final Version v : app.getVersions()) {
-                v.setAppId(id);
-                versionDao.save(v);
+            if (isNewAction) {
+                for (final Version v : app.getVersions()) {
+                    v.setAppId(id);
+                    versionDao.save(v);
+                }
             }
             return saved;
         } catch (Exception ex) {
             throw new RestException("保存应用失败", ex);
+        }
+    }
+
+    private void setPortsAndVars(App app) {
+        List<AppPort> cfg = AppPortsConfiger.get(app.getApptype());
+        for (AppPort p : cfg) {
+            portDao.setAppIdByTypeId(app.getId(), p.portType);
+        }
+        List<Port> ports = portDao.findByAppId(app.getId());
+        for (AppPort c: cfg) {
+            for (Port p: ports) {
+                if (c.portType == p.getTypeId()) {
+                    GroupVar var = new GroupVar();
+                    var.setAppId(app.getId());
+                    var.setIsPort(true);
+                    var.setName(c.name);
+                    var.setValue(Integer.toString(p.getValue()));
+                    app.getVars().add(var);
+                    ports.remove(p);
+                    break;
+                }
+            }
         }
     }
 

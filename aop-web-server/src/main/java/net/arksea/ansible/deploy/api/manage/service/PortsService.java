@@ -196,8 +196,9 @@ public class PortsService {
         }
     }
 
+    //初始化静态配置表
     @Transactional
-    public void savePortTypes(List<PortType> types) {
+    public void initPortTypeTable(List<PortType> types) {
         if (portTypeDao.count() == 0) {
             for (PortType t: types) {
                 portTypeDao.save(t);

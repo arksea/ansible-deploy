@@ -13,6 +13,7 @@ const routes: Routes = [
     children: [
       { path: '', component: AppListComponent, canActivate: [AuthGuard] },
       { path: ':id/edit', component: AppEditComponent, canActivate: [AuthGuard] },
+      { path: ':id/edit/:appType', component: AppEditComponent, canActivate: [AuthGuard] },
       { path: ':id', component: AppComponent, canActivate: [AuthGuard] },
       // { path: 'edit/ver', component: VersionEditComponent, canActivate: [AuthGuard] },
     ]

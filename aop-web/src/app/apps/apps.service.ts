@@ -109,10 +109,39 @@ export class AppsService {
         });
     }
 
-    public newTomcatApp(): App {
+    public newApp(appType: string): App {
+        switch(appType) {
+            case 'Tomcat':
+                return this.newTomcatApp();
+            case 'JavaServer':
+                return this.newJavaServerApp();
+            case 'Command':
+            default:
+                return this.newCommandApp();
+        }
+    }
+
+    private newJavaServerApp(): App {
         let app = new App();
         app.apptag = '';
-        app.apptype = 'tomcat';
+        app.apptype = 'JavaServer';
+        app.deployPath = '';
+        app.description = '';
+        app.enableJmx = true;
+        app.vars = [];
+        let ver = new Version();
+        ver.name = 'Online';
+        ver.repository = 'trunk';
+        ver.revision = 'HEAD';
+        ver.javaOpt = '-Dfile.encoding=utf-8'
+        app.versions = [ver];
+        return app;
+    }
+
+    private newTomcatApp(): App {
+        let app = new App();
+        app.apptag = '';
+        app.apptype = 'Tomcat';
         app.deployPath = '';
         app.description = '';
         app.enableJmx = true;
@@ -123,6 +152,23 @@ export class AppsService {
         ver.repository = 'trunk';
         ver.revision = 'HEAD';
         ver.javaOpt = '-Dfile.encoding=utf-8'
+        app.versions = [ver];
+        return app;
+    }
+
+    private newCommandApp(): App {
+        let app = new App();
+        app.apptag = '';
+        app.apptype = 'Command';
+        app.deployPath = '';
+        app.description = '';
+        app.enableJmx = true;
+        app.vars = [];
+        let ver = new Version();
+        ver.name = 'Online';
+        ver.repository = 'trunk';
+        ver.revision = 'HEAD';
+        ver.javaOpt = ''
         app.versions = [ver];
         return app;
     }

@@ -85,8 +85,8 @@ export class AppListComponent implements OnInit {
         }, resaon => {})
     }
 
-    onNewBtnClick() {
-        this.router.navigate(['/apps/new/edit'])
+    onNewBtnClick(appType: string) {
+        this.router.navigate(['/apps/new/edit',appType])
     }
 
 }

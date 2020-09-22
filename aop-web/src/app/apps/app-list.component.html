@@ -25,7 +25,17 @@
                                 (click)="svc.setSortType(c)">{{c.desc}}</a>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-success" [disabled]="account.perm('应用:修改') | async" (click)="onNewBtnClick()">新建应用</button>
+                    <div class="btn-group" role="group">
+                        <button id="btnGroupDropNewApp" type="button" class="btn btn-success dropdown-toggle"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            新建应用
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="btnGroupDropNewApp">
+                            <a class="dropdown-item" (click)="onNewBtnClick('Tomcat')">Tomcat</a>
+                            <a class="dropdown-item" (click)="onNewBtnClick('JavaServer')">JavaServer</a>
+                            <a class="dropdown-item" (click)="onNewBtnClick('Command')">Command</a>
+                        </div>
+                    </div>
                 </div>
             </li>
             <li *ngFor="let a of svc.appList | async;index as i;" class="list-group-item">
@@ -35,18 +45,17 @@
                             <strong>{{a.apptag}}</strong>
                             <span [hidden]="!a.deleted" class="text-danger"> (待删除)</span>
                         </a>
-                        <p>{{a.description}}</p>
+                        <p>{{a.apptype}} : {{a.description}}</p>
                     </div>
                     <div class="p-1 mt-1">
                         <button type="button" class="btn btn-sm"
-                            [class] = "a.deleted?'btn-outline-success':'btn-outline-danger'"
+                            [class]="a.deleted?'btn-outline-success':'btn-outline-danger'"
                             [disabled]="account.perm('应用:修改') | async"
                             (click)="onDelBtnClick(a)">{{a.deleted?'恢复':'删除'}}</button>
                     </div>
                     <div class="p-1 mt-1">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
-                            [disabled]="account.perm('应用:修改') | async"
-                            (click)="onEditBtnClick(a)">编辑</button>
+                            [disabled]="account.perm('应用:修改') | async" (click)="onEditBtnClick(a)">编辑</button>
                     </div>
                 </div>
             </li>

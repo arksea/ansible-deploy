@@ -65,6 +65,11 @@ public class AppService {
             portDao.setAppIdByTypeId(app.getId(), p.portType);
         }
         List<Port> ports = portDao.findByAppId(app.getId());
+        if (ports.size() < cfg.size()) {
+            throw new RuntimeException("没有足够端口可供分配，请联系管理员");
+        } else if (ports.size() > cfg.size()) {
+            throw new RuntimeException("断言失败：分配端口逻辑错误");
+        }
         for (AppPort c: cfg) {
             for (Port p: ports) {
                 if (c.portType == p.getTypeId()) {

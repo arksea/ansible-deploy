@@ -6,7 +6,7 @@ import { AppsService } from './apps.service';
 import { MessageNotify } from '../utils/message-notify';
 import { App,AppGroup, Host, GroupVar } from '../app.entity';
 import { AccountService } from '../account/account.service';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { NewVersionDialog } from './new-version.dialog';
 import { HostsService } from '../hosts/hosts.service';
 import { AddHostDialog } from './add-host.dialog';
@@ -35,15 +35,17 @@ export class AppEditComponent implements OnInit {
                 private router: Router,
                 private route: ActivatedRoute) {
         this.userGroups = this.svc.userGroups;
-        let str = this.route.snapshot.paramMap.get('id');
-        this.app = svc.newTomcatApp();
+        let params: ParamMap =  this.route.snapshot.paramMap;
+        let idStr = params.get('id');
+        let appType = params.get('appType');
+        this.app = svc.newApp(appType);
         this.appForm = this.makeFormGroup(this.app);
         this.deployPathAddon = this.makeAddon(this.app);
-        if (str == 'new') {
+        if (idStr == 'new') {
             this.isNewAction = true;
         } else {
             this.isNewAction = false;
-            let appId = Number(str);
+            let appId = Number(idStr);
             this.svc.getAppById(appId).subscribe(a => {
                 if (a == null) {
                     this.alert.warning("应用不存在或无权限(id="+appId+")");
@@ -91,7 +93,6 @@ export class AppEditComponent implements OnInit {
         let f = this.appForm;
         let a = this.app;
         a.apptag = this.apptag.value;
-        a.apptype = 'tomcat';
         a.deployPath = this.deployPath.value;
         a.description = this.desc.value;
         a.appGroupId = Number(this.appGroupId.value);
@@ -190,7 +191,7 @@ export class AppEditComponent implements OnInit {
             case 'ajp_port':
                 return 'AJP协议端口';
             case 'server_port':
-                return '服务管理端口';
+                return '服务端口';
             case 'https_port':
                 return 'HTTPS端口';
             case 'http_port':

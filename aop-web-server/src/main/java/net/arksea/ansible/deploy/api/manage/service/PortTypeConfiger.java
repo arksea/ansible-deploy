@@ -1,7 +1,6 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
 import net.arksea.ansible.deploy.api.manage.entity.PortType;
-import net.arksea.ansible.deploy.api.manage.service.PortsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +12,7 @@ import java.util.List;
  * Create by xiaohaixing on 2020/9/21
  */
 @Component
-public class PortTypeConfig {
+public class PortTypeConfiger {
 
     @Autowired
     PortsService portsService;
@@ -50,7 +49,7 @@ public class PortTypeConfig {
 
     @PostConstruct
     public void init() {
-        portsService.savePortTypes(get());
+        portsService.initPortTypeTable(get());
     }
 
 }

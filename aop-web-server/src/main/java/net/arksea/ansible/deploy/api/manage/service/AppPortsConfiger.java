@@ -9,25 +9,34 @@ import java.util.List;
 public class AppPortsConfiger {
     public static List<AppPort> get(String appType) {
         switch (appType) {
-            case "tomcat":
+            case "Tomcat":
                 return tomcat();
+            case "JavaServer":
+                return javaServer();
+            case "Command":
+                return command();
             default:
-                throw new RuntimeException("Unsupported app type: "+appType);
+                throw new RuntimeException("不支持的应用类型: "+appType);
         }
     }
-    public static List<AppPort> tomcat() {
+    private static List<AppPort> tomcat() {
         List<AppPort> list = new LinkedList<>();
-        list.add(new AppPort(PortTypeConfig.HTTP_ID, "http_port"));
-        list.add(new AppPort(PortTypeConfig.COMMON_ID, "server_port"));
-        list.add(new AppPort(PortTypeConfig.JMX_ID, "jmx_port"));
-        list.add(new AppPort(PortTypeConfig.COMMON_ID, "ajp_port"));
-        list.add(new AppPort(PortTypeConfig.COMMON_ID, "https_port"));
+        list.add(new AppPort(PortTypeConfiger.HTTP_ID, "http_port"));
+        list.add(new AppPort(PortTypeConfiger.COMMON_ID, "server_port"));
+        list.add(new AppPort(PortTypeConfiger.JMX_ID, "jmx_port"));
+        list.add(new AppPort(PortTypeConfiger.COMMON_ID, "ajp_port"));
+        list.add(new AppPort(PortTypeConfiger.COMMON_ID, "https_port"));
         return list;
     }
-    public static List<AppPort> javaServer() {
+    private static List<AppPort> javaServer() {
         List<AppPort> list = new LinkedList<>();
-        list.add(new AppPort(PortTypeConfig.SERVER_ID, "server_port"));
-        list.add(new AppPort(PortTypeConfig.JMX_ID, "jmx_port"));
+        list.add(new AppPort(PortTypeConfiger.SERVER_ID, "server_port"));
+        list.add(new AppPort(PortTypeConfiger.JMX_ID, "jmx_port"));
+        return list;
+    }
+    private static List<AppPort> command() {
+        List<AppPort> list = new LinkedList<>();
+        list.add(new AppPort(PortTypeConfiger.JMX_ID, "jmx_port"));
         return list;
     }
 }

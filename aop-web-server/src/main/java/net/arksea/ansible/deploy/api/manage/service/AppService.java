@@ -6,6 +6,8 @@ import net.arksea.ansible.deploy.api.manage.dao.PortDao;
 import net.arksea.ansible.deploy.api.manage.dao.VersionDao;
 import net.arksea.ansible.deploy.api.manage.entity.*;
 import net.arksea.restapi.RestException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +20,7 @@ import java.util.List;
  */
 @Component
 public class AppService {
-
+    private static Logger logger = LogManager.getLogger(AppService.class);
     @Autowired
     private AppDao appDao;
     @Autowired
@@ -27,6 +29,27 @@ public class AppService {
     GroupVarDao groupVarDao;
     @Autowired
     PortDao portDao;
+
+    @Transactional
+    public boolean deleteApp(long appId) {
+        App app = appDao.findById(appId);
+        if (app==null) {
+            return false;
+        }
+        logger.info("======appId={},versions count={},var count={}",appId,app.getVersions().size(),app.getVars().size());
+        for (Version v: app.getVersions()) {
+            logger.info("======verId={}",v.getId());
+            for (Host h: v.getTargetHosts()) {
+                versionDao.removeHost(v.getId(), h.getId());
+            }
+            v.getTargetHosts().clear();
+            versionDao.delete(v.getId());
+        }
+        app.getVersions().clear();
+        portDao.releaseByAppId(appId);
+        appDao.delete(appId);
+        return true;
+    }
 
     @Transactional
     public App save(final App app) {
@@ -62,7 +85,7 @@ public class AppService {
     private void setPortsAndVars(App app) {
         List<AppPort> cfg = AppPortsConfiger.get(app.getApptype());
         for (AppPort p : cfg) {
-            portDao.setAppIdByTypeId(app.getId(), p.portType);
+            portDao.assignForAppByTypeId(app.getId(), p.portType);
         }
         List<Port> ports = portDao.findByAppId(app.getId());
         if (ports.size() < cfg.size()) {
@@ -87,12 +110,13 @@ public class AppService {
     }
 
     public App findOne(final Long id) {
-        return appDao.findOne(id);
+        return appDao.findById(id);  //不能使用findOne方法，结果不正确
     }
 
     @Transactional
     public void updateDeletedById(final long id, boolean deleted) {
-        appDao.updateDeletedById(id, deleted);
+        //appDao.updateDeletedById(id, deleted);
+        deleteApp(id); //todo: 直接删除，测试完成后改回来
     }
 
     public List<App> findByUserId(long userId) {

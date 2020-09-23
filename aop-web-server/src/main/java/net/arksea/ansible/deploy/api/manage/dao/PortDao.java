@@ -24,7 +24,12 @@ public interface PortDao extends CrudRepository<Port, Long> {
     @Modifying
     @Query(nativeQuery = true,
            value="update dp2_port p set p.app_id=?1 where p.type_id=?2 and p.app_id is null and p.enabled is true limit 1")
-    int setAppIdByTypeId(long appId, int typeId);
+    int assignForAppByTypeId(long appId, int typeId);
+
+    @Modifying
+    @Query(nativeQuery = true,
+           value="update dp2_port p set p.app_id=null where p.app_id=?1")
+    int releaseByAppId(long appId);
 
     List<Port> findByAppId(long appId);
 }

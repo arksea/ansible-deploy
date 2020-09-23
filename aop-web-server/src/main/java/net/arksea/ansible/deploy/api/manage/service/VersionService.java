@@ -24,8 +24,8 @@ public class VersionService {
     }
 
     @Transactional
-    public void deleteById(long versiongId) {
-        versionDao.delete(versiongId);
+    public void deleteById(long versionId) {
+        versionDao.delete(versionId);
     }
 
     @Transactional

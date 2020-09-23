@@ -6,8 +6,6 @@ import net.arksea.ansible.deploy.api.manage.dao.PortDao;
 import net.arksea.ansible.deploy.api.manage.dao.VersionDao;
 import net.arksea.ansible.deploy.api.manage.entity.*;
 import net.arksea.restapi.RestException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +18,7 @@ import java.util.List;
  */
 @Component
 public class AppService {
-    private static Logger logger = LogManager.getLogger(AppService.class);
+
     @Autowired
     private AppDao appDao;
     @Autowired
@@ -32,13 +30,11 @@ public class AppService {
 
     @Transactional
     public boolean deleteApp(long appId) {
-        App app = appDao.findById(appId);
+        App app = appDao.findOne(appId);
         if (app==null) {
             return false;
         }
-        logger.info("======appId={},versions count={},var count={}",appId,app.getVersions().size(),app.getVars().size());
         for (Version v: app.getVersions()) {
-            logger.info("======verId={}",v.getId());
             for (Host h: v.getTargetHosts()) {
                 versionDao.removeHost(v.getId(), h.getId());
             }
@@ -77,6 +73,8 @@ public class AppService {
                 }
             }
             return saved;
+        } catch (ServiceException ex) {
+            throw ex;
         } catch (Exception ex) {
             throw new RestException("保存应用失败", ex);
         }
@@ -89,9 +87,9 @@ public class AppService {
         }
         List<Port> ports = portDao.findByAppId(app.getId());
         if (ports.size() < cfg.size()) {
-            throw new RuntimeException("没有足够端口可供分配，请联系管理员");
+            throw new ServiceException("没有足够端口可供分配，请联系管理员");
         } else if (ports.size() > cfg.size()) {
-            throw new RuntimeException("断言失败：分配端口逻辑错误");
+            throw new ServiceException("断言失败：分配端口逻辑错误");
         }
         for (AppPort c: cfg) {
             for (Port p: ports) {
@@ -110,7 +108,7 @@ public class AppService {
     }
 
     public App findOne(final Long id) {
-        return appDao.findById(id);  //不能使用findOne方法，结果不正确
+        return appDao.findOne(id);  //不能使用findOne方法，结果不正确
     }
 
     @Transactional

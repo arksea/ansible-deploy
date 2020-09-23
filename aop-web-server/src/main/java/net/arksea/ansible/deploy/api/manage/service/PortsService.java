@@ -8,6 +8,8 @@ import net.arksea.ansible.deploy.api.manage.entity.Port;
 import net.arksea.ansible.deploy.api.manage.entity.PortSection;
 import net.arksea.ansible.deploy.api.manage.entity.PortType;
 import net.arksea.ansible.deploy.api.manage.entity.PortsStat;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
@@ -18,7 +20,7 @@ import java.util.List;
  */
 @Component
 public class PortsService {
-
+    private static Logger logger = LogManager.getLogger(PortsService.class);
     @Autowired
     PortSectionDao portSectionDao;
 
@@ -92,13 +94,10 @@ public class PortsService {
             throw new RuntimeException("添加端口区间有专用的方法，不能调用修改方法");
         }
         PortSection old = portSectionDao.findOne(s.getId());
-        boolean leftExp = false; //是否向左扩展
-        boolean rifthExp = false; //是否向左扩展
         //判断是否冲突
         if (s.getMinValue() < old.getMinValue()) { //向左扩展
             int l = s.getMinValue();
             int r = old.getMinValue() - 1;
-            leftExp = true;
             if (portDao.countByRange(l, r) > 0) {
                 throw new RuntimeException("要扩展的区间与其他区间重叠");
             }
@@ -113,7 +112,6 @@ public class PortsService {
         if (s.getMaxValue() > old.getMaxValue()) {//向右扩展
             int l = old.getMaxValue() + 1;
             int r = s.getMaxValue();
-            rifthExp = true;
             if (portDao.countByRange(l, r) > 0) {
                 throw new RuntimeException("要扩展的区间与其他区间重叠");
             }
@@ -199,7 +197,9 @@ public class PortsService {
     //初始化静态配置表
     @Transactional
     public void initPortTypeTable(List<PortType> types) {
-        if (portTypeDao.count() == 0) {
+        long count = portTypeDao.count();
+        if (count == 0) {
+            logger.info("init port types: {}", count);
             for (PortType t: types) {
                 portTypeDao.save(t);
             }

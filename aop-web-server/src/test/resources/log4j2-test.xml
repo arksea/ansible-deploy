@@ -3,7 +3,10 @@
     <Appenders>
         <Console name="console" target="SYSTEM_OUT">
             <PatternLayout>
-                <Pattern>%d{HH:mm:ss.SSS} | %-5level | %msg | %c{1}.%M(%L) | %t | %X{akkaSource}%n</Pattern>
+                <Pattern>%d{HH:mm:ss.SSS} | %-5level | %msg | %c{1}.%M(%L) | %t | %X{akkaSource}%n%rEx{full,filters(
+                    org.apache,com.mysql,org.hibernate,javax,java,sun,com.sun,
+                    org.springframework,net.sf.cglib,ByCGLIB,BySpringCGLIB
+                    )}</Pattern>
             </PatternLayout>
         </Console>
     </Appenders>

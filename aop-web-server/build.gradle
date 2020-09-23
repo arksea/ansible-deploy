@@ -27,7 +27,7 @@ dependencies {
     compile 'org.springframework:spring-webmvc:4.3.27.RELEASE'
 
     compile 'org.springframework.data:spring-data-jpa:1.11.4.RELEASE'
-    compile  'org.hibernate:hibernate-entitymanager:4.3.5.Final'
+    compile  'org.hibernate:hibernate-entitymanager:4.3.11.Final'
     compile  'org.hibernate:hibernate-validator:5.0.3.Final'
 
     compile 'org.apache.shiro:shiro-core:1.5.1'

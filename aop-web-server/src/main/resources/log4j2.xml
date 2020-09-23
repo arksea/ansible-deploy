@@ -4,7 +4,10 @@
         <RollingRandomAccessFile name="file" fileName="tomcat/logs/server.log" filePattern="tomcat/logs/backup/server-%d{yyyy-MM-dd}-%i.log.gz">
             <PatternLayout>
                 <charset>UTF-8</charset>
-                <Pattern>%d{HH:mm:ss.SSS} | %-5level | %msg | %c{1}.%M(%L) | %t | %X{akkaSource}%n</Pattern>
+                <Pattern>%d{HH:mm:ss.SSS} | %-5level | %msg | %c{1}.%M(%L) | %t | %X{akkaSource}%n%rEx{full,filters(
+                    org.apache,com.mysql,org.hibernate,javax,java,sun,com.sun,
+                    org.springframework,net.sf.cglib,ByCGLIB,BySpringCGLIB
+                    )}</Pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />

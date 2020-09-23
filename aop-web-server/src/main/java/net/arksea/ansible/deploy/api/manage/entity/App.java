@@ -7,7 +7,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
-import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -21,10 +21,10 @@ public class App extends IdEntity {
     private String deployPath; //应用部署目标路径
     private String description;  //应用描述
     private Long appGroupId;
-    private List<GroupVar> vars;// 变量
-    private List<Port> ports;
+    private Set<GroupVar> vars;// 变量
+    private Set<Port> ports;
     private boolean enableJmx;
-    private List<Version> versions;
+    private Set<Version> versions;
     private Timestamp createTime; //创建时间
     private boolean deleted; //是否标记为删除状态，系统将定时删除标记为删除状态的记录
 
@@ -79,21 +79,21 @@ public class App extends IdEntity {
     @OneToMany(mappedBy = "appId", fetch = FetchType.EAGER, orphanRemoval = true)
     @OnDelete(action = OnDeleteAction.CASCADE) //在数据库层面进行级联删除操作（生成库表时定义的外键会加 ON DELETE CASCADE修饰词）
     @OrderBy("id")
-    public List<GroupVar> getVars() {
+    public Set<GroupVar> getVars() {
         return vars;
     }
 
-    public void setVars(final List<GroupVar> vars) {
+    public void setVars(final Set<GroupVar> vars) {
         this.vars = vars;
     }
 
     @OneToMany(mappedBy = "appId", fetch = FetchType.EAGER)
     @OrderBy("value")
-    public List<Port> getPorts() {
+    public Set<Port> getPorts() {
         return ports;
     }
 
-    public void setPorts(final List<Port> ports) {
+    public void setPorts(final Set<Port> ports) {
         this.ports = ports;
     }
 
@@ -113,11 +113,11 @@ public class App extends IdEntity {
 
     @OneToMany(mappedBy = "appId", fetch = FetchType.EAGER)
     @OrderBy("id")
-    public List<Version> getVersions() {
+    public Set<Version> getVersions() {
         return versions;
     }
 
-    public void setVersions(final List<Version> versions) {
+    public void setVersions(final Set<Version> versions) {
         this.versions = versions;
     }
 

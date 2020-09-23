@@ -1,6 +1,8 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
 import net.arksea.ansible.deploy.api.manage.entity.PortType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +15,7 @@ import java.util.List;
  */
 @Component
 public class PortTypeConfiger {
-
+    private static Logger logger = LogManager.getLogger(PortTypeConfiger.class);
     @Autowired
     PortsService portsService;
 

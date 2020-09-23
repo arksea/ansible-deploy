@@ -18,6 +18,7 @@ export class PortsComponent implements OnInit {
         public svc: PortsService,
         public account: AccountService,
         private alert: MessageNotify) {
+            this.svc.queryPortTypes();
     }
 
     searchForm: FormGroup = new FormGroup({

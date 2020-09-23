@@ -5,3 +5,4 @@
 /aop-web/dist-dev
 /aop-web-server/tomcat/webapps
 /aop-web-server/tomcat/logs/*.log
+/aop-web-server/tomcat/work

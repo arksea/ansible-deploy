@@ -50,18 +50,18 @@ public class PortsService {
             portDao.save(p);
         }
         //修改统计
+        int count = s.getMaxValue() - s.getMinValue() + 1;
         int typeId = s.getType().getId();
         PortsStat stat = portsStatDao.findByTypeId(typeId);
         if (stat == null) {
             stat = new PortsStat();
             stat.setTypeId(typeId);
-            stat.setAllCount(0);
-            stat.setRestCount(0);
+            stat.setAllCount(count);
+            stat.setRestCount(count);
+            portsStatDao.save(stat);
+        } else {
+            portsStatDao.incAllCount(count, typeId);
         }
-        int count = s.getMaxValue() - s.getMinValue() + 1;
-        stat.setAllCount(stat.getAllCount() + count);
-        stat.setRestCount(stat.getRestCount() + count);
-        portsStatDao.save(stat);
         //判断是否合并连续区间
         List<PortSection> sections = portSectionDao.findByTypeId(typeId);
         PortSection left = null;
@@ -156,11 +156,8 @@ public class PortsService {
         }
         //修改统计
         int typeId = s.getType().getId();
-        PortsStat stat = portsStatDao.findByTypeId(typeId);
         int count = s.getMaxValue() - s.getMinValue() - (old.getMaxValue() - old.getMinValue());
-        stat.setAllCount(stat.getAllCount() + count);
-        stat.setRestCount(stat.getRestCount() + count);
-        portsStatDao.save(stat);
+        portsStatDao.incAllCount(count, typeId);
         //判断是否合并连续区间
         List<PortSection> sections = portSectionDao.findByTypeId(typeId);
         PortSection left = null;

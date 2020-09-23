@@ -1,9 +1,6 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
-import net.arksea.ansible.deploy.api.manage.dao.AppDao;
-import net.arksea.ansible.deploy.api.manage.dao.GroupVarDao;
-import net.arksea.ansible.deploy.api.manage.dao.PortDao;
-import net.arksea.ansible.deploy.api.manage.dao.VersionDao;
+import net.arksea.ansible.deploy.api.manage.dao.*;
 import net.arksea.ansible.deploy.api.manage.entity.*;
 import net.arksea.restapi.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +24,8 @@ public class AppService {
     GroupVarDao groupVarDao;
     @Autowired
     PortDao portDao;
+    @Autowired
+    PortsStatDao portStatDao;
 
     @Transactional
     public boolean deleteApp(long appId) {
@@ -42,6 +41,10 @@ public class AppService {
             versionDao.delete(v.getId());
         }
         app.getVersions().clear();
+        List<Port> ports = portDao.findByAppId(app.getId());
+        for (Port p: ports) {
+            portStatDao.incRestCount(1, p.getTypeId());
+        }
         portDao.releaseByAppId(appId);
         appDao.delete(appId);
         return true;
@@ -84,6 +87,7 @@ public class AppService {
         List<AppPort> cfg = AppPortsConfiger.get(app.getApptype());
         for (AppPort p : cfg) {
             portDao.assignForAppByTypeId(app.getId(), p.portType);
+            portStatDao.incRestCount(-1, p.portType);
         }
         List<Port> ports = portDao.findByAppId(app.getId());
         if (ports.size() < cfg.size()) {

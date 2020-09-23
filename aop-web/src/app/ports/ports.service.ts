@@ -34,7 +34,6 @@ export class PortsService {
     public constructor(private httpUtils: HttpUtils, 
         private router: Router, 
         private alert: MessageNotify) {
-            this.queryPortTypes();
     }
 
     private update() {
@@ -79,7 +78,7 @@ export class PortsService {
         }));
     }
 
-    private queryPortTypes() {
+    public queryPortTypes() {
         const url = environment.apiUrl + '/api/ports/types';
         let ret: Observable<ServiceResponse<Array<PortType>>> = this.httpUtils.httpGet('查询端口类型', url);
         ret.subscribe(data => {

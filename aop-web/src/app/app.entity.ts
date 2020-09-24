@@ -1,8 +1,29 @@
 import { User } from "./users/users.entity";
 
-export class AppType {
+export class PortsStat {
+  typeId: number;
+  allCount: number;
+  restCount: number;
+}
+
+export class PortType {
   id: number;
   name: string;
+  description: string = '';
+  stat: PortsStat;
+}
+
+export class AppVarDefine {
+  id: number;
+  appTypeId: number
+  name: string = '';// 变量名
+  portType: PortType; // 是否端口值
+}
+
+export class AppType {
+  id: number;
+  name: string = '';
+  definitions: Array<AppVarDefine> = [];
 }
 
 export class AppVariable {
@@ -25,7 +46,7 @@ export class Version {
   appId: number = undefined;
   name: string = '';
   repository: string = '';
-  javaOpt: string = '';
+  execOpt: string = '';
   revision: string = 'HEAD';
   targetHosts: Array<Host> = [];
 }
@@ -76,17 +97,4 @@ export class PortSection {
   minValue: number;
   maxValue: number;
 
-}
-
-export class PortsStat {
-  typeId: number;
-  allCount: number;
-  restCount: number;
-}
-
-export class PortType {
-  id: number;
-  name: string;
-  description: string = '';
-  stat: PortsStat;
 }

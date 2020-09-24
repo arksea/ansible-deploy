@@ -28,7 +28,7 @@ export class NewVersionDialog {
         this.form = new FormGroup({
             name: new FormControl(ver.name,[Validators.required, Validators.minLength(2), Validators.maxLength(64)]),
             repository: new FormControl(ver.repository,[Validators.required,Validators.maxLength(1000)]),
-            javaOpt: new FormControl(ver.javaOpt,[Validators.maxLength(1000)]),
+            execOpt: new FormControl(ver.execOpt,[Validators.maxLength(1000)]),
             revision: new FormControl(ver.revision,[Validators.required,Validators.minLength(1),Validators.maxLength(64)]),
         });
     }
@@ -38,7 +38,7 @@ export class NewVersionDialog {
         let ver = this._version;
         ver.name = this.form.get('name').value;
         ver.repository = this.form.get('repository').value;
-        ver.javaOpt = this.form.get('javaOpt').value;
+        ver.execOpt = this.form.get('execOpt').value;
         ver.revision = this.form.get('revision').value;
         if (this.app.id) {
             if (!ver.appId) {

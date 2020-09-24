@@ -16,10 +16,10 @@ import java.util.Set;
 @Entity
 @Table(name = "dp2_app")
 public class App extends IdEntity {
-    private String apptag;     //应用标签，通常用来部署时建立应用目录名
+    private String apptag = "";     //应用标签，通常用来部署时建立应用目录名
     private AppType appType;
-    private String deployPath; //应用部署目标路径
-    private String description;  //应用描述
+    private String deployPath = ""; //应用部署目标路径
+    private String description = "";  //应用描述
     private Long appGroupId;
     private Set<AppVariable> vars;// 变量
     private Set<Port> ports;

@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.TreeSet;
 
 /**
  *
@@ -26,6 +28,8 @@ public class AppService {
     PortDao portDao;
     @Autowired
     PortsStatDao portStatDao;
+    @Autowired
+    AppTypeDao appTypeDao;
 
     @Transactional
     public boolean deleteApp(long appId) {
@@ -48,6 +52,16 @@ public class AppService {
         portDao.releaseByAppId(appId);
         appDao.delete(appId);
         return true;
+    }
+
+    public App createAppForEdit(String appTypeName) {
+        AppType type = appTypeDao.findByName(appTypeName);
+        App app = new App();
+        app.setAppType(type);
+        app.setVersions(new HashSet<>());
+        app.setVars(new HashSet<>());
+        Version ver = new Version();
+        return null;
     }
 
     @Transactional

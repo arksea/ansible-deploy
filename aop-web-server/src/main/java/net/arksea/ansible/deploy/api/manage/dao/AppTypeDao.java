@@ -7,4 +7,5 @@ import org.springframework.data.repository.CrudRepository;
  * Create by xiaohaixing on 2020/9/24
  */
 public interface AppTypeDao extends CrudRepository<AppType, Long> {
+    AppType findByName(String name);
 }

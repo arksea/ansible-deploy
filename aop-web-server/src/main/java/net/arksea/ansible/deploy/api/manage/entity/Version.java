@@ -12,7 +12,7 @@ public class Version extends IdEntity {
 
     private String repository;
 
-    private String javaOpt;
+    private String execOpt;
 
     private String revision;
 
@@ -30,13 +30,13 @@ public class Version extends IdEntity {
         this.repository = repository;
     }
 
-    @Column(name = "java_opt", length = 1024)
-    public String getJavaOpt() {
-        return javaOpt;
+    @Column(name = "exec_opt", length = 1024)
+    public String getExecOpt() {
+        return execOpt;
     }
 
-    public void setJavaOpt(final String javaOpt) {
-        this.javaOpt = javaOpt;
+    public void setExecOpt(final String execOpt) {
+        this.execOpt = execOpt;
     }
 
     @NotBlank

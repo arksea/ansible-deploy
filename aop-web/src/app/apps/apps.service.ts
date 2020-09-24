@@ -135,7 +135,7 @@ export class AppsService {
         ver.name = 'Online';
         ver.repository = 'trunk';
         ver.revision = 'HEAD';
-        ver.javaOpt = '-Dfile.encoding=utf-8'
+        ver.execOpt = '-Dfile.encoding=utf-8'
         app.versions = [ver];
         return app;
     }
@@ -155,7 +155,7 @@ export class AppsService {
         ver.name = 'Online';
         ver.repository = 'trunk';
         ver.revision = 'HEAD';
-        ver.javaOpt = '-Dfile.encoding=utf-8'
+        ver.execOpt = '-Dfile.encoding=utf-8'
         app.versions = [ver];
         return app;
     }
@@ -174,7 +174,7 @@ export class AppsService {
         ver.name = 'Online';
         ver.repository = 'trunk';
         ver.revision = 'HEAD';
-        ver.javaOpt = ''
+        ver.execOpt = ''
         app.versions = [ver];
         return app;
     }

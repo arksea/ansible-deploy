@@ -4,7 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 import { AppsService } from './apps.service';
 import { MessageNotify } from '../utils/message-notify';
-import { App,AppGroup, Host, GroupVar } from '../app.entity';
+import { App,AppGroup, Host, AppVariable } from '../app.entity';
 import { AccountService } from '../account/account.service';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { NewVersionDialog } from './new-version.dialog';
@@ -182,7 +182,7 @@ export class AppEditComponent implements OnInit {
         }
     }
 
-    getVarDesc(variable: GroupVar): string {
+    getVarDesc(variable: AppVariable): string {
         switch(variable.name) {
             case 'domain':
                 return 'Tomcat 域名';
@@ -203,7 +203,7 @@ export class AppEditComponent implements OnInit {
         }
     }
 
-    getInputAddon(variable: GroupVar): string {
+    getInputAddon(variable: AppVariable): string {
         switch(variable.name) {
             case 'domain':
                 return '';
@@ -214,7 +214,7 @@ export class AppEditComponent implements OnInit {
         }
     }
 
-    getInputType(variable: GroupVar): string {
+    getInputType(variable: AppVariable): string {
         switch(variable.name) {
             default:
                 return 'text';

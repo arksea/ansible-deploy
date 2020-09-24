@@ -65,7 +65,7 @@ public class AppService {
                 setPortsAndVars(saved);
             }
             long id = saved.getId();
-            for (final GroupVar v : app.getVars()) {
+            for (final AppVariable v : app.getVars()) {
                 v.setAppId(id);
                 groupVarDao.save(v);
             }
@@ -98,7 +98,7 @@ public class AppService {
         for (AppPort c: cfg) {
             for (Port p: ports) {
                 if (c.portType == p.getTypeId()) {
-                    GroupVar var = new GroupVar();
+                    AppVariable var = new AppVariable();
                     var.setAppId(app.getId());
                     var.setIsPort(true);
                     var.setName(c.name);

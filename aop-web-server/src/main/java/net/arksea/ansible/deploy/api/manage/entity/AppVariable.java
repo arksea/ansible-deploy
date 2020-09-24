@@ -6,10 +6,10 @@ import javax.persistence.*;
  * @author xiaohaixing
  */
 @Entity
-@Table(name = "dp2_group_vars",
+@Table(name = "dp2_app_variable",
         uniqueConstraints = @UniqueConstraint(columnNames = { "appId", "name" })
 )
-public class GroupVar extends IdEntity {
+public class AppVariable extends IdEntity {
 
     private Long appId; // 所属应用
     private String name;// 变量名

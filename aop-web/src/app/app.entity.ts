@@ -5,7 +5,7 @@ export class AppType {
   name: string;
 }
 
-export class GroupVar {
+export class AppVariable {
   id: number;
   name: string; // 变量名
   value: string;// 变量值
@@ -47,7 +47,7 @@ export class App {
   deployPath: string = ''; //应用部署目标路径
   description: string = '';  //应用描述
   appGroupId: number; //应用所属分组
-  vars: Array<GroupVar> = [];// 变量
+  vars: Array<AppVariable> = [];// 变量
   enableJmx: boolean = true;
   versions: Array<Version> = [];
   createTime: string; //创建时间

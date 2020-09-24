@@ -17,7 +17,7 @@ import java.util.Set;
 @Table(name = "dp2_app")
 public class App extends IdEntity {
     private String apptag;     //应用标签，通常用来部署时建立应用目录名
-    private String apptype;    //应用的类型
+    private AppType appType;
     private String deployPath; //应用部署目标路径
     private String description;  //应用描述
     private Long appGroupId;
@@ -38,14 +38,14 @@ public class App extends IdEntity {
         this.apptag = apptag;
     }
 
-    @NotBlank
-    @Column(length = 20, nullable = false)
-    public String getApptype() {
-        return apptype;
+    @ManyToOne
+    @JoinColumn(name="app_type_id",nullable = false)
+    public AppType getAppType() {
+        return appType;
     }
 
-    public void setApptype(final String apptype) {
-        this.apptype = apptype;
+    public void setAppType(AppType appType) {
+        this.appType = appType;
     }
 
     @Column(nullable = false, length = 128)

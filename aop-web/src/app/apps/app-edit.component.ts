@@ -81,8 +81,8 @@ export class AppEditComponent implements OnInit {
     }
 
     public makeAddon(app: App): string {
-        switch (app.apptype) {
-            case 'tomcat':
+        switch (app.appType.name) {
+            case 'Tomcat':
                 return '$HOME/tomcat/webapps/';
             default:
                 return '$HOME/';

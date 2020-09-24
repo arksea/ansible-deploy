@@ -84,7 +84,7 @@ public class AppService {
     }
 
     private void setPortsAndVars(App app) {
-        List<AppPort> cfg = AppPortsConfiger.get(app.getApptype());
+        List<AppPort> cfg = AppPortsConfiger.get(app.getAppType().getName());
         for (AppPort p : cfg) {
             portDao.assignForAppByTypeId(app.getId(), p.portType);
             portStatDao.incRestCount(-1, p.portType);

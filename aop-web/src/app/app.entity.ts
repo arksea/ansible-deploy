@@ -1,5 +1,10 @@
 import { User } from "./users/users.entity";
 
+export class AppType {
+  id: number;
+  name: string;
+}
+
 export class GroupVar {
   id: number;
   name: string; // 变量名
@@ -38,7 +43,7 @@ export class Host {
 export class App {
   id: number;
   apptag: string = '';     //应用标签，通常用来部署时建立应用目录名
-  apptype: string = '';    //应用的类型
+  appType: AppType;    //应用的类型
   deployPath: string = ''; //应用部署目标路径
   description: string = '';  //应用描述
   appGroupId: number; //应用所属分组

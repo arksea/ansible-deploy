@@ -3,15 +3,13 @@ package net.arksea.ansible.deploy.api.system;
 import akka.actor.ActorSystem;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import net.arksea.ansible.deploy.api.manage.service.PortTypeConfiger;
+import net.arksea.ansible.deploy.api.manage.service.ConfigDataInitializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
 
 
 /**
@@ -46,5 +44,5 @@ public class SystemFactory {
     }
 
     @Autowired
-    PortTypeConfiger portTypeConfiger;
+    ConfigDataInitializer initializer;
 }

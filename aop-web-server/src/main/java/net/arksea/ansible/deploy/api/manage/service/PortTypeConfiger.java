@@ -1,23 +1,14 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
 import net.arksea.ansible.deploy.api.manage.entity.PortType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Create by xiaohaixing on 2020/9/21
  */
-@Component
+
 public class PortTypeConfiger {
-    private static Logger logger = LogManager.getLogger(PortTypeConfiger.class);
-    @Autowired
-    PortsService portsService;
 
     public static final int HTTP_ID   = 1;
     public static final int COMMON_ID = 2;
@@ -48,10 +39,4 @@ public class PortTypeConfiger {
         list.add(p4);
         return list;
     }
-
-    @PostConstruct
-    public void init() {
-        portsService.initPortTypeTable(get());
-    }
-
 }

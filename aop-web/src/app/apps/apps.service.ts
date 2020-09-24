@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject, BehaviorSubject, Observable } from 'rxjs';
-import { App, AppGroup } from '../app.entity';
+import { App, AppGroup, AppType } from '../app.entity';
 import { ServiceResponse } from '../utils/http-utils';
 import { HttpUtils } from '../utils/http-utils';
 import { environment } from '../../environments/environment';
@@ -124,7 +124,9 @@ export class AppsService {
     private newJavaServerApp(): App {
         let app = new App();
         app.apptag = '';
-        app.apptype = 'JavaServer';
+        app.appType = new AppType();
+        app.appType.id = 2;
+        app.appType.name = 'JavaServer';
         app.deployPath = '';
         app.description = '';
         app.enableJmx = true;
@@ -141,7 +143,9 @@ export class AppsService {
     private newTomcatApp(): App {
         let app = new App();
         app.apptag = '';
-        app.apptype = 'Tomcat';
+        app.appType = new AppType();
+        app.appType.id = 1;
+        app.appType.name = 'Tomcat';
         app.deployPath = '';
         app.description = '';
         app.enableJmx = true;
@@ -159,7 +163,9 @@ export class AppsService {
     private newCommandApp(): App {
         let app = new App();
         app.apptag = '';
-        app.apptype = 'Command';
+        app.appType = new AppType();
+        app.appType.id = 3;
+        app.appType.name = 'Command';
         app.deployPath = '';
         app.description = '';
         app.enableJmx = true;

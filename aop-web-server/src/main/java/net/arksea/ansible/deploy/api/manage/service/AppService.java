@@ -86,8 +86,11 @@ public class AppService {
     private void setPortsAndVars(App app) {
         List<AppPort> cfg = AppPortsConfiger.get(app.getAppType().getName());
         for (AppPort p : cfg) {
-            portDao.assignForAppByTypeId(app.getId(), p.portType);
-            portStatDao.incRestCount(-1, p.portType);
+            int n = portDao.assignForAppByTypeId(app.getId(), p.portType.getId());
+            if (n == 0) {
+                throw new ServiceException("'"+p.portType.getName()+"'端口可用数不够，请联系管理员");
+            }
+            portStatDao.incRestCount(-1, p.portType.getId());
         }
         List<Port> ports = portDao.findByAppId(app.getId());
         if (ports.size() < cfg.size()) {
@@ -97,7 +100,7 @@ public class AppService {
         }
         for (AppPort c: cfg) {
             for (Port p: ports) {
-                if (c.portType == p.getTypeId()) {
+                if (c.portType.getId() == p.getTypeId()) {
                     AppVariable var = new AppVariable();
                     var.setAppId(app.getId());
                     var.setIsPort(true);

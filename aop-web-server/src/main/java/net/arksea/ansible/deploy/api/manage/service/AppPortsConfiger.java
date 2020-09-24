@@ -21,22 +21,22 @@ public class AppPortsConfiger {
     }
     private static List<AppPort> tomcat() {
         List<AppPort> list = new LinkedList<>();
-        list.add(new AppPort(PortTypeConfiger.HTTP_ID, "http_port"));
-        list.add(new AppPort(PortTypeConfiger.COMMON_ID, "server_port"));
-        list.add(new AppPort(PortTypeConfiger.JMX_ID, "jmx_port"));
-        list.add(new AppPort(PortTypeConfiger.COMMON_ID, "ajp_port"));
-        list.add(new AppPort(PortTypeConfiger.COMMON_ID, "https_port"));
+        list.add(new AppPort(PortTypeConfiger.get(PortTypeConfiger.HTTP_ID), "http_port"));
+        list.add(new AppPort(PortTypeConfiger.get(PortTypeConfiger.COMMON_ID), "server_port"));
+        list.add(new AppPort(PortTypeConfiger.get(PortTypeConfiger.JMX_ID), "jmx_port"));
+        list.add(new AppPort(PortTypeConfiger.get(PortTypeConfiger.COMMON_ID), "ajp_port"));
+        list.add(new AppPort(PortTypeConfiger.get(PortTypeConfiger.COMMON_ID), "https_port"));
         return list;
     }
     private static List<AppPort> javaServer() {
         List<AppPort> list = new LinkedList<>();
-        list.add(new AppPort(PortTypeConfiger.SERVER_ID, "server_port"));
-        list.add(new AppPort(PortTypeConfiger.JMX_ID, "jmx_port"));
+        list.add(new AppPort(PortTypeConfiger.get(PortTypeConfiger.SERVER_ID), "server_port"));
+        list.add(new AppPort(PortTypeConfiger.get(PortTypeConfiger.JMX_ID), "jmx_port"));
         return list;
     }
     private static List<AppPort> command() {
         List<AppPort> list = new LinkedList<>();
-        list.add(new AppPort(PortTypeConfiger.JMX_ID, "jmx_port"));
+        list.add(new AppPort(PortTypeConfiger.get(PortTypeConfiger.JMX_ID), "jmx_port"));
         return list;
     }
 }

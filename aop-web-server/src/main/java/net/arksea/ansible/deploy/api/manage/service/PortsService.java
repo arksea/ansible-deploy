@@ -207,6 +207,11 @@ public class PortsService {
         }
         portDao.deleteByRange(s.getMinValue(),s.getMaxValue());
         portSectionDao.delete(id);
+
+        //修改统计
+        int typeId = s.getType().getId();
+        int all = s.getMaxValue() - s.getMinValue() + 1;
+        portsStatDao.incAllCount(-all, typeId);
     }
 
 }

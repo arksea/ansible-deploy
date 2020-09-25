@@ -2,7 +2,6 @@ package net.arksea.ansible.deploy.api.manage.rest;
 
 import net.arksea.ansible.deploy.api.ResultCode;
 import net.arksea.ansible.deploy.api.manage.entity.App;
-import net.arksea.ansible.deploy.api.manage.entity.Version;
 import net.arksea.ansible.deploy.api.manage.service.AppService;
 import net.arksea.ansible.deploy.api.manage.service.VersionService;
 import net.arksea.restapi.BaseResult;
@@ -29,6 +28,15 @@ public class AppsController {
     VersionService versionService;
 
     private static final String MEDIA_TYPE = "application/json; charset=UTF-8";
+
+    //-------------------------------------------------------------------------
+    @RequiresPermissions("应用:修改")
+    @RequestMapping(path="apps/template/{typeName}", method = RequestMethod.GET, produces = MEDIA_TYPE)
+    public BaseResult getAppTemplate(@PathVariable("typeName") String typeName, HttpServletRequest httpRequest) {
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        App app = appService.createAppTemplate(typeName);
+        return new RestResult<>(0, app, reqid);
+    }
 
     @RequiresPermissions("应用:修改")
     @RequestMapping(path="apps", method = RequestMethod.POST, produces = MEDIA_TYPE, consumes = MEDIA_TYPE)

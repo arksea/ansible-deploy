@@ -24,9 +24,11 @@ export class AddHostDialog {
         this.app = app;
         this.hosts = hosts.filter((h,i,array)=> {
             for (let v of app.versions) {
-                for (let t of v.targetHosts) { //过滤应用在所有版本中已添加的主机
-                    if (t.id == h.id) {
-                        return false;
+                if (v.targetHosts) {
+                    for (let t of v.targetHosts) { //过滤应用在所有版本中已添加的主机
+                        if (t.id == h.id) {
+                            return false;
+                        }
                     }
                 }
             }

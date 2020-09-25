@@ -109,58 +109,13 @@ export class AppsService {
         });
     }
 
-    public newApp(appType: string): App {
-        switch(appType) {
-            case 'Tomcat':
-                return this.newTomcatApp();
-            case 'JavaServer':
-                return this.newJavaServerApp();
-            case 'Command':
-            default:
-                return this.newCommandApp();
-        }
+    public createAppTemplate(appType: string): Observable<ServiceResponse<App>> {
+        let url = environment.apiUrl + '/api/apps/template/'+appType;
+        return this.httpUtils.httpGet('获取应用创建模版', url)
     }
 
-    private newJavaServerApp(): App {
-        let app = new App();
-        app.apptag = '';
-        app.appType = new AppType();
-        app.appType.id = 2;
-        app.appType.name = 'JavaServer';
-        app.deployPath = '';
-        app.description = '';
-        app.enableJmx = true;
-        app.vars = [];
-        let ver = new Version();
-        ver.name = 'Online';
-        ver.repository = 'trunk';
-        ver.revision = 'HEAD';
-        ver.execOpt = '-Dfile.encoding=utf-8'
-        app.versions = [ver];
-        return app;
-    }
 
-    private newTomcatApp(): App {
-        let app = new App();
-        app.apptag = '';
-        app.appType = new AppType();
-        app.appType.id = 1;
-        app.appType.name = 'Tomcat';
-        app.deployPath = '';
-        app.description = '';
-        app.enableJmx = true;
-        app.vars = [{id:null,value: 'localhost', name:'domain', isPort: false},
-                    {id:null,value: '', name:'context_path', isPort: false}]
-        let ver = new Version();
-        ver.name = 'Online';
-        ver.repository = 'trunk';
-        ver.revision = 'HEAD';
-        ver.execOpt = '-Dfile.encoding=utf-8'
-        app.versions = [ver];
-        return app;
-    }
-
-    private newCommandApp(): App {
+    public createDefAppTemplate(): App {
         let app = new App();
         app.apptag = '';
         app.appType = new AppType();

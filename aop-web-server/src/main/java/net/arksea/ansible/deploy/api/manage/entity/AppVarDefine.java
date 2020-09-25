@@ -7,21 +7,23 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "dp2_app_var_define",
-        uniqueConstraints = @UniqueConstraint(columnNames = { "appTypeId", "name" })
+        uniqueConstraints = @UniqueConstraint(columnNames = { "app_type_id", "name" })
 )
 public class AppVarDefine extends IdEntity {
 
-    private long appTypeId;
+    private AppType appType;
     private String name;// 变量名
+    private String defaultValue;
     private PortType portType; // 是否端口值
 
-    @Column(nullable = false)
-    public long getAppTypeId() {
-        return appTypeId;
+    @ManyToOne
+    @JoinColumn(name="app_type_id", nullable = false)
+    public AppType getAppType() {
+        return appType;
     }
 
-    public void setAppTypeId(long appTypeId) {
-        this.appTypeId = appTypeId;
+    public void setAppType(AppType appType) {
+        this.appType = appType;
     }
 
     @Column(length = 24, nullable = false)
@@ -31,6 +33,15 @@ public class AppVarDefine extends IdEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Column(length = 256)
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
     }
 
     @ManyToOne

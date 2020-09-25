@@ -63,48 +63,52 @@ public class ConfigDataInitializer {
     private void initAppVarDefine(AppType type) {
         if (type.getName().equals("Tomcat")) {
             AppVarDefine def = new AppVarDefine();
-            def.setAppTypeId(type.getId());
+            def.setAppType(type);
             def.setName("domain");
+            def.setDefaultValue("localhost");
             appVarDefineDao.save(def);
         }
         if (type.getName().equals("Tomcat")) {
             AppVarDefine def = new AppVarDefine();
-            def.setAppTypeId(type.getId());
+            def.setAppType(type);
             def.setName("context_path");
+            def.setDefaultValue("");
             appVarDefineDao.save(def);
         }
         if (type.getName().equals("Tomcat")) {
             AppVarDefine def = new AppVarDefine();
-            def.setAppTypeId(type.getId());
+            def.setAppType(type);
             def.setName("http_port");
             def.setPortType(portTypeDao.findOne(PortTypeConfiger.HTTP_ID));
             appVarDefineDao.save(def);
         }
         if (!type.getName().equals("Command")) {
             AppVarDefine def = new AppVarDefine();
-            def.setAppTypeId(type.getId());
+            def.setAppType(type);
             def.setName("server_port");
             def.setPortType(portTypeDao.findOne(PortTypeConfiger.SERVER_ID));
             appVarDefineDao.save(def);
         }
         if (!type.getName().equals("Command")) {
             AppVarDefine def = new AppVarDefine();
-            def.setAppTypeId(type.getId());
+            def.setAppType(type);
             def.setName("jmx_port");
             def.setPortType(portTypeDao.findOne(PortTypeConfiger.JMX_ID));
             appVarDefineDao.save(def);
         }
         if (type.getName().equals("Tomcat")) {
             AppVarDefine def = new AppVarDefine();
-            def.setAppTypeId(type.getId());
+            def.setAppType(type);
             def.setName("ajp_port");
             def.setPortType(portTypeDao.findOne(PortTypeConfiger.COMMON_ID));
+            appVarDefineDao.save(def);
         }
         if (type.getName().equals("Tomcat")) {
             AppVarDefine def = new AppVarDefine();
-            def.setAppTypeId(type.getId());
+            def.setAppType(type);
             def.setName("https_port");
             def.setPortType(portTypeDao.findOne(PortTypeConfiger.COMMON_ID));
+            appVarDefineDao.save(def);
         }
 
     }

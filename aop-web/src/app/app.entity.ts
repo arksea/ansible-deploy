@@ -23,7 +23,6 @@ export class AppVarDefine {
 export class AppType {
   id: number;
   name: string = '';
-  definitions: Array<AppVarDefine> = [];
 }
 
 export class AppVariable {

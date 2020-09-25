@@ -23,6 +23,8 @@ public class AppService {
     @Autowired
     private VersionDao versionDao;
     @Autowired
+    private AppVarDefineDao appVarDefineDao;
+    @Autowired
     GroupVarDao groupVarDao;
     @Autowired
     PortDao portDao;
@@ -54,14 +56,30 @@ public class AppService {
         return true;
     }
 
-    public App createAppForEdit(String appTypeName) {
+    public App createAppTemplate(String appTypeName) {
         AppType type = appTypeDao.findByName(appTypeName);
         App app = new App();
         app.setAppType(type);
-        app.setVersions(new HashSet<>());
-        app.setVars(new HashSet<>());
         Version ver = new Version();
-        return null;
+        ver.setName("Online");
+        ver.setRepository("trunk");
+        ver.setRevision("HEAD");
+        ver.setExecOpt("");
+        ver.setTargetHosts(new HashSet<>());
+        app.setVersions(new HashSet<>());
+        app.getVersions().add(ver);
+        app.setVars(new HashSet<>());
+        Iterable<AppVarDefine> defines = appVarDefineDao.findByAppTypeId(type.getId());
+        for (AppVarDefine def : defines) {
+            if (def.getPortType() == null) { //端口类型变量保存时自动分配，无需返回给客户端进行编辑
+                AppVariable var = new AppVariable();
+                var.setValue(def.getDefaultValue());
+                var.setName(def.getName());
+                var.setIsPort(def.getPortType() != null);
+                app.getVars().add(var);
+            }
+        }
+        return app;
     }
 
     @Transactional

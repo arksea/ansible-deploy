@@ -38,11 +38,20 @@ export class AppEditComponent implements OnInit {
         let params: ParamMap =  this.route.snapshot.paramMap;
         let idStr = params.get('id');
         let appType = params.get('appType');
-        this.app = svc.newApp(appType);
+        this.app = svc.createDefAppTemplate();
         this.appForm = this.makeFormGroup(this.app);
         this.deployPathAddon = this.makeAddon(this.app);
         if (idStr == 'new') {
             this.isNewAction = true;
+            svc.createAppTemplate(appType).subscribe(
+                ret => {
+                    if (ret.code == 0) {
+                        this.app = ret.result;
+                        this.appForm = this.makeFormGroup(this.app);
+                        this.deployPathAddon = this.makeAddon(this.app);
+                    }
+                }
+            );
         } else {
             this.isNewAction = false;
             let appId = Number(idStr);

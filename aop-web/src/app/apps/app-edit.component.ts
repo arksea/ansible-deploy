@@ -4,7 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 import { AppsService } from './apps.service';
 import { MessageNotify } from '../utils/message-notify';
-import { App,AppGroup, Host, AppVariable } from '../app.entity';
+import { App,AppGroup, Host, AppVariable, AppVarDefine } from '../app.entity';
 import { AccountService } from '../account/account.service';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { NewVersionDialog } from './new-version.dialog';
@@ -23,9 +23,9 @@ export class AppEditComponent implements OnInit {
     public groupSelectModel: any;
     public app: App;
     public appForm: FormGroup;
-    public deployPathAddon: string;
     public isNewAction: boolean;
     public userGroups: Observable<AppGroup[]>;
+    private varDefineMap: Map<string,AppVarDefine> = new Map();
 
     constructor(private svc: AppsService,
                 private hostSvc: HostsService,
@@ -40,7 +40,6 @@ export class AppEditComponent implements OnInit {
         let appType = params.get('appType');
         this.app = svc.createDefAppTemplate();
         this.appForm = this.makeFormGroup(this.app);
-        this.deployPathAddon = this.makeAddon(this.app);
         if (idStr == 'new') {
             this.isNewAction = true;
             svc.createAppTemplate(appType).subscribe(
@@ -48,7 +47,6 @@ export class AppEditComponent implements OnInit {
                     if (ret.code == 0) {
                         this.app = ret.result;
                         this.appForm = this.makeFormGroup(this.app);
-                        this.deployPathAddon = this.makeAddon(this.app);
                     }
                 }
             );
@@ -62,7 +60,6 @@ export class AppEditComponent implements OnInit {
                 } else {
                     this.app = a;
                     this.appForm = this.makeFormGroup(a);
-                    this.deployPathAddon = this.makeAddon(a);
                 }
             });
         }
@@ -87,15 +84,6 @@ export class AppEditComponent implements OnInit {
             f.addControl('var_' + v.name, new FormControl({ value: v.value, disabled: v.isPort }, [Validators.maxLength(128)]))
         }
         return f;
-    }
-
-    public makeAddon(app: App): string {
-        switch (app.appType.name) {
-            case 'Tomcat':
-                return '$HOME/tomcat/webapps/';
-            default:
-                return '$HOME/';
-        }
     }
 
     public save() {
@@ -191,36 +179,40 @@ export class AppEditComponent implements OnInit {
         }
     }
 
-    getVarDesc(variable: AppVariable): string {
-        switch(variable.name) {
-            case 'domain':
-                return 'Tomcat 域名';
-            case 'context_path':
-                return 'Tomcat ContextPath (URL路径)';
-            case 'ajp_port':
-                return 'AJP协议端口';
-            case 'server_port':
-                return '服务端口';
-            case 'https_port':
-                return 'HTTPS端口';
-            case 'http_port':
-                return 'HTTP端口';
-            case 'jmx_port':
-                return 'JMX端口';
-            default:
-                return '';
-        }
+    getVarDesc(app: App, variable: AppVariable): string {
+        let def = this.svc.getAppVarDefine(app.appType.id, variable.name);
+        return def.formLabel;
+        // switch(variable.name) {
+        //     case 'domain':
+        //         return 'Tomcat 域名';
+        //     case 'context_path':
+        //         return 'Tomcat ContextPath (URL路径)';
+        //     case 'ajp_port':
+        //         return 'AJP协议端口';
+        //     case 'server_port':
+        //         return '服务端口';
+        //     case 'https_port':
+        //         return 'HTTPS端口';
+        //     case 'http_port':
+        //         return 'HTTP端口';
+        //     case 'jmx_port':
+        //         return 'JMX端口';
+        //     default:
+        //         return '';
+        // }
     }
 
-    getInputAddon(variable: AppVariable): string {
-        switch(variable.name) {
-            case 'domain':
-                return '';
-            case 'context_path':
-                return 'http://domain:port/';
-            default:
-                return '';
-        }
+    getInputAddon(app: App, variable: AppVariable): string {
+        let def = this.svc.getAppVarDefine(app.appType.id, variable.name);
+        return def.inputAddon;
+        // switch(variable.name) {
+        //     case 'domain':
+        //         return '';
+        //     case 'context_path':
+        //         return 'http://domain:port/';
+        //     default:
+        //         return '';
+        // }
     }
 
     getInputType(variable: AppVariable): string {

@@ -46,7 +46,7 @@
                 </label>
                 <div class="input-group">
                     <div class="input-group-prepend">
-                        <span class="input-group-text">{{deployPathAddon}}</span>
+                        <span class="input-group-text">$HOME/</span>
                     </div>
                     <input type="text" id="deployPath" formControlName="deployPath" class="form-control"
                         placeholder="建议设置为应用短名">
@@ -62,12 +62,12 @@
                 </select>
             </div>
             <div *ngFor="let v of app.vars" class="col-lg-6 col-md-6 form-group mb-4">
-                <label for="var_{{v.name}}">{{getVarDesc(v)}}
+                <label for="var_{{v.name}}">{{getVarDesc(app, v)}}
                     <span class="text-danger" *ngIf="appForm.get('var_'+v.name)?.invalid">(长度0至128)</span>
                 </label>
                 <div class="input-group">
-                    <div class="input-group-prepend" *ngIf="getInputAddon(v).length > 0">
-                        <span class="input-group-text">{{getInputAddon(v)}}</span>
+                    <div class="input-group-prepend" *ngIf="getInputAddon(app,v).length > 0">
+                        <span class="input-group-text">{{getInputAddon(app,v)}}</span>
                     </div>
                     <input [type]="getInputType(v)" id="var_{{v.name}}" formControlName="var_{{v.name}}"
                         class="form-control" [placeholder]="v.isPort?'保存时自动分配':''">

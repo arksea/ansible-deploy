@@ -66,6 +66,8 @@ public class ConfigDataInitializer {
             def.setAppType(type);
             def.setName("domain");
             def.setDefaultValue("localhost");
+            def.setFormLabel("Tomcat 域名");
+            def.setInputAddon("");
             appVarDefineDao.save(def);
         }
         if (type.getName().equals("Tomcat")) {
@@ -73,12 +75,15 @@ public class ConfigDataInitializer {
             def.setAppType(type);
             def.setName("context_path");
             def.setDefaultValue("");
+            def.setFormLabel("Tomcat ContextPath (URL路径)");
+            def.setInputAddon("http://your_app_domain/");
             appVarDefineDao.save(def);
         }
         if (type.getName().equals("Tomcat")) {
             AppVarDefine def = new AppVarDefine();
             def.setAppType(type);
             def.setName("http_port");
+            def.setFormLabel("HTTP端口");
             def.setPortType(portTypeDao.findOne(PortTypeConfiger.HTTP_ID));
             appVarDefineDao.save(def);
         }
@@ -86,13 +91,18 @@ public class ConfigDataInitializer {
             AppVarDefine def = new AppVarDefine();
             def.setAppType(type);
             def.setName("server_port");
-            def.setPortType(portTypeDao.findOne(PortTypeConfiger.SERVER_ID));
+            boolean isTomcat = type.getName().equals("Tomcat");
+            String formLabel = isTomcat?"服务管理端口":"应用服务端口";
+            def.setFormLabel(formLabel);
+            int portId = isTomcat?PortTypeConfiger.COMMON_ID:PortTypeConfiger.SERVER_ID;
+            def.setPortType(portTypeDao.findOne(portId));
             appVarDefineDao.save(def);
         }
         if (!type.getName().equals("Command")) {
             AppVarDefine def = new AppVarDefine();
             def.setAppType(type);
             def.setName("jmx_port");
+            def.setFormLabel("JMX端口");
             def.setPortType(portTypeDao.findOne(PortTypeConfiger.JMX_ID));
             appVarDefineDao.save(def);
         }
@@ -100,6 +110,7 @@ public class ConfigDataInitializer {
             AppVarDefine def = new AppVarDefine();
             def.setAppType(type);
             def.setName("ajp_port");
+            def.setFormLabel("AJP协议端口");
             def.setPortType(portTypeDao.findOne(PortTypeConfiger.COMMON_ID));
             appVarDefineDao.save(def);
         }
@@ -107,6 +118,7 @@ public class ConfigDataInitializer {
             AppVarDefine def = new AppVarDefine();
             def.setAppType(type);
             def.setName("https_port");
+            def.setFormLabel("HTTPS端口");
             def.setPortType(portTypeDao.findOne(PortTypeConfiger.COMMON_ID));
             appVarDefineDao.save(def);
         }

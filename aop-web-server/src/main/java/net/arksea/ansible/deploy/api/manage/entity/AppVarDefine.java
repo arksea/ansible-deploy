@@ -1,5 +1,4 @@
 package net.arksea.ansible.deploy.api.manage.entity;
-
 import javax.persistence.*;
 
 /**
@@ -13,6 +12,8 @@ public class AppVarDefine extends IdEntity {
 
     private AppType appType;
     private String name;// 变量名
+    private String formLabel="";  //表单输入框标签
+    private String inputAddon=""; //表单输入框提示前缀
     private String defaultValue;
     private PortType portType; // 是否端口值
 
@@ -33,6 +34,24 @@ public class AppVarDefine extends IdEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Column(length = 64, nullable = false)
+    public String getFormLabel() {
+        return formLabel;
+    }
+
+    public void setFormLabel(String formLabel) {
+        this.formLabel = formLabel;
+    }
+
+    @Column(length = 32)
+    public String getInputAddon() {
+        return inputAddon;
+    }
+
+    public void setInputAddon(String inputAddon) {
+        this.inputAddon = inputAddon;
     }
 
     @Column(length = 256)

@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.TreeSet;
 
 /**
  *
@@ -116,31 +115,39 @@ public class AppService {
     }
 
     private void setPortsAndVars(App app) {
-        List<AppPort> cfg = AppPortsConfiger.get(app.getAppType().getName());
-        for (AppPort p : cfg) {
-            int n = portDao.assignForAppByTypeId(app.getId(), p.portType.getId());
-            if (n == 0) {
-                throw new ServiceException("'"+p.portType.getName()+"'端口可用数不够，请联系管理员");
+        List<AppVarDefine> defines = appVarDefineDao.findByAppTypeId(app.getAppType().getId());
+        int portCount = 0;
+        for (AppVarDefine def: defines) {
+            if (def.getPortType() != null) {
+                portCount++;
+                PortType portType = def.getPortType();
+                int n = portDao.assignForAppByTypeId(app.getId(), portType.getId());
+                if (n == 0) {
+                    throw new ServiceException("'"+portType.getName()+"'端口可用数不够，请联系管理员");
+                }
+                portStatDao.incRestCount(-1, portType.getId());
             }
-            portStatDao.incRestCount(-1, p.portType.getId());
         }
         List<Port> ports = portDao.findByAppId(app.getId());
-        if (ports.size() < cfg.size()) {
+        if (ports.size() < portCount) {
             throw new ServiceException("没有足够端口可供分配，请联系管理员");
-        } else if (ports.size() > cfg.size()) {
+        } else if (ports.size() > portCount) {
             throw new ServiceException("断言失败：分配端口逻辑错误");
         }
-        for (AppPort c: cfg) {
-            for (Port p: ports) {
-                if (c.portType.getId() == p.getTypeId()) {
-                    AppVariable var = new AppVariable();
-                    var.setAppId(app.getId());
-                    var.setIsPort(true);
-                    var.setName(c.name);
-                    var.setValue(Integer.toString(p.getValue()));
-                    app.getVars().add(var);
-                    ports.remove(p);
-                    break;
+        for (AppVarDefine def: defines) {
+            if (def.getPortType() != null) {
+                PortType portType = def.getPortType();
+                for (Port p : ports) {
+                    if (portType.getId() == p.getTypeId()) {
+                        AppVariable var = new AppVariable();
+                        var.setAppId(app.getId());
+                        var.setIsPort(true);
+                        var.setName(def.getName());
+                        var.setValue(Integer.toString(p.getValue()));
+                        app.getVars().add(var);
+                        ports.remove(p);
+                        break;
+                    }
                 }
             }
         }

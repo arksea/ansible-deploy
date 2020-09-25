@@ -6,7 +6,7 @@ import { HttpUtils } from '../utils/http-utils';
 import { environment } from '../../environments/environment';
 import { map, first } from 'rxjs/operators';
 import { CrudModel, IModelInfo } from '../utils/crud-model';
-import { Version } from '../app.entity';
+import { Version, AppVarDefine } from '../app.entity';
 
 class AppsModelInfo implements IModelInfo<number, App> {
     private sortType: string;
@@ -49,6 +49,7 @@ export class AppsService {
     public sortTypes: Array<SortType> = [{type:"name", order:"asc", desc:"应用名-升序"},
                                          {type:"name", order:"desc",desc:"应用名-降序"}]
     public selectedSortType: BehaviorSubject<SortType> = new BehaviorSubject(this.sortTypes[0])
+    private varDefineMap: Map<string,AppVarDefine> = new Map();
 
     public constructor(private httpUtils: HttpUtils) {
     }
@@ -96,24 +97,38 @@ export class AppsService {
 
     public queryUserApps() {
         let url = environment.apiUrl + '/api/user/apps';
-        this.httpUtils.httpGet('查询用户应用', url).subscribe(data => {
-            if (data.code == 0) {
-                this.appsModel.opResetModels.next(data.result);
+        this.httpUtils.httpGet('查询用户应用', url).subscribe(ret => {
+            if (ret.code == 0) {
+                this.appsModel.opResetModels.next(ret.result);
             }
         });
         url = environment.apiUrl + '/api/user/groups';
-        this.httpUtils.httpGet('查询用户的分组', url).subscribe(data => {
-            if (data.code == 0) {
-                this.userGroups.next(data.result);
+        this.httpUtils.httpGet('查询用户的分组', url).subscribe(ret => {
+            if (ret.code == 0) {
+                this.userGroups.next(ret.result);
             }
         });
+        url = environment.apiUrl + '/api/varDefines';
+        this.httpUtils.httpGet('查询变量定义',url).subscribe(ret => {
+            if (ret.code == 0) {
+                for (let def of ret.result) {
+                    let key = '' + def.appType.id + ':' + def.name;
+                    this.varDefineMap[key] = def;
+                }
+            }
+        })
     }
+
 
     public createAppTemplate(appType: string): Observable<ServiceResponse<App>> {
         let url = environment.apiUrl + '/api/apps/template/'+appType;
         return this.httpUtils.httpGet('获取应用创建模版', url)
     }
 
+    public getAppVarDefine(appTypeId: number, name: string): AppVarDefine {
+        let key = '' + appTypeId + ':' + name;
+        return this.varDefineMap[key];
+    }
 
     public createDefAppTemplate(): App {
         let app = new App();

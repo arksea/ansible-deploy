@@ -1,0 +1,60 @@
+<div class="container-xl mt-3">
+    <div class="ml-3 mb-5">
+        <h1>操作管理</h1>
+    </div>
+    <div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <div class="d-flex">
+                    <div class="mr-auto">
+                        <div class="pr-2 dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                应用类型：{{svc.appType?.name}}
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a *ngFor="let t of svc.appTypes" class="dropdown-item"
+                                    (click)="onSelectAppTypeBtnClick(t)">{{t.name}}</a>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-success mr-2"
+                        [disabled]="account.perm('操作管理:修改') | async">新类型
+                    </button>
+                    <button type="button" class="btn btn-success"
+                        [disabled]="account.perm('操作管理:修改') | async"
+                        (click)="onNewOperationBtnClick()">新操作
+                    </button>
+                </div>
+            </li>
+            <li *ngFor="let o of svc.operationList | async;index as i;" class="list-group-item">
+                <div class="d-flex mt-2">
+                    <div class="mr-auto">
+                        <strong>{{o.name}}</strong><span [hidden]="!o.released" class="text-danger"> (测试中)</span>
+                        <p>{{o.description}}</p>
+                    </div>
+                    <div class="p-1 mt-1">
+                        <button type="button" class="btn btn-outline-danger btn-sm"
+                            [disabled]="account.perm('操作管理:修改') | async"
+                            (click)="onDeleteOperationBtnClick(o)">删除
+                        </button>
+                    </div>
+                    <div class="p-1 mt-1">
+                            <button type="button" class="btn btn-sm"
+                                [class.btn-outline-danger]="o.released"
+                                [class.btn-outline-info]="!o.released"
+                                [disabled]="account.perm('操作管理:修改') | async"
+                                >{{o.released?'禁用':'发布'}}
+                            </button>
+                        </div>
+                    <div class="p-1 mt-1">
+                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                            [disabled]="account.perm('操作管理:修改') | async"
+                            (click)="onEditOperationBtnClick(o)">编辑
+                        </button>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

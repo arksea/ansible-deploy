@@ -1,7 +1,9 @@
 package net.arksea.ansible.deploy.api.manage.rest;
 
 import net.arksea.ansible.deploy.api.ResultCode;
+import net.arksea.ansible.deploy.api.manage.dao.AppTypeDao;
 import net.arksea.ansible.deploy.api.manage.entity.App;
+import net.arksea.ansible.deploy.api.manage.entity.AppType;
 import net.arksea.ansible.deploy.api.manage.service.AppService;
 import net.arksea.ansible.deploy.api.manage.service.VersionService;
 import net.arksea.restapi.BaseResult;
@@ -25,6 +27,9 @@ public class AppsController {
     AppService appService;
 
     @Autowired
+    AppTypeDao appTypeDao;
+
+    @Autowired
     VersionService versionService;
 
     private static final String MEDIA_TYPE = "application/json; charset=UTF-8";
@@ -32,7 +37,7 @@ public class AppsController {
     //-------------------------------------------------------------------------
     @RequiresPermissions("应用:修改")
     @RequestMapping(path="apps/template/{typeName}", method = RequestMethod.GET, produces = MEDIA_TYPE)
-    public BaseResult getAppTemplate(@PathVariable("typeName") String typeName, HttpServletRequest httpRequest) {
+    public RestResult<App> getAppTemplate(@PathVariable("typeName") String typeName, HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         App app = appService.createAppTemplate(typeName);
         return new RestResult<>(0, app, reqid);
@@ -75,6 +80,14 @@ public class AppsController {
         Iterable<App> apps = appService.findNotInGroup();
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         return new RestResult<>(0, apps, reqid);
+    }
+    //-------------------------------------------------------------------------
+    @RequiresPermissions("应用:查询")
+    @RequestMapping(path="appTypes", method = RequestMethod.GET, produces = MEDIA_TYPE)
+    public RestResult<Iterable<AppType>> getAppTypes(HttpServletRequest httpRequest) {
+        Iterable<AppType> types = appTypeDao.findAll();
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        return new RestResult<>(0, types, reqid);
     }
     //-------------------------------------------------------------------------
 

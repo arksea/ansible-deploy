@@ -182,37 +182,11 @@ export class AppEditComponent implements OnInit {
     getVarDesc(app: App, variable: AppVariable): string {
         let def = this.svc.getAppVarDefine(app.appType.id, variable.name);
         return def.formLabel;
-        // switch(variable.name) {
-        //     case 'domain':
-        //         return 'Tomcat 域名';
-        //     case 'context_path':
-        //         return 'Tomcat ContextPath (URL路径)';
-        //     case 'ajp_port':
-        //         return 'AJP协议端口';
-        //     case 'server_port':
-        //         return '服务端口';
-        //     case 'https_port':
-        //         return 'HTTPS端口';
-        //     case 'http_port':
-        //         return 'HTTP端口';
-        //     case 'jmx_port':
-        //         return 'JMX端口';
-        //     default:
-        //         return '';
-        // }
     }
 
     getInputAddon(app: App, variable: AppVariable): string {
         let def = this.svc.getAppVarDefine(app.appType.id, variable.name);
         return def.inputAddon;
-        // switch(variable.name) {
-        //     case 'domain':
-        //         return '';
-        //     case 'context_path':
-        //         return 'http://domain:port/';
-        //     default:
-        //         return '';
-        // }
     }
 
     getInputType(variable: AppVariable): string {

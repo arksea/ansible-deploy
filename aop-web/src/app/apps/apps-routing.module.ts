@@ -5,7 +5,6 @@ import { AuthGuard } from '../account/auth-guard';
 import { AppListComponent } from './app-list.component';
 import { AppEditComponent } from './app-edit.component';
 import { AppComponent } from './app.component';
-// import { VersionEditComponent } from './version-edit.component';
 
 const routes: Routes = [
   {
@@ -15,7 +14,6 @@ const routes: Routes = [
       { path: ':id/edit', component: AppEditComponent, canActivate: [AuthGuard] },
       { path: ':id/edit/:appType', component: AppEditComponent, canActivate: [AuthGuard] },
       { path: ':id', component: AppComponent, canActivate: [AuthGuard] },
-      // { path: 'edit/ver', component: VersionEditComponent, canActivate: [AuthGuard] },
     ]
   }
 ];

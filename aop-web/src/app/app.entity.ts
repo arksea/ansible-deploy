@@ -35,6 +35,15 @@ export class AppVariable {
   isPort: boolean;// 是否端口值，用于主机范围的唯一性判断
 }
 
+export class AppOperation {
+  id: number;
+  appType: AppType;
+  name: string = '';
+  description: string = '';
+  playbook: string = '';
+  released: boolean = false;
+}
+
 export class Port {
   id: number;
   typeId: number;

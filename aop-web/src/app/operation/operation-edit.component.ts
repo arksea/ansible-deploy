@@ -43,7 +43,6 @@ export class OperationEditComponent implements OnInit {
         if (idStr == 'new') {
             this.isNewAction = true;
             this.operation = new AppOperation();
-            this.operation.appType = this.appType;
         } else {
             this.isNewAction = false;
             let opId = Number(idStr);
@@ -68,6 +67,9 @@ export class OperationEditComponent implements OnInit {
         op.name = this.name.value;
         op.description = this.desc.value;
         op.playbook = this.playbook.value;
+        if (this.isNewAction) {
+            op.appType = this.appType;
+        }
         this.svc.saveOperation(op).subscribe(ret => {
             if (ret.code == 0) {
                 if (this.isNewAction) {

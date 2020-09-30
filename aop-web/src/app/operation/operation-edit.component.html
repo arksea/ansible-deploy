@@ -28,8 +28,8 @@
         <div class="mb-4">
             <div class="form-group">
                 <label for="playbook">Ansible操作脚本
-                    <span class="text-danger" *ngIf="desc.errors?.required">*</span>
-                    <span class="text-danger" *ngIf="desc.errors?.minlength || desc?.errors?.maxlength">(长度6至512)</span>
+                    <span class="text-danger" *ngIf="playbook.errors?.required">*</span>
+                    <span class="text-danger" *ngIf="playbook.errors?.minlength || playbook?.errors?.maxlength">(长度小于65535)</span>
                 </label>
                 <textarea id="playbook" class="form-control" rows="19" formControlName="playbook"></textarea>
             </div>

@@ -42,7 +42,8 @@
                             </div>
                             <div class="pl-1">
                                 <button type="button" class="btn btn-outline-success btn-sm"
-                                    [disabled]="account.perm('应用:部署') | async">上线</button>
+                                    [disabled]="account.perm('应用:部署') | async"
+                                    (click)="onOperationClick()">上线</button>
                             </div>
                         </div>
                     </div>

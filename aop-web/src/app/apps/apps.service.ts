@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject, BehaviorSubject, Observable } from 'rxjs';
-import { App, AppGroup, AppType } from '../app.entity';
+import { App, AppGroup, AppType, OperationJob } from '../app.entity';
 import { ServiceResponse } from '../utils/http-utils';
 import { HttpUtils } from '../utils/http-utils';
 import { environment } from '../../environments/environment';
@@ -37,6 +37,17 @@ class SortType {
     type: string;
     order: string;
     desc: string;
+}
+
+class StartOpeartionJob {
+    appId: number;
+    operationId: number;
+    hosts: Array<number> = [];
+}
+
+export class PollLogsResult {
+    log: string;
+    index: number;
 }
 
 @Injectable()
@@ -217,5 +228,20 @@ export class AppsService {
         return this.appsModel.modelData.pipe(first(),map(data => {
             return data.map.get(data.selected);
         }))
+    }
+
+    public startJob(): Observable<ServiceResponse<OperationJob>> {
+        const url = environment.apiUrl + '/api/jobs';
+        const body = new StartOpeartionJob();
+        body.appId = 9;
+        body.operationId = 3;
+        body.hosts.push(1);
+        body.hosts.push(2);
+        return this.httpUtils.httpPost('开始操作任务', url, body);
+    }
+
+    public pollJobLogs(jobId: number, index: number): Observable<ServiceResponse<PollLogsResult>> {
+        const url = environment.apiUrl + '/api/jobs/' + jobId + '/logs/' + index ;
+        return this.httpUtils.httpGet('读取操作日志', url);
     }
 }

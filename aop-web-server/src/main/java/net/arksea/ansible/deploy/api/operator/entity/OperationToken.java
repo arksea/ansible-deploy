@@ -1,7 +1,6 @@
 package net.arksea.ansible.deploy.api.operator.entity;
 
 import net.arksea.ansible.deploy.api.auth.entity.User;
-import net.arksea.ansible.deploy.api.manage.entity.App;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -19,7 +18,6 @@ public class OperationToken extends IdEntity {
     private Timestamp releaseTime;
     private Boolean released;
 
-    @ManyToOne(targetEntity = App.class)
     @JoinColumn(nullable = false, unique = true)
     public Long getAppId() {
         return appId;

@@ -1,5 +1,7 @@
 package net.arksea.ansible.deploy.api.operator.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 
@@ -54,6 +56,7 @@ public class OperationJob extends IdEntity {
     }
 
     @Column
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "GMT+08:00")
     public Timestamp getStartTime() {
         return startTime;
     }
@@ -63,6 +66,7 @@ public class OperationJob extends IdEntity {
     }
 
     @Column
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "GMT+08:00")
     public Timestamp getEndTime() {
         return endTime;
     }
@@ -73,7 +77,7 @@ public class OperationJob extends IdEntity {
 
     @Basic(fetch= FetchType.LAZY)
     @Lob
-    @Column(nullable = false)
+    @Column
     public String getLog() {
         return log;
     }

@@ -1,5 +1,6 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
+import net.arksea.ansible.deploy.api.ServiceException;
 import net.arksea.ansible.deploy.api.auth.dao.UserDao;
 import net.arksea.ansible.deploy.api.manage.dao.AppDao;
 import net.arksea.ansible.deploy.api.manage.dao.AppGroupDao;

@@ -109,3 +109,14 @@ export class PortSection {
   maxValue: number;
 
 }
+
+export class OperationJob {
+  id: number;
+  appId: number;
+  operatorId: number;
+  operationId: number;
+  execHost: string;
+  startTime: string;
+  endTime: string;
+  log: string;
+}

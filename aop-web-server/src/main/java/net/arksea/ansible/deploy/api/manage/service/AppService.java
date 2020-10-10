@@ -1,7 +1,10 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
+import net.arksea.ansible.deploy.api.ServiceException;
 import net.arksea.ansible.deploy.api.manage.dao.*;
 import net.arksea.ansible.deploy.api.manage.entity.*;
+import net.arksea.ansible.deploy.api.operator.dao.OperationTokenDao;
+import net.arksea.ansible.deploy.api.operator.entity.OperationToken;
 import net.arksea.restapi.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,6 +34,8 @@ public class AppService {
     PortsStatDao portStatDao;
     @Autowired
     AppTypeDao appTypeDao;
+    @Autowired
+    OperationTokenDao operationTokenDao;
 
     @Transactional
     public boolean deleteApp(long appId) {
@@ -106,6 +111,7 @@ public class AppService {
                     versionDao.save(v);
                 }
             }
+            createOperationToken(saved.getId());
             return saved;
         } catch (ServiceException ex) {
             throw ex;
@@ -151,6 +157,12 @@ public class AppService {
                 }
             }
         }
+    }
+
+    private void createOperationToken(long appId) {
+        OperationToken token = new OperationToken();
+        token.setAppId(appId);
+        operationTokenDao.save(token);
     }
 
     public App findOne(final Long id) {

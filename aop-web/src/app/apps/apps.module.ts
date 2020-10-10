@@ -9,13 +9,13 @@ import { RouterModule } from '@angular/router';
 import { AppsRoutingModule } from './apps-routing.module';
 import { AppsComponent } from './apps.component';
 import { AccountModule } from '../account/account.module';
-// import { NewGroupDialog } from './new-group.dialog';
 import { AppsService } from './apps.service';
 import { AppListComponent } from './app-list.component';
 import { AppEditComponent } from './app-edit.component';
 import { AppComponent } from './app.component';
 import { NewVersionDialog } from './new-version.dialog';
 import { AddHostDialog } from './add-host.dialog';
+import { JobPlayDialog } from './job-play.dialog';
 
 @NgModule({
   imports: [
@@ -25,10 +25,10 @@ import { AddHostDialog } from './add-host.dialog';
     VenderModule, NgbPaginationModule, NgbAlertModule, NgbModule,
     AccountModule, AppsRoutingModule],
   declarations: [
-    AppsComponent, AppListComponent, AppEditComponent, AppComponent, NewVersionDialog, AddHostDialog
+    AppsComponent, AppListComponent, AppEditComponent, AppComponent, NewVersionDialog, AddHostDialog,JobPlayDialog
   ],
   entryComponents: [
-    NewVersionDialog, AddHostDialog
+    NewVersionDialog, AddHostDialog,JobPlayDialog
   ],
   providers: [AppsService],
   exports: []

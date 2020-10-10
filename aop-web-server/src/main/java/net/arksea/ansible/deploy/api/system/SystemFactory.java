@@ -19,14 +19,30 @@ import org.springframework.stereotype.Component;
 @Component
 public class SystemFactory {
     private static final Logger logger = LogManager.getLogger(SystemFactory.class);
-    @Bean(name = "system")
-    public ActorSystem createSystem() {
-        Config config = ConfigFactory.load();
-        return ActorSystem.create("system",config.getConfig("system").withFallback(config));
-    }
 
     @Autowired
     private Environment env;
+    Config config;
+
+    public SystemFactory() {
+        Config cfg = ConfigFactory.load();
+        config = cfg.getConfig("system").withFallback(cfg);
+    }
+
+    @Bean(name = "system")
+    public ActorSystem createSystem() {
+        return ActorSystem.create("system",config.getConfig("system").withFallback(config));
+    }
+
+    @Bean(name = "systemBindPort")
+    public int bindPort() {
+        return config.getInt("akka.remote.netty.tcp.port");
+    }
+
+    @Bean(name = "systemConfig")
+    Config createConfig() {
+        return config;
+    }
 
     @Bean(name= "systemProfile")
     public String systemProfile() {

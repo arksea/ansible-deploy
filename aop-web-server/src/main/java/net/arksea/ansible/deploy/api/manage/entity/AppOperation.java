@@ -1,7 +1,5 @@
 package net.arksea.ansible.deploy.api.manage.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 
 /**
@@ -35,7 +33,7 @@ public class AppOperation extends IdEntity {
         this.name = name;
     }
 
-    @Column(length = 1024, nullable = false)
+    @Column(length = 128, nullable = false)
     public String getDescription() {
         return description;
     }

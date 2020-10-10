@@ -9,6 +9,7 @@ import { NewVersionDialog } from './new-version.dialog';
 import { HostsService } from '../hosts/hosts.service';
 import { AddHostDialog } from './add-host.dialog';
 import { Version } from '../app.entity';
+import { JobPlayDialog } from './job-play.dialog';
 
 
 @Component({
@@ -38,4 +39,8 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit() {}
+
+    onOperationClick() {
+        let ref = this.modal.open(JobPlayDialog, {size: 'lg', scrollable: true});
+    }
 }

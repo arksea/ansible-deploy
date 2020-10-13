@@ -68,6 +68,53 @@ task ngBuild(type: Exec) {
     commandLine 'cmd', '/c', 'ng build --prod'
 }
 
+
+
+task publishQA {
+    dependsOn(build,ngBuild)
+    doLast {
+        //拷贝前先删除部署目录
+        delete('publish/qa/WEB-INF')
+        delete('publish/qa/META-INF')
+        copy { //拷贝本项目WEB相关文件
+            from 'src/main/webapp/'
+            into 'publish/qa'
+        }
+        copy { //拷贝本项目WEB相关文件
+            from '../aop-web/dist/aop-web'
+            into 'publish/qa'
+        }
+        delete('tomcat/webapps/aop-web-server/WEB-INF/lib/xml-apis-1.0.b2.jar')
+        copy { //拷贝依赖库
+            from configurations.runtime
+            into 'publish/qa/WEB-INF/lib'
+        }
+        copy { //拷贝类
+            from 'build/classes/java/main/'
+            into 'publish/qa/WEB-INF/classes'
+        }
+        copy { //拷贝资源
+            from 'build/resources/main/'
+            into 'publish/qa/WEB-INF/classes'
+        }
+        copy { //拷贝资源
+            from 'build/resources/test/'
+            into 'publish/qa/WEB-INF/classes'
+        }
+        copy { //拷贝META-INF
+            from 'build/tmp/war/'
+            into 'publish/qa/META-INF/'
+        }
+    }
+}
+
+//发布部署文件，并提交到部署SVN
+task publishToSvnQA(type: Exec) {
+    dependsOn publishQA
+    commandLine 'cmd', '/c', 'TortoiseProc.exe /command:commit /path:"./publish/qa"'
+}
+
+
 //------------------------------------------------------------------------
 //Development
 

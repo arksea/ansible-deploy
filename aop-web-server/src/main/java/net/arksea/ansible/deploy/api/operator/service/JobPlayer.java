@@ -2,6 +2,7 @@ package net.arksea.ansible.deploy.api.operator.service;
 
 import akka.actor.AbstractActor;
 import akka.actor.Actor;
+import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.japi.Creator;
 import akka.japi.pf.ReceiveBuilder;
@@ -12,6 +13,7 @@ import scala.concurrent.duration.Duration;
 
 import java.sql.Timestamp;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -25,6 +27,7 @@ public class JobPlayer extends AbstractActor {
     private final LinkedList<String> logs = new LinkedList<>();
     private final JobResources beans;
     private final long MAX_LOG_LEN_PER_REQUEST = 1024;
+    private final long STOP_JOB_DELAY = 10;
 
     private JobPlayer(OperationJob job, Set<Long>hosts, JobResources beans) {
         this.job = job;
@@ -48,8 +51,20 @@ public class JobPlayer extends AbstractActor {
             this.index = index;
         }
     }
-    public static class StopJob {} {
+    public static class OfferLog {
+        public final String log;
+        public OfferLog(String log) {
+            this.log = log;
+        }
     }
+    public static class OfferLogs {
+        public final List<String> logs;
+        public OfferLogs(List<String> logs) {
+            this.logs = logs;
+        }
+    }
+    public static class StopJob {}
+    public static class StartJob{}
 
     public void preStart() {
         context().system().scheduler().scheduleOnce(
@@ -71,17 +86,29 @@ public class JobPlayer extends AbstractActor {
     @Override
     public Receive createReceive() {
         return ReceiveBuilder.create()
-                .match(Init.class, this::handleInit)
-                .match(PollLogs.class, this::handlePollLogs)
-                .match(StopJob.class, this::handleStopJob)
+                .match(Init.class,      this::handleInit)
+                .match(PollLogs.class,  this::handlePollLogs)
+                .match(OfferLog.class,  this::handleOfferLog)
+                .match(OfferLogs.class, this::handleOfferLogs)
+                .match(StartJob.class,  this::handleStartJob)
+                .match(StopJob.class,   this::handleStopJob)
                 .build();
     }
 
     private void handleInit(Init msg) {
-        JobContextCreator creator = new JobContextCreator(job, hosts, beans, logs);
+        JobContextCreator creator = new JobContextCreator(job, hosts, beans, this.logs::offer);
         creator.run();
+        self().tell(new StartJob(), self());
+    }
+
+    private void handleStartJob(StartJob msg) {
+        ActorRef self = self ();
+        JobPlaybookRunner runner = new JobPlaybookRunner(job, hosts, beans,
+                str -> self.tell(new OfferLog(str), ActorRef.noSender())
+        );
+        runner.run();
         context().system().scheduler().scheduleOnce(
-                Duration.create(10, TimeUnit.SECONDS),
+                Duration.create(STOP_JOB_DELAY, TimeUnit.SECONDS),
                 self(),new StopJob(),context().dispatcher(),self());
     }
 
@@ -103,5 +130,13 @@ public class JobPlayer extends AbstractActor {
 
     private void handleStopJob(StopJob msg) {
         context().stop(self());
+    }
+    private void handleOfferLog(OfferLog msg) {
+        this.logs.offer(msg.log);
+    }
+    private void handleOfferLogs(OfferLogs msg) {
+        for(String log : msg.logs) {
+            this.logs.offer(log);
+        }
     }
 }

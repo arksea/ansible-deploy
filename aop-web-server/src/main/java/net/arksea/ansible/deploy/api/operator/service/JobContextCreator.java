@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Queue;
 import java.util.Set;
 
 
@@ -23,30 +22,33 @@ public class JobContextCreator {
     private JobResources resources;
     private OperationJob job;
     private Set<Long> hosts;
-    private Queue<String> logsQueue;
+    private IJobLogger jobLogger;
 
-    public JobContextCreator(OperationJob job, Set<Long> hosts, JobResources resources, Queue<String> logsQueue) {
+    public JobContextCreator(OperationJob job, Set<Long> hosts, JobResources resources, IJobLogger jobLogger) {
         this.job = job;
         this.hosts = hosts;
         this.resources = resources;
-        this.logsQueue = logsQueue;
+        this.jobLogger = jobLogger;
     }
 
     public void run() {
         try {
-            logsQueue.offer("初始化工作目录:\n");
-            logsQueue.offer("生成playbook文件...");
+            log("初始化工作目录:\n");
+            log("生成playbook文件...");
             generatePlaybookFile();
-            logsQueue.offer("成功\n生成hosts文件...");
+            log("成功\n生成hosts文件...");
             generateHostFile();
-            logsQueue.offer("成功\n");
-            logsQueue.offer("初始化工作目录完成\n");
+            log("成功\n");
+            log("初始化工作目录完成\n");
         } catch (Exception ex) {
-            logsQueue.offer("失败\n");
-            throw new ServiceException("初始化工作目录失败", ex);
+            log("失败\n");
+            throw new ServiceException("初始化工作目录失败\n", ex);
         }
     }
 
+    private void log(String str) {
+        jobLogger.log(str);
+    }
     private String getJobPath() {
         LocalDate localDate = LocalDate.now();
         return resources.jobWorkRoot + "/" + localDate + "/" + job.getId() + "/";
@@ -108,7 +110,7 @@ public class JobContextCreator {
             for (final Long hid : hosts) {
                 Host h = resources.hostDao.findOne(hid);
                 if (h == null) {
-                    logsQueue.offer("The specified host: "+hid + " not found");
+                    log("The specified host: "+hid + " not found");
                 } else {
                     writer.append(h.getPrivateIp());
                     writer.append("\n");

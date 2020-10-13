@@ -3,6 +3,7 @@ package net.arksea.ansible.deploy.api.manage.rest;
 import net.arksea.ansible.deploy.api.ResultCode;
 import net.arksea.ansible.deploy.api.manage.dao.AppOperationDao;
 import net.arksea.ansible.deploy.api.manage.entity.AppOperation;
+import net.arksea.ansible.deploy.api.manage.entity.AppOperationCode;
 import net.arksea.ansible.deploy.api.manage.service.OperationsService;
 import net.arksea.restapi.RestException;
 import net.arksea.restapi.RestResult;
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Create by xiaohaixing on 2020/9/25
@@ -56,7 +56,7 @@ public class OperationController {
     public String save(@RequestBody final AppOperation operation,
                            final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        AppOperation saved = operationsService.save(operation);
+        AppOperation saved = operationsService.saveOperation(operation);
         return RestUtils.createResult(ResultCode.SUCCEED, saved.getId(), reqid);
     }
 
@@ -66,5 +66,14 @@ public class OperationController {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         operationDao.delete(id);
         return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+    }
+
+    @RequiresPermissions("操作管理:修改")
+    @RequestMapping(path="codes", method = RequestMethod.POST, produces = MEDIA_TYPE)
+    public String saveOperationCode(@RequestBody final AppOperationCode code,
+                       final HttpServletRequest httpRequest) {
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        AppOperationCode saved = operationsService.saveOperationCode(code);
+        return RestUtils.createResult(ResultCode.SUCCEED, saved.getId(), reqid);
     }
 }

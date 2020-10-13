@@ -1,10 +1,9 @@
 package net.arksea.ansible.deploy.api.operator.service;
 
-import net.arksea.ansible.deploy.api.ServiceException;
+import akka.dispatch.Futures;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 
 import java.io.*;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -25,11 +24,15 @@ public class JobPlaybookRunner {
 
     public void run() {
         try {
-            log("执行Playbook脚本:\n");
-            log("执行Playbook脚本完成\n");
+            log("开始操作任务:\n");
+            String cmd = "";
+            Futures.future(() -> {
+                exec(cmd);
+                return true;
+            }, resources.system.dispatcher());
+            log("操作任务完成\n");
         } catch (Exception ex) {
-            log("执行Playbook脚本失败\n");
-            throw new ServiceException("执行Playbook脚本失败\n", ex);
+            log("操作任务失败\n");
         }
     }
 
@@ -37,31 +40,26 @@ public class JobPlaybookRunner {
         jobLogger.log(str);
     }
 
-    protected String exec(final String cmd) throws IOException {
+    protected void exec(final String cmd) throws IOException {
         final Process process = Runtime.getRuntime().exec(cmd);
-        final ByteArrayOutputStream buf = new ByteArrayOutputStream(1024);
         try (BufferedReader inReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-             BufferedReader errReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-             OutputStreamWriter bufWriter = new OutputStreamWriter(buf);) {
+             BufferedReader errReader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+            log("执行Playbook脚本:\n");
             String line = inReader.readLine();
-            final Long appId = job.getAppId();
             while (line != null) {
-                bufWriter.write(line);
-                bufWriter.write("\n");
                 log(line);
                 line = inReader.readLine();
             }
             line = errReader.readLine();
             while (line != null) {
-                bufWriter.write(line);
-                bufWriter.write("\n");
                 log(line);
                 line = errReader.readLine();
             }
-            bufWriter.flush();
+            log("执行Playbook脚本完成\n");
+        } catch (Exception ex) {
+            log("执行Playbook脚本失败\n");
         } finally {
             process.destroy();
         }
-        return buf.toString();
     }
 }

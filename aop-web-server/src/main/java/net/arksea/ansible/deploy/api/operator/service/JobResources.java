@@ -1,5 +1,6 @@
 package net.arksea.ansible.deploy.api.operator.service;
 
+import akka.actor.ActorSystem;
 import net.arksea.ansible.deploy.api.manage.dao.AppOperationDao;
 import net.arksea.ansible.deploy.api.manage.dao.HostDao;
 import net.arksea.ansible.deploy.api.operator.dao.OperationJobDao;
@@ -27,4 +28,6 @@ public class JobResources {
     String jobWorkRoot;
     @Resource(name="systemBindPort")
     int systemBindPort;
+    @Autowired
+    ActorSystem system;
 }

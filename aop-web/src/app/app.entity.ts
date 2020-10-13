@@ -40,8 +40,15 @@ export class AppOperation {
   appType: AppType;
   name: string = '';
   description: string = '';
-  playbook: string = '';
+  codes: Array<AppOperationCode> = [];
   released: boolean = false;
+}
+
+export class AppOperationCode {
+  operationId: number;
+  fileName: string;
+  description: string = '';
+  code: string = '';
 }
 
 export class Port {

@@ -12,9 +12,7 @@ import { AccountModule } from '../account/account.module';
 import { OperationsService } from './operations.service';
 import { OperationListComponent } from './operation-list.component';
 import { OperationEditComponent } from './operation-edit.component';
-// import { AppComponent } from './app.component';
-// import { NewVersionDialog } from './new-version.dialog';
-// import { AddHostDialog } from './add-host.dialog';
+import { NewCodeFileDialog } from './new-code-file.dialog';
 
 @NgModule({
   imports: [
@@ -24,9 +22,10 @@ import { OperationEditComponent } from './operation-edit.component';
     VenderModule, NgbPaginationModule, NgbAlertModule, NgbModule,
     AccountModule, OperationsRoutingModule],
   declarations: [
-    OperationsComponent, OperationListComponent, OperationEditComponent
+    OperationsComponent, OperationListComponent, OperationEditComponent,NewCodeFileDialog
   ],
   entryComponents: [
+    NewCodeFileDialog
   ],
   providers: [OperationsService],
   exports: []

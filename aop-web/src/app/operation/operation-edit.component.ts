@@ -1,16 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, AbstractControl, Validators } from '@angular/forms';
+import { FormDataEvent } from '@angular/forms/esm2015';
+import { FormGroup, FormControl, AbstractControl, Validators, ValidatorFn } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Observable } from 'rxjs';
 import { OperationsService } from './operations.service';
 import { MessageNotify } from '../utils/message-notify';
-import { AppOperation, AppType } from '../app.entity';
+import { AppOperation, AppOperationCode } from '../app.entity';
 import { AccountService } from '../account/account.service';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { HostsService } from '../hosts/hosts.service';
-import { Version } from '../app.entity';
 import { ConfirmDialog } from '../utils/confirm.dialog';
-
+import { NewCodeFileDialog } from './new-code-file.dialog';
 
 @Component({
     selector: 'operation-edit',
@@ -22,6 +21,8 @@ export class OperationEditComponent implements OnInit {
     public editForm: FormGroup;
     public isNewAction: boolean;
     private appTypeId: number;
+    private activeCode: AppOperationCode = new AppOperationCode();
+
     constructor(public svc: OperationsService,
                 private hostSvc: HostsService,
                 public account: AccountService,
@@ -38,7 +39,7 @@ export class OperationEditComponent implements OnInit {
         this.editForm = new FormGroup({
             name: new FormControl('',[Validators.required,Validators.maxLength(16),Validators.minLength(2)]),
             description: new FormControl('',[Validators.required,Validators.maxLength(512),Validators.minLength(6)]),
-            playbook: new FormControl('', [Validators.required,Validators.maxLength(65535)])
+            codeContent: new FormControl('', [Validators.required,Validators.maxLength(65535)])
         });
         if (idStr == 'new') {
             this.isNewAction = true;
@@ -52,7 +53,10 @@ export class OperationEditComponent implements OnInit {
                         this.operation = op;
                         this.name.setValue(op.name);
                         this.desc.setValue(op.description);
-                        this.playbook.setValue(op.playbook);
+                        if (this.operation.codes.length > 0) {
+                            this.activeCode = this.operation.codes[0];
+                            this.codeContent.setValue(this.activeCode.code);
+                        }
                     } else {
                         this.alert.warning('指定操作不存在：'+opId);
                         this.router.navigate(['/operations'])
@@ -66,7 +70,7 @@ export class OperationEditComponent implements OnInit {
         let op = this.operation;
         op.name = this.name.value;
         op.description = this.desc.value;
-        op.playbook = this.playbook.value;
+        this.activeCode.code = this.codeContent.value;
         if (this.isNewAction) {
             op.appType = this.appType;
         }
@@ -82,6 +86,56 @@ export class OperationEditComponent implements OnInit {
         });
     }
 
+    newCode() {
+        let ref = this.modal.open(NewCodeFileDialog);
+        ref.componentInstance.operation = this.operation;
+        ref.result.then(result => {
+            if (result != 'cancel') {
+                this.selectCode(result);
+            }
+        },reason => {})
+    }
+
+    deleteCode(code: AppOperationCode) {
+        let ref = this.modal.open(ConfirmDialog);
+        ref.componentInstance.title = "确认要删除吗?"
+        ref.componentInstance.message = "删除文件: "+code.fileName
+        ref.result.then(result => {
+            if (result == "ok") {
+                this.doDeleteCode(code);
+            }
+        }, resaon => {})
+    }
+
+    doDeleteCode(code: AppOperationCode) {
+        let codes: Array<AppOperationCode> = [];
+        for (let c of this.operation.codes) {
+            if (c.fileName != code.fileName) {
+                codes.push(c);
+            }
+        }
+        this.operation.codes = codes;
+        if (code.fileName == this.activeCode.fileName) {
+            if (this.operation.codes.length > 0) {
+                this.activeCode = this.operation.codes[0];
+            } else {
+                this.activeCode = new AppOperationCode();
+            }
+        }
+    }
+
+    isActiveCode(code: AppOperationCode): boolean {
+        return this.activeCode.fileName == code.fileName;
+    }
+
+    selectCode(code: AppOperationCode) {
+        if (this.activeCode) {
+            this.activeCode.code = this.codeContent.value;
+            this.activeCode = code;
+            this.codeContent.setValue(code.code);
+        }
+    }
+
     public cancel() {
         this.router.navigate(['/operations'])
     }
@@ -92,10 +146,11 @@ export class OperationEditComponent implements OnInit {
     get desc() {
         return this.editForm.get('description');
     }
-    get playbook() {
-        return this.editForm.get('playbook');
+    get codeContent() {
+        return this.editForm.get('codeContent');
     }
     get appType() {
         return this.svc.appTypesMap[this.appTypeId];
     }
 }
+

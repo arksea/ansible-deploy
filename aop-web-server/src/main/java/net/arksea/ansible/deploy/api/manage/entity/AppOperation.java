@@ -1,6 +1,7 @@
 package net.arksea.ansible.deploy.api.manage.entity;
 
 import javax.persistence.*;
+import java.util.Set;
 
 /**
  * Create by xiaohaixing on 2020/9/25
@@ -11,7 +12,7 @@ public class AppOperation extends IdEntity {
     private AppType appType;
     private String name;
     private String description;
-    private String playbook;
+    private Set<AppOperationCode> codes;
     private Boolean released;
 
     @ManyToOne
@@ -42,16 +43,13 @@ public class AppOperation extends IdEntity {
         this.description = description;
     }
 
-
-    @Basic(fetch= FetchType.LAZY)
-    @Lob
-    @Column(nullable = false)
-    public String getPlaybook() {
-        return playbook;
+    @OneToMany(mappedBy = "operationId", fetch = FetchType.EAGER)
+    public Set<AppOperationCode> getCodes() {
+        return codes;
     }
 
-    public void setPlaybook(String playbook) {
-        this.playbook = playbook;
+    public void setCodes(Set<AppOperationCode> codes) {
+        this.codes = codes;
     }
 
     @Column(nullable = false, columnDefinition = "TINYINT(1) NOT NULL DEFAULT 0")

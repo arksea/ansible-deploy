@@ -18,7 +18,7 @@ public class OperationToken extends IdEntity {
     private Timestamp releaseTime;
     private Boolean released;
 
-    @JoinColumn(nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     public Long getAppId() {
         return appId;
     }

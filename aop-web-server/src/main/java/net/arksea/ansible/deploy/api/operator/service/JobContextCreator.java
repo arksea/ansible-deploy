@@ -62,7 +62,7 @@ public class JobContextCreator {
             parentFile.mkdirs();
         }
         try (final FileWriter writer = new FileWriter(file)) {
-            writer.append(op.getPlaybook());
+            //writer.append(op.getPlaybook());
             writer.flush();
         }
     }

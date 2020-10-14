@@ -8,8 +8,10 @@ import { AccountService } from '../account/account.service';
 import { NewVersionDialog } from './new-version.dialog';
 import { HostsService } from '../hosts/hosts.service';
 import { AddHostDialog } from './add-host.dialog';
-import { Version } from '../app.entity';
+import { Version, Host } from '../app.entity';
 import { JobPlayDialog } from './job-play.dialog';
+import { isInteger } from '@ng-bootstrap/ng-bootstrap/util/util';
+import { FormGroup, FormControl } from '@angular/forms';
 
 
 @Component({
@@ -17,10 +19,9 @@ import { JobPlayDialog } from './job-play.dialog';
     templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
-
-    public svnaddr = 'svn://127.0.0.1';
     app: App;
     operations: AppOperation[];
+    hostChecked: FormGroup = new FormGroup({});
     constructor(private svc: AppsService,
                 private hostSvc: HostsService,
                 public account: AccountService,
@@ -35,6 +36,7 @@ export class AppComponent implements OnInit {
                 this.router.navigate(["/apps"]);
             } else {
                 this.app = a;
+                this.initHostCheckedStatus(a);
                 this.svc.getOperationsByAppTypeId(a.appType.id).subscribe(ret => {
                     if (ret.code == 0) {
                         this.operations = ret.result;
@@ -45,10 +47,44 @@ export class AppComponent implements OnInit {
 
     }
 
+    initHostCheckedStatus(app: App) {
+        for (let v of app.versions) {
+            for (let h of v.targetHosts) {
+                let n = this.checkName(v,h);
+                this.hostChecked.addControl(n,new FormControl(false));
+            }
+        }
+    }
+
+    checkName(v: Version, h: Host): string {
+        return v.id+'-'+h.id;
+    }
+
+    hasHostChecked(ver: Version): boolean {
+        for (let h of ver.targetHosts) {
+            let name = this.checkName(ver, h);
+            let c = this.hostChecked.get(name);
+            if (c && c.value) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     ngOnInit() {}
 
-    onOperationClick(operation: AppOperation) {
+    onOperationClick(ver: Version, op: AppOperation) {
         let ref = this.modal.open(JobPlayDialog, {size: 'lg', scrollable: true});
-        ref.componentInstance.operation = operation;
+        ref.componentInstance.operation = op;
+        ref.componentInstance.app = this.app;
+        let hosts: Array<number> = [];
+        for (let h of ver.targetHosts) {
+            let name = this.checkName(ver, h);
+            let c = this.hostChecked.get(name);
+            if (c && c.value) {
+                hosts.push(h.id);
+            }
+        }
+        ref.componentInstance.hosts = hosts;
     }
 }

@@ -2,7 +2,7 @@
     <div id="app-head" class="mb-5">
         <h1>{{app?.apptag}} - {{app?.description}}</h1>
     </div>
-    <div id="group-list">
+    <div id="group-list" [formGroup]="hostChecked">
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
                 <div class="d-flex">
@@ -34,8 +34,8 @@
 
                             <div class="pl-1" *ngFor="let op of operations">
                                 <button type="button" class="btn btn-outline-danger btn-sm"
-                                        [disabled]="account.perm('应用:部署') | async"
-                                        (click)="onOperationClick(op)">
+                                        [disabled]="(account.perm('应用:部署') | async) || !hasHostChecked(v)"
+                                        (click)="onOperationClick(v, op)">
                                     {{op.name}}
                                 </button>
                             </div>
@@ -47,7 +47,9 @@
                                     <div class="col-sm-2">内网IP</div>
                                     <div class="col">描述</div>
                                     <div class="col-sm-2">状态</div>
-                                    <div class="col-sm-2 text-right"><input type="checkbox"></div>
+                                    <div class="col-sm-2 text-right">
+                                        <!-- <input type="checkbox"> -->
+                                    </div>
                             </div>
                         </li>
                         <li *ngFor="let h of v.targetHosts" class="list-group-item">
@@ -55,7 +57,7 @@
                                 <div class="col-sm-2">{{h.privateIp}}</div>
                                 <div class="col">{{h.description}}</div>
                                 <div class="col-sm-2">online</div>
-                                <div class="col-sm-2 text-right"><input type="checkbox"></div>
+                                <div class="col-sm-2 text-right"><input type="checkbox" formControlName="{{checkName(v,h)}}"></div>
                             </div>
                         </li>
                     </ul>

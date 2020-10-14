@@ -5,7 +5,7 @@ import { MessageNotify } from '../utils/message-notify';
 import { Subject, BehaviorSubject, Observable, timer, Subscription } from 'rxjs';
 import { publishReplay, refCount, scan, map } from 'rxjs/operators';
 import { AppsService, PollLogsResult } from './apps.service';
-import { AppOperation } from '../app.entity';
+import { AppOperation, App } from '../app.entity';
 
 export type IModelOperation = (data: ModelData) => ModelData;
 export class ModelData {
@@ -20,6 +20,9 @@ export class ModelData {
 export class JobPlayDialog implements OnDestroy {
 
     operation: AppOperation;
+    app: App;
+    hosts: Array<number>;
+
     jobStarted: BehaviorSubject<boolean> = new BehaviorSubject(false);
     // opAddModel     ──┬──＞ updates  ===＞ jobLogs
     opAddModel: Subject<PollLogsResult> = new Subject();
@@ -46,11 +49,13 @@ export class JobPlayDialog implements OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.logsPollTimerSubscription.unsubscribe();
+        if (this.logsPollTimerSubscription) {
+            this.logsPollTimerSubscription.unsubscribe();
+        }
     }
 
     startJob() {
-         this.svc.startJob().subscribe(ret => {
+         this.svc.startJob(this.app,this.operation, this.hosts).subscribe(ret => {
              if (ret.code == 0) {
                 this.jobStarted.next(true);
                 let jobId = ret.result.id;

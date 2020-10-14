@@ -230,13 +230,12 @@ export class AppsService {
         }))
     }
 
-    public startJob(): Observable<ServiceResponse<OperationJob>> {
+    public startJob(app: App, operation: AppOperation,hosts: Array<number>): Observable<ServiceResponse<OperationJob>> {
         const url = environment.apiUrl + '/api/jobs';
         const body = new StartOpeartionJob();
-        body.appId = 9;
-        body.operationId = 5;
-        body.hosts.push(1);
-        body.hosts.push(2);
+        body.appId = app.id;
+        body.operationId = operation.id;
+        body.hosts = hosts;
         return this.httpUtils.httpPost('开始操作任务', url, body);
     }
 

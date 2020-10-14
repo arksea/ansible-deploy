@@ -40,6 +40,7 @@ export class AppOperation {
   appType: AppType;
   name: string = '';
   description: string = '';
+  command: string = '';
   codes: Array<AppOperationCode> = [];
   released: boolean = false;
 }

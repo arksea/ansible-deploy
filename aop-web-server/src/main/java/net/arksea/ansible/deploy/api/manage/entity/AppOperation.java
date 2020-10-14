@@ -12,6 +12,7 @@ public class AppOperation extends IdEntity {
     private AppType appType;
     private String name;
     private String description;
+    private String command;
     private Set<AppOperationCode> codes;
     private Boolean released;
 
@@ -41,6 +42,15 @@ public class AppOperation extends IdEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Column(length = 256, nullable = false)
+    public String getCommand() {
+        return command;
+    }
+
+    public void setCommand(String command) {
+        this.command = command;
     }
 
     @OneToMany(mappedBy = "operationId", fetch = FetchType.EAGER)

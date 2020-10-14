@@ -23,7 +23,7 @@ public class OperationsService {
     @Transactional
     public AppOperation saveOperation(AppOperation operation) {
         AppOperation saved = operationDao.save(operation);
-        for (AppOperationCode c: saved.getCodes()) {
+        for (AppOperationCode c: operation.getCodes()) {
             c.setOperationId(saved.getId());
             operationCodeDao.save(c);
         }

@@ -11,7 +11,6 @@ import net.arksea.ansible.deploy.api.operator.dao.OperationJobDao;
 import net.arksea.ansible.deploy.api.operator.dao.OperationTokenDao;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import net.arksea.ansible.deploy.api.operator.entity.OperationToken;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,15 +78,15 @@ public class JobService {
         ActorRef ref = system.actorOf(JobPlayer.props(job, hosts, jobResources), name);
     }
 
-    public Future<Pair<String,Integer>> pollJobLogs(long jobId, int index) {
+    public Future<JobPlayer.PollLogsResult> pollJobLogs(long jobId, int index) {
         OperationJob job = operationJobDao.findOne(jobId);
         if (job.getEndTime() == null) {
             String path = "akka.tcp://system@" + job.getExecHost() + ":" + systemBindPort + "/user/" + makeJobActorName(jobId);
             ActorSelection s = system.actorSelection(path);
             JobPlayer.PollLogs msg = new JobPlayer.PollLogs(index);
-            return Patterns.ask(s, msg, 10000).mapTo(classTag((Class<Pair<String, Integer>>) (Class<?>) Pair.class));
+            return Patterns.ask(s, msg, 10000).mapTo(classTag(JobPlayer.PollLogsResult.class));
         } else {
-            return Futures.successful(Pair.of("", -1));
+            return Futures.successful(new JobPlayer.PollLogsResult("", -1, 0));
         }
     }
 

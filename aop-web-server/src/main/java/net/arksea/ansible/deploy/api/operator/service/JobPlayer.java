@@ -26,8 +26,9 @@ public class JobPlayer extends AbstractActor {
     private final Set<Long> hosts;
     private final LinkedList<String> logs = new LinkedList<>();
     private final JobResources beans;
-    private final long MAX_LOG_LEN_PER_REQUEST = 1024;
+    private final long MAX_LOG_LEN_PER_REQUEST = 10240;
     private final long STOP_JOB_DELAY = 10;
+    private final long JOB_PLAY_TIMEOUT = 600;
 
     private JobPlayer(OperationJob job, Set<Long>hosts, JobResources beans) {
         this.job = job;
@@ -51,6 +52,17 @@ public class JobPlayer extends AbstractActor {
             this.index = index;
         }
     }
+    public static class PollLogsResult {
+        public String log;
+        public int index;
+        public int size;
+        private PollLogsResult() {}
+        public PollLogsResult(String log, int index, int size) {
+            this.log = log;
+            this.index = index;
+            this.size = size;
+        }
+    }
     public static class OfferLog {
         public final String log;
         public OfferLog(String log) {
@@ -70,6 +82,9 @@ public class JobPlayer extends AbstractActor {
         context().system().scheduler().scheduleOnce(
                 Duration.create(1, TimeUnit.SECONDS),
                 self(),new Init(),context().dispatcher(),self());
+        context().system().scheduler().scheduleOnce(
+                Duration.create(JOB_PLAY_TIMEOUT, TimeUnit.SECONDS),
+                self(),new StopJob(),context().dispatcher(),self());
     }
 
     public void postStop() {
@@ -103,29 +118,38 @@ public class JobPlayer extends AbstractActor {
 
     private void handleStartJob(StartJob msg) {
         ActorRef self = self ();
-        JobPlaybookRunner runner = new JobPlaybookRunner(job, hosts, beans,
-                str -> self.tell(new OfferLog(str), ActorRef.noSender())
+        JobCommandRunner runner = new JobCommandRunner(job, beans,
+                new IJobEventListener() {
+                    @Override
+                    public void log(String str) {
+                        self.tell(new OfferLog(str), ActorRef.noSender());
+                    }
+                    @Override
+                    public void onFinished() {
+                        context().system().scheduler().scheduleOnce(
+                                Duration.create(STOP_JOB_DELAY, TimeUnit.SECONDS),
+                                self(),new StopJob(),context().dispatcher(),self());
+                    }
+                }
         );
         runner.run();
-        context().system().scheduler().scheduleOnce(
-                Duration.create(STOP_JOB_DELAY, TimeUnit.SECONDS),
-                self(),new StopJob(),context().dispatcher(),self());
     }
 
     private void handlePollLogs(PollLogs msg) {
         StringBuilder sb = new StringBuilder();
         long len = 0;
-        int index = -1;
+        int index;
         for (index = msg.index; index < logs.size(); ++index) {
             String log = logs.get(index);
             sb.append(log);
             len = len + log.length();
             if (len > MAX_LOG_LEN_PER_REQUEST) {
+                ++index;
                 break;
             }
         }
-        Pair<String,Integer> pair = Pair.of(sb.toString(), index);
-        sender().tell(pair, self());
+        PollLogsResult result = new PollLogsResult(sb.toString(), index, logs.size());
+        sender().tell(result, self());
     }
 
     private void handleStopJob(StopJob msg) {

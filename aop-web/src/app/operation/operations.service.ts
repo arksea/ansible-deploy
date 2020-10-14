@@ -62,7 +62,7 @@ export class OperationsService {
 
     public queryOperations() {
         const url = environment.apiUrl + '/api/operations/?appTypeId=' + this.appType.id;
-        this.httpUtils.httpGet('查询操作脚本', url).subscribe(ret => {
+        this.httpUtils.httpGet('查询操作', url).subscribe(ret => {
             if (ret.code == 0) {
                 this.model.opResetModels.next(ret.result)
             }

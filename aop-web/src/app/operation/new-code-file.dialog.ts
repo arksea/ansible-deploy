@@ -40,7 +40,9 @@ export class NewCodeFileDialog {
         event.preventDefault();
         let name = this.createForm.get('name').value;
         let c = new AppOperationCode();
-        c.operationId = this.operation.id;
+        if (this.operation.id > 0) {
+            c.operationId = this.operation.id;
+        }
         c.fileName = name;
         this.operation.codes.push(c);
         this.modal.close(c);

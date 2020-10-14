@@ -5,6 +5,7 @@ import akka.dispatch.OnComplete;
 import net.arksea.ansible.deploy.api.auth.info.ClientInfo;
 import net.arksea.ansible.deploy.api.auth.service.UserService;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
+import net.arksea.ansible.deploy.api.operator.service.JobPlayer;
 import net.arksea.ansible.deploy.api.operator.service.JobService;
 import net.arksea.restapi.ErrorResult;
 import net.arksea.restapi.RestResult;
@@ -39,11 +40,6 @@ public class JobController {
         public Set<Long> hosts;
     }
 
-    public static class PollLogsResult {
-        public String log;
-        public int index;
-    }
-
     @RequestMapping(method = RequestMethod.POST, produces = MEDIA_TYPE)
     public RestResult<OperationJob> startJob(@RequestBody final StartOpeartionJob body,
                                               final HttpServletRequest httpRequest) {
@@ -55,20 +51,17 @@ public class JobController {
     }
 
     @RequestMapping(path="{jobId}/logs/{index}", method = RequestMethod.GET, produces = MEDIA_TYPE)
-    public DeferredResult<RestResult<PollLogsResult>> pollJobLogs(@PathVariable(name="jobId") final long jobId,
-                                          @PathVariable(name="index") final int index,
-                                          final HttpServletRequest httpRequest) {
-        DeferredResult<RestResult<PollLogsResult>> result = new DeferredResult<>();
+    public DeferredResult<RestResult<JobPlayer.PollLogsResult>> pollJobLogs(@PathVariable(name="jobId") final long jobId,
+                                                                            @PathVariable(name="index") final int index,
+                                                                            final HttpServletRequest httpRequest) {
+        DeferredResult<RestResult<JobPlayer.PollLogsResult>> result = new DeferredResult<>();
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         jobService.pollJobLogs(jobId, index).onComplete(
-                new OnComplete<Pair<String, Integer>>() {
+                new OnComplete<JobPlayer.PollLogsResult>() {
                     @Override
-                    public void onComplete(Throwable failure, Pair<String, Integer> ret) {
+                    public void onComplete(Throwable failure, JobPlayer.PollLogsResult ret) {
                         if (failure == null) {
-                            PollLogsResult r = new PollLogsResult();
-                            r.log = ret.getLeft();
-                            r.index = ret.getRight();
-                            result.setResult(new RestResult<>(0, r, reqid));
+                            result.setResult(new RestResult<>(0, ret, reqid));
                         } else {
                             result.setErrorResult(new ErrorResult<>(1, reqid, failure.getMessage()));
                         }

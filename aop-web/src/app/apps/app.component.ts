@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppsService } from './apps.service';
 import { MessageNotify } from '../utils/message-notify';
-import { App } from '../app.entity';
+import { App, AppOperation } from '../app.entity';
 import { AccountService } from '../account/account.service';
 import { NewVersionDialog } from './new-version.dialog';
 import { HostsService } from '../hosts/hosts.service';
@@ -20,6 +20,7 @@ export class AppComponent implements OnInit {
 
     public svnaddr = 'svn://127.0.0.1';
     app: App;
+    operations: AppOperation[];
     constructor(private svc: AppsService,
                 private hostSvc: HostsService,
                 public account: AccountService,
@@ -34,13 +35,20 @@ export class AppComponent implements OnInit {
                 this.router.navigate(["/apps"]);
             } else {
                 this.app = a;
+                this.svc.getOperationsByAppTypeId(a.appType.id).subscribe(ret => {
+                    if (ret.code == 0) {
+                        this.operations = ret.result;
+                    }
+                })
             }
         });
+
     }
 
     ngOnInit() {}
 
-    onOperationClick() {
+    onOperationClick(operation: AppOperation) {
         let ref = this.modal.open(JobPlayDialog, {size: 'lg', scrollable: true});
+        ref.componentInstance.operation = operation;
     }
 }

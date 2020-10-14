@@ -18,7 +18,7 @@
                                 <strong>版本: {{v.name}}</strong>
                             </div>
 
-                            <div class="dropdown pl-1">
+                            <!-- <div class="dropdown pl-1">
                                 <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown"
                                         [disabled]="account.perm('应用:部署') | async">
                                     其他操作
@@ -30,20 +30,14 @@
                                     <button class="dropdown-item" type="button" [disabled]="account.perm('应用:部署') | async">重启</button>
                                     <button class="dropdown-item" type="button" [disabled]="account.perm('应用:部署') | async">启动</button>
                                 </div>
-                            </div>
+                            </div> -->
 
-                            <div class="pl-1">
+                            <div class="pl-1" *ngFor="let op of operations">
                                 <button type="button" class="btn btn-outline-danger btn-sm"
-                                    [disabled]="account.perm('应用:部署') | async">下线</button>
-                            </div>
-                            <div class="pl-1">
-                                <button type="button" class="btn btn-outline-info btn-sm"
-                                    [disabled]="account.perm('应用:部署') | async">发布</button>
-                            </div>
-                            <div class="pl-1">
-                                <button type="button" class="btn btn-outline-success btn-sm"
-                                    [disabled]="account.perm('应用:部署') | async"
-                                    (click)="onOperationClick()">上线</button>
+                                        [disabled]="account.perm('应用:部署') | async"
+                                        (click)="onOperationClick(op)">
+                                    {{op.name}}
+                                </button>
                             </div>
                         </div>
                     </div>

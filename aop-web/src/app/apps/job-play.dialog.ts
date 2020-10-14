@@ -5,12 +5,11 @@ import { MessageNotify } from '../utils/message-notify';
 import { Subject, BehaviorSubject, Observable, timer, Subscription } from 'rxjs';
 import { publishReplay, refCount, scan, map } from 'rxjs/operators';
 import { AppsService, PollLogsResult } from './apps.service';
-import { Host, Version, App } from '../app.entity';
-import { FormGroup, FormArray, FormControl } from '@angular/forms';
+import { AppOperation } from '../app.entity';
 
 export type IModelOperation = (data: ModelData) => ModelData;
 export class ModelData {
-    constructor(public logs: string, public index: number) {
+    constructor(public logs: string, public index: number, public size: number) {
     };
 }
 
@@ -20,7 +19,7 @@ export class ModelData {
 })
 export class JobPlayDialog implements OnDestroy {
 
-
+    operation: AppOperation;
     jobStarted: BehaviorSubject<boolean> = new BehaviorSubject(false);
     // opAddModel     ──┬──＞ updates  ===＞ jobLogs
     opAddModel: Subject<PollLogsResult> = new Subject();
@@ -33,14 +32,14 @@ export class JobPlayDialog implements OnDestroy {
             scan((modelData: ModelData, op: IModelOperation) => {
                 const newData = op(modelData);
                 return newData;
-            }, new ModelData('',0)),
+            }, new ModelData('',0,0)),
             publishReplay(1),
             refCount()
         );
         this.opAddModel.pipe(
             map(function (ret: PollLogsResult): IModelOperation {
                 return (oldData: ModelData) => {
-                    return new ModelData(oldData.logs + ret.log, ret.index);
+                    return new ModelData(oldData.logs + ret.log, ret.index, ret.size);
                 }
             })
         ).subscribe(this.updates);

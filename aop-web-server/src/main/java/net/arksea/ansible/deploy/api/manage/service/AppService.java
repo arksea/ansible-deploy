@@ -162,6 +162,7 @@ public class AppService {
     private void createOperationToken(long appId) {
         OperationToken token = new OperationToken();
         token.setAppId(appId);
+        token.setReleased(true);
         operationTokenDao.save(token);
     }
 

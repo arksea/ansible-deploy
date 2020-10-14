@@ -39,7 +39,7 @@ public class OperationController {
 
     @RequiresPermissions("操作管理:查询")
     @RequestMapping(path="{id}", method = RequestMethod.GET, produces = MEDIA_TYPE)
-    public RestResult<AppOperation> getOperationsByAppTypeId(
+    public RestResult<AppOperation> getOperationsById(
             @PathVariable("id") long id,
             final HttpServletRequest httpRequest) {
         AppOperation op = operationDao.findOne(id);

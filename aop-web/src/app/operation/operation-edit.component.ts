@@ -38,7 +38,8 @@ export class OperationEditComponent implements OnInit {
         this.appTypeId = Number(params.get('appTypeId'));
         this.editForm = new FormGroup({
             name: new FormControl('',[Validators.required,Validators.maxLength(16),Validators.minLength(2)]),
-            description: new FormControl('',[Validators.required,Validators.maxLength(512),Validators.minLength(6)]),
+            description: new FormControl('',[Validators.required,Validators.maxLength(128),Validators.minLength(6)]),
+            command: new FormControl('',[Validators.required,Validators.maxLength(256),Validators.minLength(1)]),
             codeContent: new FormControl('', [Validators.required,Validators.maxLength(65535)])
         });
         if (idStr == 'new') {
@@ -53,6 +54,7 @@ export class OperationEditComponent implements OnInit {
                         this.operation = op;
                         this.name.setValue(op.name);
                         this.desc.setValue(op.description);
+                        this.command.setValue(op.command);
                         if (this.operation.codes.length > 0) {
                             this.activeCode = this.operation.codes[0];
                             this.codeContent.setValue(this.activeCode.code);
@@ -70,6 +72,7 @@ export class OperationEditComponent implements OnInit {
         let op = this.operation;
         op.name = this.name.value;
         op.description = this.desc.value;
+        op.command = this.command.value;
         this.activeCode.code = this.codeContent.value;
         if (this.isNewAction) {
             op.appType = this.appType;
@@ -145,6 +148,9 @@ export class OperationEditComponent implements OnInit {
     }
     get desc() {
         return this.editForm.get('description');
+    }
+    get command() {
+        return this.editForm.get('command');
     }
     get codeContent() {
         return this.editForm.get('codeContent');

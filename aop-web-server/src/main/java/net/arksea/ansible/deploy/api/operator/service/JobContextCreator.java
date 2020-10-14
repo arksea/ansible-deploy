@@ -1,14 +1,14 @@
 package net.arksea.ansible.deploy.api.operator.service;
 
 
-import net.arksea.ansible.deploy.api.ServiceException;
 import net.arksea.ansible.deploy.api.manage.entity.AppOperation;
+import net.arksea.ansible.deploy.api.manage.entity.AppOperationCode;
 import net.arksea.ansible.deploy.api.manage.entity.Host;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -19,12 +19,13 @@ import java.util.Set;
  */
 public class JobContextCreator {
 
+    private Logger logger = LogManager.getLogger(JobContextCreator.class);
     private JobResources resources;
     private OperationJob job;
     private Set<Long> hosts;
-    private IJobLogger jobLogger;
+    private IJobEventListener jobLogger;
 
-    public JobContextCreator(OperationJob job, Set<Long> hosts, JobResources resources, IJobLogger jobLogger) {
+    public JobContextCreator(OperationJob job, Set<Long> hosts, JobResources resources, IJobEventListener jobLogger) {
         this.job = job;
         this.hosts = hosts;
         this.resources = resources;
@@ -34,36 +35,66 @@ public class JobContextCreator {
     public void run() {
         try {
             log("初始化工作目录:\n");
-            log("生成playbook文件...");
-            generatePlaybookFile();
-            log("成功\n生成hosts文件...");
+            generateCodeFiles();
+            log("生成hosts文件...");
             generateHostFile();
             log("成功\n");
             log("初始化工作目录完成\n");
         } catch (Exception ex) {
-            log("失败\n");
-            throw new ServiceException("初始化工作目录失败\n", ex);
+            log("失败:"+ex.getMessage()+"\n");
+            logger.warn("初始化工作目录失败", ex);
         }
     }
 
     private void log(String str) {
         jobLogger.log(str);
     }
+
     private String getJobPath() {
-        LocalDate localDate = LocalDate.now();
-        return resources.jobWorkRoot + "/" + localDate + "/" + job.getId() + "/";
+        return resources.getJobPath(job);
     }
 
-    private void generatePlaybookFile() throws IOException {
+    private void generateCodeFiles() throws IOException {
         AppOperation op = resources.appOperationDao.findOne(job.getOperationId());
-        final File file = new File(getJobPath() + "operation.yml" );
+        for (AppOperationCode c : op.getCodes()) {
+            generateCodeFile(c);
+        }
+    }
+    private void generateCodeFile(AppOperationCode code) throws IOException {
+        log("生成脚本文件'"+code.getFileName()+"'...");
+        String path = getJobPath() + code.getFileName();
+        final File file = new File(path);
         final File parentFile = file.getParentFile();
         if (!parentFile.exists()) {
             parentFile.mkdirs();
         }
         try (final FileWriter writer = new FileWriter(file)) {
-            //writer.append(op.getPlaybook());
+            writer.append(code.getCode());
             writer.flush();
+        }
+        log("成功\n");
+        chmod(code.getFileName());
+    }
+
+    protected void chmod(final String fileName) throws IOException {
+        String cmd = "chmod u+x " + getJobPath() + fileName;
+        final Process process = Runtime.getRuntime().exec(cmd);
+        try (BufferedReader inReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+             BufferedReader errReader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+            log("修改文件权限'"+fileName+"'...");
+            String line = inReader.readLine();
+            while (line != null) {
+                log(line);
+                line = inReader.readLine();
+            }
+            line = errReader.readLine();
+            while (line != null) {
+                log(line);
+                line = errReader.readLine();
+            }
+            log("成功\n");
+        } finally {
+            process.destroy();
         }
     }
 
@@ -105,7 +136,6 @@ public class JobContextCreator {
             parentFile.mkdirs();
         }
         try (final FileWriter writer = new FileWriter(file)) {
-            writer.append("\n\n");
             writer.append("[deploy_target]\n");
             for (final Long hid : hosts) {
                 Host h = resources.hostDao.findOne(hid);

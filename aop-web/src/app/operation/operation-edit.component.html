@@ -5,8 +5,8 @@
         </div>
     </div>
     <form (ngSubmit)="save()" [formGroup]="editForm">
-        <div class="row">
-            <div class="col-lg-4 form-group mb-4">
+        <div class="row mb-2">
+            <div class="col-lg-4 form-group">
                 <label for="name">操作名称
                     <span class="text-danger" *ngIf="name.errors?.required">*</span>
                     <span class="text-danger"
@@ -15,17 +15,24 @@
                 <input type="text" id="name" formControlName="name" class="form-control"
                     placeholder="请尽量简短明确，因为它将显示在操作按钮上">
             </div>
-        </div>
-        <div class="mb-4">
-            <div class="form-group">
+            <div class="form-group col-lg-8">
                 <label for="description">操作说明
                     <span class="text-danger" *ngIf="desc.errors?.required">*</span>
-                    <span class="text-danger" *ngIf="desc.errors?.minlength || desc?.errors?.maxlength">(长度6至512)</span>
+                    <span class="text-danger" *ngIf="desc.errors?.minlength || desc?.errors?.maxlength">(长度6至128)</span>
                 </label>
                 <input type="text" id="description" class="form-control" formControlName="description">
             </div>
         </div>
         <div class="mb-4">
+            <div class="form-group">
+                <label for="command">启动命令行
+                    <span class="text-danger" *ngIf="desc.errors?.required">*</span>
+                    <span class="text-danger" *ngIf="desc.errors?.minlength || desc?.errors?.maxlength">(长度1至256)</span>
+                </label>
+                <input type="text" id="command" class="form-control" formControlName="command">
+            </div>
+        </div>
+        <div class="mb-3">
             <div class="form-group">
                 <label for="playbook">脚本文件</label>
                 <div class="card">

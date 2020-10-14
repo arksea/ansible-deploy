@@ -6,7 +6,7 @@ import { HttpUtils } from '../utils/http-utils';
 import { environment } from '../../environments/environment';
 import { map, first } from 'rxjs/operators';
 import { CrudModel, IModelInfo } from '../utils/crud-model';
-import { Version, AppVarDefine } from '../app.entity';
+import { Version, AppVarDefine, AppOperation } from '../app.entity';
 
 class AppsModelInfo implements IModelInfo<number, App> {
     private sortType: string;
@@ -48,6 +48,7 @@ class StartOpeartionJob {
 export class PollLogsResult {
     log: string;
     index: number;
+    size: number;
 }
 
 @Injectable()
@@ -129,7 +130,6 @@ export class AppsService {
             }
         })
     }
-
 
     public createAppTemplate(appType: string): Observable<ServiceResponse<App>> {
         let url = environment.apiUrl + '/api/apps/template/'+appType;
@@ -234,7 +234,7 @@ export class AppsService {
         const url = environment.apiUrl + '/api/jobs';
         const body = new StartOpeartionJob();
         body.appId = 9;
-        body.operationId = 3;
+        body.operationId = 5;
         body.hosts.push(1);
         body.hosts.push(2);
         return this.httpUtils.httpPost('开始操作任务', url, body);
@@ -243,5 +243,10 @@ export class AppsService {
     public pollJobLogs(jobId: number, index: number): Observable<ServiceResponse<PollLogsResult>> {
         const url = environment.apiUrl + '/api/jobs/' + jobId + '/logs/' + index ;
         return this.httpUtils.httpGet('读取操作日志', url);
+    }
+
+    public getOperationsByAppTypeId(appTypeId: number): Observable<ServiceResponse<AppOperation[]>> {
+        const url = environment.apiUrl + '/api/operations/?appTypeId=' + appTypeId;
+        return this.httpUtils.httpGet('查询操作', url);
     }
 }

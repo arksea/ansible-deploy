@@ -4,13 +4,17 @@ import akka.actor.AbstractActor;
 import akka.actor.Actor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
+import akka.dispatch.OnComplete;
 import akka.japi.Creator;
 import akka.japi.pf.ReceiveBuilder;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import net.arksea.ansible.deploy.api.operator.entity.OperationToken;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import scala.concurrent.duration.Duration;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  * Create by xiaohaixing on 2020/9/30
  */
 public class JobPlayer extends AbstractActor {
-
+    private Logger logger = LogManager.getLogger(JobPlayer.class);
     private final OperationJob job;
     private final Set<Long> hosts;
     private final LinkedList<String> logs = new LinkedList<>();
@@ -29,6 +33,7 @@ public class JobPlayer extends AbstractActor {
     private final long MAX_LOG_LEN_PER_REQUEST = 10240;
     private final long STOP_JOB_DELAY = 10;
     private final long JOB_PLAY_TIMEOUT = 600;
+    private FileWriter jobLogFileWriter;
 
     private JobPlayer(OperationJob job, Set<Long>hosts, JobResources beans) {
         this.job = job;
@@ -111,28 +116,58 @@ public class JobPlayer extends AbstractActor {
     }
 
     private void handleInit(Init msg) {
-        JobContextCreator creator = new JobContextCreator(job, hosts, beans, this.logs::offer);
-        creator.run();
-        self().tell(new StartJob(), self());
+        try {
+            String path = getJobPath() + "job-play.log";
+            final File file = new File(path);
+            final File parentFile = file.getParentFile();
+            if (!parentFile.exists()) {
+                parentFile.mkdirs();
+            }
+            jobLogFileWriter = new FileWriter(file);
+            offerLog("初始化操作任务:\n");
+            JobContextCreator creator = new JobContextCreator(job, hosts, beans, this::offerLog);
+            creator.run();
+            self().tell(new StartJob(), self());
+        } catch (Exception ex) {
+            delayStopJob();
+            offerLog("初始化操作任务失败: "+ex.getMessage() + "\n");
+            logger.warn("初始化操作任务失败",ex);
+        }
     }
 
     private void handleStartJob(StartJob msg) {
-        ActorRef self = self ();
+        ActorRef self = self();
         JobCommandRunner runner = new JobCommandRunner(job, beans,
                 new IJobEventListener() {
                     @Override
                     public void log(String str) {
                         self.tell(new OfferLog(str), ActorRef.noSender());
                     }
+
                     @Override
                     public void onFinished() {
-                        context().system().scheduler().scheduleOnce(
-                                Duration.create(STOP_JOB_DELAY, TimeUnit.SECONDS),
-                                self(),new StopJob(),context().dispatcher(),self());
+                        delayStopJob();
                     }
                 }
         );
-        runner.run();
+        runner.run().onComplete(new OnComplete<Boolean>() {
+            @Override
+            public void onComplete(Throwable failure, Boolean success) {
+                if (failure == null) {
+                    offerLog("操作任务完成\n");
+                } else {
+                    offerLog("操作任务失败:"+failure.getMessage()+"\n");
+                    logger.warn("操作任务失败", failure);
+                }
+                delayStopJob();
+            }
+        }, context().dispatcher());
+    }
+
+    private void delayStopJob() {
+        context().system().scheduler().scheduleOnce(
+                Duration.create(STOP_JOB_DELAY, TimeUnit.SECONDS),
+                self(),new StopJob(),context().dispatcher(),self());
     }
 
     private void handlePollLogs(PollLogs msg) {
@@ -153,14 +188,33 @@ public class JobPlayer extends AbstractActor {
     }
 
     private void handleStopJob(StopJob msg) {
+        if (jobLogFileWriter != null) {
+            try {
+                jobLogFileWriter.flush();
+                jobLogFileWriter.close();
+            } catch (Exception ex) {
+                logger.warn("关闭操作结果日志文件失败", ex);
+            }
+        }
         context().stop(self());
     }
     private void handleOfferLog(OfferLog msg) {
-        this.logs.offer(msg.log);
+        offerLog(msg.log);
     }
     private void handleOfferLogs(OfferLogs msg) {
         for(String log : msg.logs) {
-            this.logs.offer(log);
+            offerLog(log);
         }
+    }
+    private void offerLog(String log) {
+        try {
+            this.logs.offer(log);
+            jobLogFileWriter.append(log);
+        } catch (Exception ex) {
+            logger.warn("记录操作结果失败", ex);
+        }
+    }
+    private String getJobPath() {
+        return beans.getJobPath(job);
     }
 }

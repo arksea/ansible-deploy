@@ -32,18 +32,11 @@ public class JobContextCreator {
         this.jobLogger = jobLogger;
     }
 
-    public void run() {
-        try {
-            log("初始化工作目录:\n");
-            generateCodeFiles();
-            log("生成hosts文件...");
-            generateHostFile();
-            log("成功\n");
-            log("初始化工作目录完成\n");
-        } catch (Exception ex) {
-            log("失败:"+ex.getMessage()+"\n");
-            logger.warn("初始化工作目录失败", ex);
-        }
+    public void run() throws Exception {
+        generateCodeFiles();
+        log("生成hosts文件...");
+        generateHostFile();
+        log("成功\n");
     }
 
     private void log(String str) {

@@ -1,11 +1,12 @@
 package net.arksea.ansible.deploy.api.operator.service;
 
 import akka.dispatch.Futures;
-import akka.dispatch.OnComplete;
 import net.arksea.ansible.deploy.api.manage.entity.AppOperation;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import scala.concurrent.Future;
+
 import java.io.*;
 
 /**
@@ -23,30 +24,13 @@ public class JobCommandRunner {
         this.jobLogger = jobLogger;
     }
 
-    public void run() {
-        try {
-            log("启动操作任务:\n");
-            AppOperation op = resources.appOperationDao.findOne(job.getOperationId());
-            String cmd = getJobPath()+op.getCommand();
-            Futures.future(() -> {
-                exec(cmd);
-                return true;
-            }, resources.system.dispatcher()).onComplete(new OnComplete<Boolean>() {
-                @Override
-                public void onComplete(Throwable failure, Boolean success) {
-                    if (failure == null) {
-                        log("操作任务完成\n");
-                    } else {
-                        log("操作任务失败:"+failure.getMessage()+"\n");
-                        logger.warn("操作任务失败", failure);
-                    }
-                    jobLogger.onFinished();
-                }
-            }, resources.system.dispatcher());
-        } catch (Exception ex) {
-            log("操作任务失败:"+ex.getMessage()+"\n");
-            logger.warn("操作任务失败", ex);
-        }
+    public Future<Boolean> run() {
+        AppOperation op = resources.appOperationDao.findOne(job.getOperationId());
+        String cmd = getJobPath()+op.getCommand();
+        return Futures.future(() -> {
+            exec(cmd);
+            return true;
+        }, resources.system.dispatcher());
     }
 
     private void log(String str) {
@@ -57,7 +41,7 @@ public class JobCommandRunner {
         final Process process = Runtime.getRuntime().exec(cmd);
         try (BufferedReader inReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
              BufferedReader errReader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
-            log("执行启动命令行:\n");
+            log(cmd+"\n");
             String line = inReader.readLine();
             while (line != null) {
                 log(line+"\n");
@@ -69,7 +53,8 @@ public class JobCommandRunner {
                 line = errReader.readLine();
             }
         } catch (Exception ex) {
-            log("执行启动命令行失败\n");
+            log("执行任务启动命令行失败\n");
+            logger.warn("执行启动命令行失败", ex);
         } finally {
             process.destroy();
         }

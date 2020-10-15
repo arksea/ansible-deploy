@@ -1,6 +1,7 @@
 package net.arksea.ansible.deploy.api.operator.service;
 
 import akka.actor.ActorSystem;
+import net.arksea.ansible.deploy.api.manage.dao.AppDao;
 import net.arksea.ansible.deploy.api.manage.dao.AppOperationDao;
 import net.arksea.ansible.deploy.api.manage.dao.HostDao;
 import net.arksea.ansible.deploy.api.operator.dao.OperationJobDao;
@@ -18,6 +19,8 @@ import java.time.LocalDate;
  */
 @Component
 public class JobResources {
+    @Autowired
+    public AppDao appDao;
     @Autowired
     public HostDao hostDao;
     @Autowired

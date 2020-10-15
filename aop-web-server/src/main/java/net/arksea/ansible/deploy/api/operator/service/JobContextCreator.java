@@ -1,15 +1,11 @@
 package net.arksea.ansible.deploy.api.operator.service;
 
-
-import net.arksea.ansible.deploy.api.manage.entity.AppOperation;
-import net.arksea.ansible.deploy.api.manage.entity.AppOperationCode;
-import net.arksea.ansible.deploy.api.manage.entity.Host;
+import net.arksea.ansible.deploy.api.manage.entity.*;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
-import java.time.LocalDate;
 import java.util.Set;
 
 
@@ -34,9 +30,8 @@ public class JobContextCreator {
 
     public void run() throws Exception {
         generateCodeFiles();
-        log("生成hosts文件...");
         generateHostFile();
-        log("成功\n");
+        generateVarFile();
     }
 
     private void log(String str) {
@@ -123,6 +118,7 @@ public class JobContextCreator {
      * 生成应用的待部署目标Host文件
      */
     private void generateHostFile() throws IOException {
+        log("生成hosts文件...");
         final File file = new File(getJobPath() + "/hosts");
         final File parentFile = file.getParentFile();
         if (!parentFile.exists()) {
@@ -141,33 +137,37 @@ public class JobContextCreator {
             }
             writer.flush();
         }
+        log("成功\n");
     }
 
-//    /**
-//     * 生成应用变量文件
-//     */
-//    private void generateVarFile(final App app, final String path) throws IOException {
-//        final File file = new File(path + "/vars.yml");
-//        final File parentFile = file.getParentFile();
-//        if (!parentFile.exists()) {
-//            parentFile.mkdirs();
-//        }
-//        try (final FileWriter writer = new FileWriter(file)) {
-//            writer.append("product: ");
-//            writer.append(app.getApptag());
-//            writer.append("\n");
+    /**
+     * 生成应用变量文件
+     */
+    private void generateVarFile() throws IOException {
+        log("生成变量文件'vars.yml'...");
+        final File file = new File(getJobPath() + "/vars.yml");
+        final File parentFile = file.getParentFile();
+        if (!parentFile.exists()) {
+            parentFile.mkdirs();
+        }
+        try (final FileWriter writer = new FileWriter(file)) {
+            final App app = resources.appDao.findOne(job.getAppId());
+            writer.append("apptag: ");
+            writer.append(app.getApptag());
+            writer.append("\n");
 //            writer.append("deploy_path: ");
 //            writer.append(app.getDeployPath());
 //            writer.append("\n");
-//            for (final AppVariable var : app.getVars()) {
-//                writer.append(var.getName());
-//                writer.append(": ");
-//                writer.append(var.getValue());
-//                writer.append("\n");
-//            }
-//            writer.flush();
-//        }
-//    }
+            for (final AppVariable var : app.getVars()) {
+                writer.append(var.getName());
+                writer.append(": ");
+                writer.append(var.getValue());
+                writer.append("\n");
+            }
+            writer.flush();
+        }
+        log("成功\n");
+    }
 
 //    private void generateSetenv(final Set<Version> versions, final String path) throws IOException {
 //        final String pathname = CMD_PATH + app.getAppType().getName() + "/templates/setenv.sh";

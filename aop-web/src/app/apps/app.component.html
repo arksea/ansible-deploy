@@ -42,17 +42,17 @@
                         </div>
                     </div>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
+                        <li class="list-group-item mr-2">
                             <div class="row">
                                     <div class="col-sm-2">内网IP</div>
                                     <div class="col">描述</div>
                                     <div class="col-sm-2">状态</div>
                                     <div class="col-sm-2 text-right">
-                                        <!-- <input type="checkbox"> -->
+                                        <input type="checkbox" formControlName="{{selectAllName(v)}}" title="全选">
                                     </div>
                             </div>
                         </li>
-                        <li *ngFor="let h of v.targetHosts" class="list-group-item">
+                        <li *ngFor="let h of v.targetHosts" class="list-group-item mr-2">
                             <div class="row">
                                 <div class="col-sm-2">{{h.privateIp}}</div>
                                 <div class="col">{{h.description}}</div>

@@ -47,17 +47,32 @@ export class AppComponent implements OnInit {
 
     }
 
+    ngOnInit() {}
+
     initHostCheckedStatus(app: App) {
         for (let v of app.versions) {
             for (let h of v.targetHosts) {
                 let n = this.checkName(v,h);
                 this.hostChecked.addControl(n,new FormControl(false));
             }
+            let selectAllName = this.selectAllName(v);
+            let selectAll = new FormControl(false);
+            this.hostChecked.addControl(selectAllName, selectAll);
+            selectAll.valueChanges.subscribe(s => {
+                for (let h of v.targetHosts) {
+                    let c = this.hostChecked.get(this.checkName(v, h));
+                    c.setValue(s);
+                }
+            })
         }
     }
 
     checkName(v: Version, h: Host): string {
         return v.id+'-'+h.id;
+    }
+
+    selectAllName(v: Version): string {
+        return 'select-all-' + v.id
     }
 
     hasHostChecked(ver: Version): boolean {
@@ -70,8 +85,6 @@ export class AppComponent implements OnInit {
         }
         return false;
     }
-
-    ngOnInit() {}
 
     onOperationClick(ver: Version, op: AppOperation) {
         let ref = this.modal.open(JobPlayDialog, {size: 'lg', scrollable: true});

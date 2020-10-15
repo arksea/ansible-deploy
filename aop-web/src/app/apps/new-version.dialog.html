@@ -8,16 +8,17 @@
             <input type="text" class="form-control" id="name" formControlName="name">
         </div>
         <div class="form-group">
-            <label for="repository">SVN地址</label>
+            <label for="repository">部署文件存储地址</label>
             <div class="input-group">
                 <div class="input-group-prepend">
-                    <span class="input-group-text">svn://deploy-svn/{{app.apptag}}/</span>
+                    <span class="input-group-text">仓库协议://仓库主机/{{app.apptag}}/</span>
                 </div>
-                <input type="text" class="form-control" id="repository" formControlName="repository">
+                <input type="text" class="form-control" id="repository" formControlName="repository"
+                    placeholder="分支相对路径">
             </div>
         </div>
         <div class="form-group">
-            <label for="revision">SVN Revision</label>
+            <label for="revision">Revision</label>
             <input type="text" class="form-control" id="revision" formControlName="revision">
         </div>
         <div class="form-group">

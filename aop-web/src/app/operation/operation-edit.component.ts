@@ -1,13 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { FormDataEvent } from '@angular/forms/esm2015';
-import { FormGroup, FormControl, AbstractControl, Validators, ValidatorFn } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { OperationsService } from './operations.service';
 import { MessageNotify } from '../utils/message-notify';
 import { AppOperation, AppOperationCode } from '../app.entity';
 import { AccountService } from '../account/account.service';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { HostsService } from '../hosts/hosts.service';
 import { ConfirmDialog } from '../utils/confirm.dialog';
 import { NewCodeFileDialog } from './new-code-file.dialog';
 
@@ -17,14 +15,13 @@ import { NewCodeFileDialog } from './new-code-file.dialog';
 })
 export class OperationEditComponent implements OnInit {
 
-    public operation: AppOperation;
+    public operation: AppOperation = new AppOperation();
     public editForm: FormGroup;
     public isNewAction: boolean;
     private appTypeId: number;
     private activeCode: AppOperationCode = new AppOperationCode();
 
     constructor(public svc: OperationsService,
-                private hostSvc: HostsService,
                 public account: AccountService,
                 protected alert: MessageNotify,
                 protected modal: NgbModal,

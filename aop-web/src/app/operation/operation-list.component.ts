@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormDataEvent } from '@angular/forms/esm2015';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Router } from '@angular/router';
 import { OperationsService } from './operations.service';
 import { ConfirmDialog } from '../utils/confirm.dialog';
 import { MessageNotify } from '../utils/message-notify';

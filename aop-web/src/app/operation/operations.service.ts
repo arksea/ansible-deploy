@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject, Observable, of, BehaviorSubject } from 'rxjs';
+import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import { map, first, flatMap } from 'rxjs/operators';
 import { AppOperation, AppType, AppOperationCode } from '../app.entity';
 import { ServiceResponse } from '../utils/http-utils';

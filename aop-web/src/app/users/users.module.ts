@@ -9,7 +9,6 @@ import { RouterModule } from '@angular/router';
 import { UsersRoutingModule } from './users-routing.module';
 import { ActiveUsersComponent, BlockedUsersComponent } from './users.component';
 import { AccountModule } from '../account/account.module';
-// import { NewGroupDialog } from './new-group.dialog';
 import { UsersService } from './users.service';
 
 @NgModule({

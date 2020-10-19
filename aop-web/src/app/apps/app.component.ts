@@ -5,14 +5,9 @@ import { AppsService } from './apps.service';
 import { MessageNotify } from '../utils/message-notify';
 import { App, AppOperation } from '../app.entity';
 import { AccountService } from '../account/account.service';
-import { NewVersionDialog } from './new-version.dialog';
-import { HostsService } from '../hosts/hosts.service';
-import { AddHostDialog } from './add-host.dialog';
 import { Version, Host } from '../app.entity';
 import { JobPlayDialog } from './job-play.dialog';
-import { isInteger } from '@ng-bootstrap/ng-bootstrap/util/util';
 import { FormGroup, FormControl } from '@angular/forms';
-
 
 @Component({
     selector: 'app',
@@ -23,7 +18,6 @@ export class AppComponent implements OnInit {
     operations: AppOperation[];
     hostChecked: FormGroup = new FormGroup({});
     constructor(private svc: AppsService,
-                private hostSvc: HostsService,
                 public account: AccountService,
                 private route: ActivatedRoute,
                 private router: Router,

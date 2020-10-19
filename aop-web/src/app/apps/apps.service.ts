@@ -53,7 +53,6 @@ export class PollLogsResult {
 
 @Injectable()
 export class AppsService {
-    private EMETY_SET: Set<string> = new Set();
     public userGroups: Subject<AppGroup[]> = new BehaviorSubject([]);
     private appsModelInfo: AppsModelInfo = new AppsModelInfo();
     public appsModel: CrudModel<number, App> = new CrudModel<number, App>(this.appsModelInfo);

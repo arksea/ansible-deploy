@@ -40,4 +40,15 @@ public class AppOperationCode extends IdEntity {
     public void setCode(String code) {
         this.code = code;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        } else if (o instanceof AppOperationCode) {
+            return ((AppOperationCode)o).getId().equals(this.getId());
+        } else {
+            return false;
+        }
+    }
 }

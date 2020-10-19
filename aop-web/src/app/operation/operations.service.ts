@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject, Observable, of, BehaviorSubject } from 'rxjs';
 import { map, first, flatMap } from 'rxjs/operators';
-import { AppOperation, AppType } from '../app.entity';
+import { AppOperation, AppType, AppOperationCode } from '../app.entity';
 import { ServiceResponse } from '../utils/http-utils';
 import { HttpUtils } from '../utils/http-utils';
 import { MessageNotify } from "../utils/message-notify";
@@ -49,13 +49,15 @@ export class OperationsService {
                 for (let t of this.appTypes) {
                     this.appTypesMap[t.id] = t;
                 }
-                this.appType = this.appTypes[0];
+                if (this.appType == undefined) {
+                    this.appType = this.appTypes[0];
+                }
                 this.queryOperations();
             }
         });
     }
 
-    public saveOperation(operation: AppOperation): Observable<ServiceResponse<number>> {
+    public saveOperation(operation: AppOperation): Observable<ServiceResponse<AppOperation>> {
         const url = environment.apiUrl + '/api/operations';
         return this.httpUtils.httpPost('保存操作脚本', url, operation);
     }
@@ -94,7 +96,7 @@ export class OperationsService {
 
     public deleteOperation(operation: AppOperation): Observable<boolean> {
         const url = environment.apiUrl + '/api/operations/' + operation.id;
-        return this.httpUtils.httpDelete('删除操作脚本', url).pipe(map(ret => {
+        return this.httpUtils.httpDelete('删除操作', url).pipe(map(ret => {
             if (ret.code == 0) {
                 this.model.opDelModel.next(operation.id);
                 return true;
@@ -104,4 +106,10 @@ export class OperationsService {
         }));
     }
 
+    public deleteOperationCode(code: AppOperationCode): Observable<boolean> {
+        const url = environment.apiUrl + '/api/operations/codes/' + code.id;
+        return this.httpUtils.httpDelete('删除操作脚本', url).pipe(map(ret => {
+            return ret.code == 0;
+        }));
+    }
 }

@@ -46,6 +46,7 @@ export class AppOperation {
 }
 
 export class AppOperationCode {
+  id: number;
   operationId: number;
   fileName: string;
   description: string = '';

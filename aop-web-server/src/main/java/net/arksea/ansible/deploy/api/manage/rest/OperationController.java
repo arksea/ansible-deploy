@@ -53,11 +53,11 @@ public class OperationController {
 
     @RequiresPermissions("操作管理:修改")
     @RequestMapping(method = RequestMethod.POST, produces = MEDIA_TYPE)
-    public String save(@RequestBody final AppOperation operation,
+    public RestResult<AppOperation> save(@RequestBody final AppOperation operation,
                            final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         AppOperation saved = operationsService.saveOperation(operation);
-        return RestUtils.createResult(ResultCode.SUCCEED, saved.getId(), reqid);
+        return new RestResult<>(0, saved, reqid);
     }
 
     @RequiresPermissions("操作管理:修改")
@@ -75,5 +75,13 @@ public class OperationController {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         AppOperationCode saved = operationsService.saveOperationCode(code);
         return RestUtils.createResult(ResultCode.SUCCEED, saved.getId(), reqid);
+    }
+
+    @RequiresPermissions("操作管理:修改")
+    @RequestMapping(path="codes/{id}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
+    public String deleteOperationCode(@PathVariable(name = "id") final Long id, final HttpServletRequest httpRequest) {
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        operationsService.deleteOperationCode(id);
+        return RestUtils.createResult(ResultCode.SUCCEED, "", reqid);
     }
 }

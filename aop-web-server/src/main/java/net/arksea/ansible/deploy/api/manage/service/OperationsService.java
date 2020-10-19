@@ -6,9 +6,7 @@ import net.arksea.ansible.deploy.api.manage.entity.AppOperation;
 import net.arksea.ansible.deploy.api.manage.entity.AppOperationCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import javax.transaction.Transactional;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Create by xiaohaixing on 2020/9/25
@@ -22,17 +20,17 @@ public class OperationsService {
 
     @Transactional
     public AppOperation saveOperation(AppOperation operation) {
-        AppOperation saved = operationDao.save(operation);
-        for (AppOperationCode c: operation.getCodes()) {
-            c.setOperationId(saved.getId());
-            operationCodeDao.save(c);
-        }
-        return saved;
+        return operationDao.save(operation);
     }
 
     @Transactional
     public AppOperationCode saveOperationCode(AppOperationCode code) {
         return operationCodeDao.save(code);
+    }
+
+    @Transactional
+    public void deleteOperationCode(Long id) {
+        operationCodeDao.delete(id);
     }
 
     public Iterable<AppOperation> getAll() {

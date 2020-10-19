@@ -56,8 +56,7 @@ export class OperationEditComponent implements OnInit {
                         this.desc.setValue(op.description);
                         this.command.setValue(op.command);
                         if (this.operation.codes.length > 0) {
-                            this.activeCode = this.operation.codes[0];
-                            this.codeContent.setValue(this.activeCode.code);
+                            this.setActiveCode(this.operation.codes[0])
                         }
                     } else {
                         this.alert.warning('指定操作不存在：'+opId);
@@ -80,13 +79,20 @@ export class OperationEditComponent implements OnInit {
         this.svc.saveOperation(op).subscribe(ret => {
             if (ret.code == 0) {
                 if (this.isNewAction) {
-                    op.id = ret.result;
-                    this.svc.model.opSetModel.next(op);
+                    this.svc.model.opSetModel.next(ret.result);
                 }
                 this.alert.success('保存脚本成功');
                 this.router.navigate(['/operations']);
             }
         });
+    }
+
+    private setActiveCode(code: AppOperationCode) {
+        if (this.activeCode != undefined) {
+            this.activeCode.code = this.codeContent.value;
+        }
+        this.activeCode = code;
+        this.codeContent.setValue(this.activeCode.code);
     }
 
     newCode() {
@@ -105,7 +111,15 @@ export class OperationEditComponent implements OnInit {
         ref.componentInstance.message = "删除文件: "+code.fileName
         ref.result.then(result => {
             if (result == "ok") {
-                this.doDeleteCode(code);
+                if (this.isNewAction) {
+                    this.doDeleteCode(code);
+                } else {
+                    this.svc.deleteOperationCode(code).subscribe(ret => {
+                        if (ret) {
+                            this.doDeleteCode(code);
+                        }
+                    });
+                }
             }
         }, resaon => {})
     }
@@ -120,9 +134,9 @@ export class OperationEditComponent implements OnInit {
         this.operation.codes = codes;
         if (code.fileName == this.activeCode.fileName) {
             if (this.operation.codes.length > 0) {
-                this.activeCode = this.operation.codes[0];
+                this.setActiveCode(this.operation.codes[0])
             } else {
-                this.activeCode = new AppOperationCode();
+                this.setActiveCode(new AppOperationCode());
             }
         }
     }
@@ -132,11 +146,7 @@ export class OperationEditComponent implements OnInit {
     }
 
     selectCode(code: AppOperationCode) {
-        if (this.activeCode) {
-            this.activeCode.code = this.codeContent.value;
-            this.activeCode = code;
-            this.codeContent.setValue(code.code);
-        }
+        this.setActiveCode(code);
     }
 
     public cancel() {

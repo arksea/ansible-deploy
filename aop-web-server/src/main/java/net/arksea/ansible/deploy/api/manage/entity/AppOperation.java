@@ -53,7 +53,7 @@ public class AppOperation extends IdEntity {
         this.command = command;
     }
 
-    @OneToMany(mappedBy = "operationId", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "operationId", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     public Set<AppOperationCode> getCodes() {
         return codes;
     }

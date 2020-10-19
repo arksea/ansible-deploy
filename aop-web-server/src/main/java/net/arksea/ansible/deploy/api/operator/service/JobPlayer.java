@@ -34,6 +34,7 @@ public class JobPlayer extends AbstractActor {
     private final long STOP_JOB_DELAY = 10;
     private final long JOB_PLAY_TIMEOUT = 600;
     private FileWriter jobLogFileWriter;
+    private boolean noMoreLogs = false;
 
     private JobPlayer(OperationJob job, Set<Long>hosts, JobResources beans) {
         this.job = job;
@@ -80,6 +81,7 @@ public class JobPlayer extends AbstractActor {
             this.logs = logs;
         }
     }
+    public static class NoMoreLogs {}
     public static class StopJob {}
     public static class StartJob{}
 
@@ -111,6 +113,7 @@ public class JobPlayer extends AbstractActor {
                 .match(OfferLog.class,  this::handleOfferLog)
                 .match(OfferLogs.class, this::handleOfferLogs)
                 .match(StartJob.class,  this::handleStartJob)
+                .match(NoMoreLogs.class,this::handleNoMoreLogs)
                 .match(StopJob.class,   this::handleStopJob)
                 .build();
     }
@@ -159,32 +162,41 @@ public class JobPlayer extends AbstractActor {
                     offerLog("操作任务失败:"+failure.getMessage()+"\n");
                     logger.warn("操作任务失败", failure);
                 }
-                delayStopJob();
             }
         }, context().dispatcher());
     }
 
     private void delayStopJob() {
+        self().tell(new NoMoreLogs(), ActorRef.noSender());
         context().system().scheduler().scheduleOnce(
                 Duration.create(STOP_JOB_DELAY, TimeUnit.SECONDS),
                 self(),new StopJob(),context().dispatcher(),self());
     }
 
+    private void handleNoMoreLogs(NoMoreLogs msg) {
+        this.noMoreLogs = true;
+    }
+
     private void handlePollLogs(PollLogs msg) {
-        StringBuilder sb = new StringBuilder();
-        long len = 0;
-        int index;
-        for (index = msg.index; index < logs.size(); ++index) {
-            String log = logs.get(index);
-            sb.append(log);
-            len = len + log.length();
-            if (len > MAX_LOG_LEN_PER_REQUEST) {
-                ++index;
-                break;
+        if (msg.index < logs.size() || !noMoreLogs) {
+            StringBuilder sb = new StringBuilder();
+            long len = 0;
+            int index;
+            for (index = msg.index; index < logs.size(); ++index) {
+                String log = logs.get(index);
+                sb.append(log);
+                len = len + log.length();
+                if (len > MAX_LOG_LEN_PER_REQUEST) {
+                    ++index;
+                    break;
+                }
             }
+            PollLogsResult result = new PollLogsResult(sb.toString(), index, logs.size());
+            sender().tell(result, self());
+        } else {
+            PollLogsResult result = new PollLogsResult("", -1, logs.size());
+            sender().tell(result, self());
         }
-        PollLogsResult result = new PollLogsResult(sb.toString(), index, logs.size());
-        sender().tell(result, self());
     }
 
     private void handleStopJob(StopJob msg) {

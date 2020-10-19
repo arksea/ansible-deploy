@@ -6,7 +6,7 @@ import javax.persistence.*;
  * Create by xiaohaixing on 2020/9/25
  */
 @Entity
-@Table(name = "dp2_app_operation_code")
+@Table(name = "dp2_app_operation_code", uniqueConstraints = @UniqueConstraint(columnNames = { "operationId", "fileName" }))
 public class AppOperationCode extends IdEntity {
     private Long operationId;
     private String fileName;

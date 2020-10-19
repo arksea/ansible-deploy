@@ -1,7 +1,20 @@
-const account_web_server = "http://10.79.186.29:8062"
-const api_web_server = "http://10.79.186.29:8062"
+function getApiAddr(): string {
+  let uri = document.documentURI;
+  let n = uri.indexOf('//');
+  let localAddr = 'http://localhost:8080';
+  let addr = localAddr;
+  if (n > 0) {
+    n = uri.indexOf('/', n+2);
+  } else {
+    n = uri.indexOf('/');
+  }
+  if (n > 0) {
+    addr = uri.substring(0, n);
+  }
+  return addr.endsWith(':4200') ? localAddr : addr;
+}
 export const environment = {
   production: true,
-  accountApiUrl: account_web_server,
-  apiUrl: api_web_server
+  accountApiUrl: getApiAddr(),
+  apiUrl: getApiAddr()
 };

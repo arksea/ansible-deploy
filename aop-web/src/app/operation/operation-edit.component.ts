@@ -37,7 +37,7 @@ export class OperationEditComponent implements OnInit {
             name: new FormControl('',[Validators.required,Validators.maxLength(16),Validators.minLength(2)]),
             description: new FormControl('',[Validators.required,Validators.maxLength(128),Validators.minLength(6)]),
             command: new FormControl('',[Validators.required,Validators.maxLength(256),Validators.minLength(1)]),
-            codeContent: new FormControl('', [Validators.required,Validators.maxLength(65535)])
+            codeContent: new FormControl('', [Validators.maxLength(65535)])
         });
         if (idStr == 'new') {
             this.isNewAction = true;
@@ -75,9 +75,7 @@ export class OperationEditComponent implements OnInit {
         }
         this.svc.saveOperation(op).subscribe(ret => {
             if (ret.code == 0) {
-                if (this.isNewAction) {
-                    this.svc.model.opSetModel.next(ret.result);
-                }
+                this.svc.model.opSetModel.next(ret.result);
                 this.alert.success('保存脚本成功');
                 this.router.navigate(['/operations']);
             }
@@ -97,7 +95,8 @@ export class OperationEditComponent implements OnInit {
         ref.componentInstance.operation = this.operation;
         ref.result.then(result => {
             if (result != 'cancel') {
-                this.selectCode(result);
+                let code = result as AppOperationCode;
+                this.selectCode(code);
             }
         },reason => {})
     }
@@ -108,7 +107,7 @@ export class OperationEditComponent implements OnInit {
         ref.componentInstance.message = "删除文件: "+code.fileName
         ref.result.then(result => {
             if (result == "ok") {
-                if (this.isNewAction) {
+                if (this.isNewAction || code.id == undefined) {
                     this.doDeleteCode(code);
                 } else {
                     this.svc.deleteOperationCode(code).subscribe(ret => {

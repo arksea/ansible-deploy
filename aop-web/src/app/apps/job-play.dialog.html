@@ -1,5 +1,5 @@
 <div class="modal-header d-flex">
-    <h3 class="modal-title m-2 mr-auto"><strong class="text-danger"> [上线] </strong>操作</h3>
+    <h3 class="modal-title m-2 mr-auto"><span class="text-danger"> [{{operation.name}}] </span>操作</h3>
     <button type="button" class="btn btn-danger m-2" *ngIf="!(jobStarted|async)" (click)="startJob()">开始</button>
     <button type="button" class="btn btn-outline-secondary m-2" (click)="modal.dismiss('cancel')">
         {{(jobStarted|async)?'关闭':'取消'}}

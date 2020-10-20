@@ -13,29 +13,15 @@
             <li *ngFor="let v of app?.versions" class="list-group-item py-4">
                 <div class="card">
                     <div class="card-header">
-                        <div class="d-flex">
-                            <div class="mr-auto pt-2">
+                        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                            <div class="pt-2">
                                 <strong>版本: {{v.name}}</strong>
                             </div>
-
-                            <!-- <div class="dropdown pl-1">
-                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown"
-                                        [disabled]="account.perm('应用:部署') | async">
-                                    其他操作
-                                </button>
-                                <div class="dropdown-menu">
-                                    <button class="dropdown-item" type="button" [disabled]="account.perm('应用:部署') | async">安装</button>
-                                    <button class="dropdown-item" type="button" [disabled]="account.perm('应用:部署') | async">配置</button>
-                                    <button class="dropdown-item" type="button" [disabled]="account.perm('应用:部署') | async">停止</button>
-                                    <button class="dropdown-item" type="button" [disabled]="account.perm('应用:部署') | async">重启</button>
-                                    <button class="dropdown-item" type="button" [disabled]="account.perm('应用:部署') | async">启动</button>
-                                </div>
-                            </div> -->
-
-                            <div class="pl-1" *ngFor="let op of operations">
-                                <button type="button" class="btn btn-outline-danger btn-sm"
-                                        [disabled]="(account.perm('应用:部署') | async) || !hasHostChecked(v)"
-                                        (click)="onOperationClick(v, op)">
+                            <div class="btn-group btn-group-sm" role="group" [title] = "hasHostChecked(v)?'':'请选择要操作的目标主机'">
+                                <button type="button" class="btn btn-outline-danger"
+                                    *ngFor="let op of operations"
+                                    [disabled]="(account.perm('应用:部署') | async) || !hasHostChecked(v)"
+                                    (click)="onOperationClick(v, op)">
                                     {{op.name}}
                                 </button>
                             </div>

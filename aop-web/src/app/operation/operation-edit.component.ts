@@ -34,8 +34,8 @@ export class OperationEditComponent implements OnInit {
         let idStr = params.get('id');
         this.appTypeId = Number(params.get('appTypeId'));
         this.editForm = new FormGroup({
-            name: new FormControl('',[Validators.required,Validators.maxLength(16),Validators.minLength(2)]),
-            description: new FormControl('',[Validators.required,Validators.maxLength(128),Validators.minLength(6)]),
+            name: new FormControl('',[Validators.required,Validators.maxLength(32),Validators.minLength(2)]),
+            description: new FormControl('',[Validators.required,Validators.maxLength(128),Validators.minLength(1)]),
             command: new FormControl('',[Validators.required,Validators.maxLength(256),Validators.minLength(1)]),
             codeContent: new FormControl('', [Validators.maxLength(65535)])
         });

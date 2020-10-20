@@ -18,7 +18,7 @@
             <div class="form-group col-lg-8">
                 <label for="description">操作说明
                     <span class="text-danger" *ngIf="desc.errors?.required">*</span>
-                    <span class="text-danger" *ngIf="desc.errors?.minlength || desc?.errors?.maxlength">(长度6至128)</span>
+                    <span class="text-danger" *ngIf="desc.errors?.minlength || desc?.errors?.maxlength">(长度1至128)</span>
                 </label>
                 <input type="text" id="description" class="form-control" formControlName="description">
             </div>
@@ -26,8 +26,8 @@
         <div class="mb-4">
             <div class="form-group">
                 <label for="command">启动命令行
-                    <span class="text-danger" *ngIf="desc.errors?.required">*</span>
-                    <span class="text-danger" *ngIf="desc.errors?.minlength || desc?.errors?.maxlength">(长度1至256)</span>
+                    <span class="text-danger" *ngIf="command.errors?.required">*</span>
+                    <span class="text-danger" *ngIf="command.errors?.minlength || command?.errors?.maxlength">(长度1至256)</span>
                 </label>
                 <input type="text" id="command" class="form-control" formControlName="command">
             </div>

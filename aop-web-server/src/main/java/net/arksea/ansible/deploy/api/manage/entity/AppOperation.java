@@ -26,7 +26,7 @@ public class AppOperation extends IdEntity {
         this.appType = appType;
     }
 
-    @Column(length = 16, nullable = false)
+    @Column(length = 32, nullable = false)
     public String getName() {
         return name;
     }

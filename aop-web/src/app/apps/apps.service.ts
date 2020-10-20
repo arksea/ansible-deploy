@@ -6,7 +6,7 @@ import { HttpUtils } from '../utils/http-utils';
 import { environment } from '../../environments/environment';
 import { map, first } from 'rxjs/operators';
 import { CrudModel, IModelInfo } from '../utils/crud-model';
-import { Version, AppVarDefine, AppOperation } from '../app.entity';
+import { Version, AppVarDefine, AppOperation, Host } from '../app.entity';
 
 class AppsModelInfo implements IModelInfo<number, App> {
     private sortType: string;
@@ -229,12 +229,15 @@ export class AppsService {
         }))
     }
 
-    public startJob(app: App, operation: AppOperation,hosts: Array<number>): Observable<ServiceResponse<OperationJob>> {
+    public startJob(app: App, operation: AppOperation,hosts: Array<Host>): Observable<ServiceResponse<OperationJob>> {
         const url = environment.apiUrl + '/api/jobs';
         const body = new StartOpeartionJob();
         body.appId = app.id;
         body.operationId = operation.id;
-        body.hosts = hosts;
+        body.hosts = []
+        for (let h of hosts) {
+            body.hosts.push(h.id);
+        }
         return this.httpUtils.httpPost('开始操作任务', url, body);
     }
 

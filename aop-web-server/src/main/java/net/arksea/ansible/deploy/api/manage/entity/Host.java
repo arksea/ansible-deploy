@@ -2,6 +2,8 @@ package net.arksea.ansible.deploy.api.manage.entity;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -17,6 +19,7 @@ public class Host extends IdEntity {
     private Long appGroupId;
     private boolean enabled;
     private Timestamp createTime; //创建时间
+    private Map status = new HashMap<>();
 
     @Column(name = "public_ip", length = 36)
     public String getPublicIp() {
@@ -70,6 +73,15 @@ public class Host extends IdEntity {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    @Transient
+    public Map getStatus() {
+        return status;
+    }
+
+    public void setStatus(Map status) {
+        this.status = status;
     }
 
     @Override

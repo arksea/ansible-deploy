@@ -4,7 +4,7 @@ import { MessageNotify } from '../utils/message-notify';
 import { Subject, BehaviorSubject, Observable, timer, Subscription } from 'rxjs';
 import { publishReplay, refCount, scan, map, delay } from 'rxjs/operators';
 import { AppsService } from './apps.service';
-import { AppOperation, App } from '../app.entity';
+import { AppOperation, App, Host } from '../app.entity';
 
 export type IModelOperation = (data: ModelData) => ModelData;
 export class ModelData {
@@ -21,14 +21,13 @@ export class JobPlayDialog implements OnInit, OnDestroy {
 
     operation: AppOperation;
     app: App;
-    hosts: Array<number>;
+    hosts: Array<Host>;
 
     jobStarted: BehaviorSubject<boolean> = new BehaviorSubject(false);
     // opAddModel     ──┬──＞ updates  ===＞ jobLogs
     opAddModel: Subject<ModelData> = new Subject();
     updates: Subject<IModelOperation> = new Subject();
     jobLogs: Observable<ModelData>;
-    logsPollTimerSubscription: Subscription;
 
     constructor(public modal: NgbActiveModal, public svc: AppsService, private alert: MessageNotify) {
     }
@@ -55,6 +54,7 @@ export class JobPlayDialog implements OnInit, OnDestroy {
                 this.svc.pollJobLogs(data.jobId, data.index).subscribe(s => {
                     if (s.code == 0) {
                         let ret = s.result;
+                        this.setHostStatus(ret.log);
                         this.opAddModel.next(new ModelData(data.jobId, data.logs+ret.log, ret.index, ret.size, data.pollCount+1));
                     }
                 })
@@ -62,10 +62,29 @@ export class JobPlayDialog implements OnInit, OnDestroy {
         })
     }
 
-    ngOnDestroy(): void {
-        if (this.logsPollTimerSubscription) {
-            this.logsPollTimerSubscription.unsubscribe();
+    private setHostStatus(log: string) {
+        let lines = log.split('\n')
+        let method = '@@SET_HOST_STATUS'
+        for (let line of lines) {
+            let i = line.indexOf(method)
+            if (i >= 0) {
+                let kvStr = line.substring(i+method.length+1)
+                let kv = kvStr.split(',');
+                if (kv.length == 3) {
+                    let key   = kv[0]
+                    let value = kv[1]
+                    let color = Number(kv[2])
+                    for (let h of this.hosts) {
+                        if (h.privateIp == key) {
+                            h.status[this.operation.name] = {value: value, color: color}
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    ngOnDestroy(): void {
     }
 
     startJob() {

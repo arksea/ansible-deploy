@@ -68,10 +68,21 @@ task ngBuild(type: Exec) {
     commandLine 'cmd', '/c', 'ng build --prod'
 }
 
-
+task publishQaDel {
+    doLast {
+        //拷贝前先删除部署目录下所有文件
+        File dir = file('publish/qa/')
+        dir.listFiles().each {File file ->
+            if(file.name!='.svn'){
+                println 'delete ' + file.name
+                delete file
+            }
+        }
+    }
+}
 
 task publishQA {
-    dependsOn(build,ngBuild)
+    dependsOn(publishQaDel,build,ngBuild)
     doLast {
         //拷贝前先删除部署目录
         delete('publish/qa/WEB-INF')

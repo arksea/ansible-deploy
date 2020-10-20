@@ -71,6 +71,10 @@ export class Version {
   targetHosts: Array<Host> = [];
 }
 
+export class HostStatus {
+  value: string;
+  color: number;
+}
 export class Host {
   id: number;
   publicIp: string;  //公网IP
@@ -79,6 +83,7 @@ export class Host {
   appGroupId: number; //所属分组
   enabled: boolean;  //是否可用状态
   createTime: string;//创建时间
+  status: Map<string,HostStatus> = new Map();
 }
 
 export class App {

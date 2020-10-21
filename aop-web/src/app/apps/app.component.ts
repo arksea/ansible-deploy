@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FormGroup, FormControl } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppsService } from './apps.service';
 import { MessageNotify } from '../utils/message-notify';
 import { App, AppOperation, HostStatus } from '../app.entity';
 import { AccountService } from '../account/account.service';
 import { Version, Host } from '../app.entity';
-import { JobPlayDialog } from './job-play.dialog';
-import { FormGroup, FormControl } from '@angular/forms';
+import { JobPlayDialog, StatusJobPlayDialog } from './job-play.dialog';
 
 @Component({
     selector: 'app',
@@ -48,8 +48,6 @@ export class AppComponent implements OnInit {
             for (let h of v.targetHosts) {
                 let n = this.checkName(v,h);
                 this.hostChecked.addControl(n,new FormControl(false));
-                ///@todo delete test
-                //h.status['@@preStatusTest'] = {value: '离线', color: 0} 
             }
             let selectAllName = this.selectAllName(v);
             let selectAll = new FormControl(false);
@@ -95,6 +93,14 @@ export class AppComponent implements OnInit {
             }
         }
         ref.componentInstance.hosts = hosts;
+    }
+
+    onStatusOperationClick(ver: Version, op: AppOperation) {
+        let ref = this.modal.open(StatusJobPlayDialog, {size: 'lg', scrollable: true});
+        ref.componentInstance.operation = op;
+        ref.componentInstance.app = this.app;
+        ref.componentInstance.hosts = ver.targetHosts;
+        ref.componentInstance.isStatusTestJob = true;
     }
 
     public getHostStatusStyle(s: HostStatus): string {

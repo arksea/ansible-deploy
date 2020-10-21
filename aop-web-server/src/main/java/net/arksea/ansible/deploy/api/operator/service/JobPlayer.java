@@ -31,8 +31,8 @@ public class JobPlayer extends AbstractActor {
     private final LinkedList<String> logs = new LinkedList<>();
     private final JobResources beans;
     private final long MAX_LOG_LEN_PER_REQUEST = 10240;
-    private final long STOP_JOB_DELAY = 10;
-    private final long JOB_PLAY_TIMEOUT = 600;
+    private final long STOP_JOB_DELAY = 3;
+    private final long JOB_PLAY_TIMEOUT = 300;
     private FileWriter jobLogFileWriter;
     private boolean noMoreLogs = false;
 

@@ -15,7 +15,7 @@ import { AppEditComponent } from './app-edit.component';
 import { AppComponent } from './app.component';
 import { NewVersionDialog } from './new-version.dialog';
 import { AddHostDialog } from './add-host.dialog';
-import { JobPlayDialog } from './job-play.dialog';
+import { JobPlayDialog, StatusJobPlayDialog } from './job-play.dialog';
 
 @NgModule({
   imports: [
@@ -25,10 +25,11 @@ import { JobPlayDialog } from './job-play.dialog';
     VenderModule, NgbPaginationModule, NgbAlertModule, NgbModule,
     AccountModule, AppsRoutingModule],
   declarations: [
-    AppsComponent, AppListComponent, AppEditComponent, AppComponent, NewVersionDialog, AddHostDialog,JobPlayDialog
+    AppsComponent, AppListComponent, AppEditComponent, AppComponent, 
+    NewVersionDialog, AddHostDialog,JobPlayDialog,StatusJobPlayDialog
   ],
   entryComponents: [
-    NewVersionDialog, AddHostDialog,JobPlayDialog
+    NewVersionDialog, AddHostDialog,JobPlayDialog,StatusJobPlayDialog
   ],
   providers: [AppsService],
   exports: []

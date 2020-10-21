@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject, BehaviorSubject, Observable } from 'rxjs';
-import { User } from './users.entity';
+import { User, Role } from './users.entity';
 import { ServiceResponse } from '../utils/http-utils';
 import { HttpUtils } from '../utils/http-utils';
 import { environment } from '../../environments/environment';
@@ -42,15 +42,17 @@ class SortType {
 
 @Injectable()
 export class UsersService {
-    private EMETY_SET: Set<string> = new Set();
+
     private userModelInfo: UsersModelInfo = new UsersModelInfo();
     public usersModel: CrudModel<number, User> = new CrudModel<number, User>(this.userModelInfo);
     public userList: Subject<User[]> = this.usersModel.modelList;
     public sortTypes: Array<SortType> = [{type:"name", order:"asc", desc:"用户名-正序"},
                                          {type:"name", order:"desc",desc:"用户名-逆序"}]
     public selectedSortType: BehaviorSubject<SortType> = new BehaviorSubject(this.sortTypes[1])
+    public roles: Array<Role> = []
 
     public constructor(private httpUtils: HttpUtils) {
+        this.getRoles()
     }
 
     public getSortDesc(index: number): string {
@@ -70,6 +72,16 @@ export class UsersService {
         ret.subscribe(data => {
             if (data.code == 0) {
                 this.usersModel.opResetModels.next(data.result);
+            }
+        });
+    }
+
+    public getRoles() {
+        let url = environment.apiUrl + '/api/roles/';
+        let ret: Observable<ServiceResponse<Array<Role>>> = this.httpUtils.httpGet('查询用户信息', url);
+        ret.subscribe(data => {
+            if (data.code == 0) {
+                this.roles= data.result;
             }
         });
     }
@@ -128,5 +140,10 @@ export class UsersService {
             }
             return null;
         }))
+    }
+
+    public updateUserRoles(userId: number, ids: Array<number>) {
+        const url = environment.apiUrl + '/api/roles/user/' + userId;
+        return this.httpUtils.httpPut('更新用户角色列表', url, ids);
     }
 }

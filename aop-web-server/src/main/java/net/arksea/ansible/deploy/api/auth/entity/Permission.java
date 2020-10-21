@@ -86,20 +86,4 @@ public class Permission extends IdEntity implements Comparable<Permission> {
     public int hashCode() {
         return this.permission.hashCode();
     }
-
-    public String makeContent() {
-        String content = "";
-        try {
-            Map<String, Object> map = new HashMap<>();
-            map.put("id", id);
-            map.put("权限", permission);
-            map.put("描述", description);
-            map.put("是否可用", available);
-            map.put("归属节点", pid);
-            content = objectMapper.writeValueAsString(map);
-        } catch (Exception ex) {
-            throw new RuntimeException("make json failed", ex);
-        }
-        return content;
-    }
 }

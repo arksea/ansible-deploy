@@ -10,6 +10,7 @@ import { UsersRoutingModule } from './users-routing.module';
 import { ActiveUsersComponent, BlockedUsersComponent } from './users.component';
 import { AccountModule } from '../account/account.module';
 import { UsersService } from './users.service';
+import { UserRolesDialog } from './user-roles.dialog';
 
 @NgModule({
   imports: [
@@ -19,10 +20,10 @@ import { UsersService } from './users.service';
     VenderModule, NgbPaginationModule, NgbAlertModule, NgbModule,
     AccountModule, UsersRoutingModule],
   declarations: [
-    ActiveUsersComponent, BlockedUsersComponent
+    ActiveUsersComponent, BlockedUsersComponent,UserRolesDialog
   ],
   entryComponents: [
-
+    UserRolesDialog
   ],
   providers: [UsersService],
   exports: []

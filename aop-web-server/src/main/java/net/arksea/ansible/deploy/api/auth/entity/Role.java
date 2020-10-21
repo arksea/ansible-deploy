@@ -65,33 +65,4 @@ public class Role extends IdEntity {
     public String toString() {
         return "role="+role+",description="+description+",available="+available;
     }
-
-    public String makeContent() {
-        String content = "";
-        String perInfo = "无";
-        if (permissions != null && permissions.size() > 0) {
-            perInfo = "";
-            for (Permission p : permissions) {
-                perInfo += ("【" + p.getId() + "】" + p.getPermission() + "；");
-            }
-        }
-        try {
-            Map<String, Object> map = new HashMap<>();
-            map.put("id", id);
-            map.put("角色名", role);
-            map.put("描述", description);
-            map.put("是否可用", available);
-            map.put("分配权限", perInfo);
-            content = objectMapper.writeValueAsString(map);
-        } catch (Exception ex) {
-            content = "{" +
-                    "id:" + id +
-                    ", 角色名:" + role +
-                    ", 描述:" + description +
-                    ", 是否可用:" + available +
-                    ", 分配权限:" + perInfo +
-                    "}";
-        }
-        return content;
-    }
 }

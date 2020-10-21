@@ -7,6 +7,7 @@ import { ConfirmDialog } from '../utils/confirm.dialog';
 import { MessageNotify } from '../utils/message-notify';
 import { User } from './users.entity';
 import { AccountService } from '../account/account.service';
+import { UserRolesDialog } from './user-roles.dialog';
 
 export class UsersComponent {
 
@@ -27,6 +28,11 @@ export class UsersComponent {
 
     newUser() {
         //this.modal.open(NewUserDialog);
+    }
+
+    onUserRolesBtnClick(user: User) {
+        let ref = this.modal.open(UserRolesDialog, {size: 'lg'});
+        ref.componentInstance.user = user;
     }
 }
 

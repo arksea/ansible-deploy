@@ -3,6 +3,7 @@ package net.arksea.ansible.deploy.api.manage.rest;
 import net.arksea.ansible.deploy.api.manage.dao.AppVarDefineDao;
 import net.arksea.ansible.deploy.api.manage.entity.AppVarDefine;
 import net.arksea.restapi.RestResult;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,6 +23,7 @@ public class AppVarDefineController {
     @Autowired
     AppVarDefineDao appVarDefineDao;
 
+    @RequiresPermissions("应用:查询")
     @RequestMapping(method = RequestMethod.GET, produces = MEDIA_TYPE)
     public RestResult<Iterable<AppVarDefine>> getAppVarDefines(final HttpServletRequest httpRequest) {
         Iterable<AppVarDefine> defines = appVarDefineDao.findAll();

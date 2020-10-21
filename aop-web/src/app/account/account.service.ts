@@ -6,7 +6,7 @@ import { ServiceResponse } from '../utils/http-utils';
 import { HttpUtils } from '../utils/http-utils';
 import { MessageNotify } from "../utils/message-notify";
 import { environment } from '../../environments/environment';
-import { map, flatMap } from 'rxjs/operators';
+import { map, flatMap, first } from 'rxjs/operators';
 
 type ChildPermMap = Map<string, Set<string>>;
 
@@ -116,17 +116,20 @@ export class AccountService {
 
   public hasRole(role: string): Observable<boolean> {
     return this.loginUserRoles.pipe(
+      first(),
       map(roles => roles.has(role)));
   }
 
   public hasPerm(perm: string): Observable<boolean> {
     return this.loginUserPerms.pipe(
+      first(),
       map(perms => perms.has(perm))
     )
   }
 
   public hasPermOrChild(perm: string): Observable<boolean> {
     return this.permChilds.pipe(
+      first(),
       flatMap(m => {
         let childs = m.get(perm);
         if (childs) {

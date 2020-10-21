@@ -23,7 +23,6 @@ public class App extends IdEntity {
     private Long appGroupId;
     private Set<AppVariable> vars;// 变量
     private Set<Port> ports;
-    private boolean enableJmx;
     private Set<Version> versions;
     private Timestamp createTime; //创建时间
     private boolean deleted; //是否标记为删除状态，系统将定时删除标记为删除状态的记录
@@ -100,15 +99,6 @@ public class App extends IdEntity {
     @Override
     public String toString() {
         return apptag;
-    }
-
-    @Column(nullable = false, columnDefinition = "TINYINT(1) NOT NULL DEFAULT 1")
-    public boolean isEnableJmx() {
-        return enableJmx;
-    }
-
-    public void setEnableJmx(final boolean enableJmx) {
-        this.enableJmx = enableJmx;
     }
 
     @OneToMany(mappedBy = "appId", fetch = FetchType.EAGER)

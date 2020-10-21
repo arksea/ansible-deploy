@@ -27,6 +27,7 @@
                     </div>
                     <div class="btn-group" role="group">
                         <button id="btnGroupDropNewApp" type="button" class="btn btn-success dropdown-toggle"
+                            [disabled]="account.perm('应用:修改') | async"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             新建应用
                         </button>

@@ -131,27 +131,4 @@ public class User extends IdEntity {
     public String toString() {
         return "name=" + name + ",email=" + email + ",locked=" + locked;
     }
-
-    public String makeContent() {
-        String content = "";
-        String roleInfo = "无";
-        if (roles != null && roles.size() > 0) {
-            roleInfo = "";
-            for (Role r : roles) {
-                roleInfo += ("【" + r.getId() + "】" + r.getRole() + "；");
-            }
-        }
-        try {
-            Map<String, Object> map = new HashMap<>();
-            map.put("id", id);
-            map.put("账号", name);
-            map.put("邮箱", email);
-            map.put("是否锁定", locked);
-            map.put("分配角色", roleInfo);
-            content = objectMapper.writeValueAsString(map);
-        } catch (Exception ex) {
-            throw new RuntimeException("make json failed", ex);
-        }
-        return content;
-    }
 }

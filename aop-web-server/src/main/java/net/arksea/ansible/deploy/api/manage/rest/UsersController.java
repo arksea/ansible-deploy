@@ -1,18 +1,19 @@
 package net.arksea.ansible.deploy.api.manage.rest;
 
 import net.arksea.ansible.deploy.api.ResultCode;
+import net.arksea.ansible.deploy.api.auth.entity.Role;
 import net.arksea.ansible.deploy.api.auth.entity.User;
+import net.arksea.ansible.deploy.api.auth.info.ClientInfo;
+import net.arksea.ansible.deploy.api.manage.entity.App;
 import net.arksea.ansible.deploy.api.manage.service.UsersService;
 import net.arksea.restapi.RestResult;
 import net.arksea.restapi.RestUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  *
@@ -68,5 +69,25 @@ public class UsersController {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         usersService.unblockUser(userId);
         return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+    }
+
+    @RequiresPermissions("用户管理:查询")
+    @RequestMapping(path="roles", method = RequestMethod.GET, produces = MEDIA_TYPE)
+    public RestResult<Iterable<Role>> getRoles(final HttpServletRequest httpRequest) {
+        Iterable<Role> roles = usersService.getRoles();
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        return new RestResult<>(0, roles, reqid);
+    }
+
+    //-------------------------------------------------------------------------
+    @RequiresPermissions("用户管理:修改")
+    @RequestMapping(path="roles/user/{userId}", method = RequestMethod.PUT, produces = MEDIA_TYPE)
+    public RestResult<Boolean> updateUserRoles(
+            @PathVariable(name="userId") long userId,
+            @RequestBody List<Long> roleIdList,
+            HttpServletRequest httpRequest) {
+        usersService.updateUserRoles(userId, roleIdList);
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        return new RestResult<>(0, true, reqid);
     }
 }

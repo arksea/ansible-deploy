@@ -23,6 +23,7 @@ public class VersionController {
     @Autowired
     VersionService versionService;
 
+    @RequiresPermissions("应用:修改")
     @RequestMapping(path="versions/{verId}/hosts/{hostId}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
     public String deleteHost(@PathVariable("verId") final long verId,
                              @PathVariable("hostId") final long hostId,
@@ -32,6 +33,7 @@ public class VersionController {
         return RestUtils.createResult(ResultCode.SUCCEED, reqid);
     }
 
+    @RequiresPermissions("应用:修改")
     @RequestMapping(path="versions/{verId}/hosts", method = RequestMethod.POST, produces = MEDIA_TYPE)
     public String addHosts(@PathVariable("verId") final long verId,
                            @RequestBody final List<Long> hosts,
@@ -41,6 +43,7 @@ public class VersionController {
         return RestUtils.createResult(ResultCode.SUCCEED, reqid);
     }
 
+    @RequiresPermissions("应用:修改")
     @RequestMapping(path="versions/{verId}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
     public String delete(@PathVariable("verId") final long verId,
                            final HttpServletRequest httpRequest) {

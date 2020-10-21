@@ -9,11 +9,10 @@ import net.arksea.ansible.deploy.api.operator.service.JobPlayer;
 import net.arksea.ansible.deploy.api.operator.service.JobService;
 import net.arksea.restapi.ErrorResult;
 import net.arksea.restapi.RestResult;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
-import scala.Function1;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Set;
@@ -40,6 +39,7 @@ public class JobController {
         public Set<Long> hosts;
     }
 
+    @RequiresPermissions("应用:部署")
     @RequestMapping(method = RequestMethod.POST, produces = MEDIA_TYPE)
     public RestResult<OperationJob> startJob(@RequestBody final StartOpeartionJob body,
                                               final HttpServletRequest httpRequest) {
@@ -50,6 +50,7 @@ public class JobController {
         return new RestResult<>(0, job, reqid);
     }
 
+    @RequiresPermissions("应用:部署")
     @RequestMapping(path="{jobId}/logs/{index}", method = RequestMethod.GET, produces = MEDIA_TYPE)
     public DeferredResult<RestResult<JobPlayer.PollLogsResult>> pollJobLogs(@PathVariable(name="jobId") final long jobId,
                                                                             @PathVariable(name="index") final int index,

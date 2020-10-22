@@ -22,8 +22,11 @@
             <li class="nav-item" routerLinkActive="active" [hidden]="perm('端口管理:查询') | async">
                 <a class="nav-link" [routerLink]="['/ports']">端口管理</a>
             </li>
-            <li class="nav-item" routerLinkActive="active" [hidden]="perm('操作管理:查询') | async">
+            <!-- <li class="nav-item" routerLinkActive="active" [hidden]="perm('操作管理:查询') | async">
                 <a class="nav-link" [routerLink]="['/operations']">操作管理</a>
+            </li> -->
+            <li class="nav-item" routerLinkActive="active" [hidden]="perm('操作管理:查询') | async">
+                <a class="nav-link" [routerLink]="['/app-types']">应用类型</a>
             </li>
             <li class="nav-item" routerLinkActive="active" [hidden]="perm('应用:查询') | async">
                 <a class="nav-link" [routerLink]="['/apps']">我的应用</a>

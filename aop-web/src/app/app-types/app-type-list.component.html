@@ -1,0 +1,46 @@
+<div class="container-xl mt-3">
+    <div class="mb-5 ml-3">
+        <h1>应用类型</h1>
+    </div>
+    <div id="group-list">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <div class="d-flex">
+                    <div class="mr-auto"></div>
+                    <button type="button" class="btn btn-success"
+                        [disabled]="account.perm('操作管理:修改') | async">新类型
+                    </button>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="d-flex mt-2">
+                    <div class="mr-auto">
+                        <strong>Tomcat</strong>                        
+                        <p>管理Tomcat应用部署相关操作</p>
+                    </div>
+                    <div class="p-1 mt-1">
+                        <button type="button" class="btn btn-sm btn-outline-danger"
+                            [disabled]="account.perm('操作管理:修改') | async">删除
+                        </button>
+                    </div>
+                    <div class="p-1 mt-1">
+                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                            [disabled]="account.perm('操作管理:修改') | async">编辑
+                        </button>
+                    </div>
+                    <div class="p-1 mt-1">
+                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                            [disabled]="account.perm('系统:查询') | async">应用
+                        </button>
+                    </div>
+                    <div class="p-1 mt-1">
+                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                            [disabled]="account.perm('操作管理:查询') | async"
+                            [routerLink]="['/operations']">操作
+                        </button>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

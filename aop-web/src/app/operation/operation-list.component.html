@@ -18,9 +18,6 @@
                             </div>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-success mr-2"
-                        [disabled]="account.perm('操作管理:修改') | async">新类型
-                    </button>
                     <button type="button" class="btn btn-success"
                         [disabled]="account.perm('操作管理:修改') | async"
                         (click)="onNewOperationBtnClick()">新操作

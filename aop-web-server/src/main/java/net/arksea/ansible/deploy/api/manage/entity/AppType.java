@@ -9,6 +9,7 @@ import javax.persistence.*;
 @Table(name = "dp2_app_type")
 public class AppType extends IdEntity {
     private String name;
+    private String description;
 
     @Column(nullable = false, length = 64, unique = true)
     public String getName() {
@@ -17,5 +18,14 @@ public class AppType extends IdEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Column(nullable = false, length = 256, unique = true)
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

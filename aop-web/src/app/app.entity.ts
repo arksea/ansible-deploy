@@ -24,8 +24,9 @@ export class AppVarDefine {
 }
 
 export class AppType {
-  id: number;
-  name: string = '';
+  id: number
+  name: string = ''
+  description: string = ''
 }
 
 export class AppVariable {

@@ -3,7 +3,6 @@ import { FormGroup,FormControl,Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { UsersService } from './users.service';
 import { AccountService } from '../account/account.service';
-import { MessageNotify } from '../utils/message-notify';
 import { User, Role } from './users.entity';
 
 @Component({

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core'
 import { FormGroup, FormControl, Validators } from '@angular/forms'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { Router } from '@angular/router'
+import { Router, ActivatedRoute, ParamMap } from '@angular/router'
 import { OperationsService } from './operations.service'
 import { ConfirmDialog } from '../utils/confirm.dialog'
 import { MessageNotify } from '../utils/message-notify'
@@ -14,10 +14,16 @@ import { AppType, AppOperation } from '../app.entity'
 })
 export class OperationListComponent implements OnInit {
 
+    appTypeId: number;
+    
     constructor(private modal: NgbModal, public svc: OperationsService,
-        public account: AccountService,
-        private alert: MessageNotify,
-        private router: Router) {
+            public account: AccountService,
+            private alert: MessageNotify,
+            private router: Router,
+            private route: ActivatedRoute) {
+        let params: ParamMap =  this.route.snapshot.paramMap
+        let idStr = params.get('id')
+        this.appTypeId = Number(idStr)
     }
 
     searchForm: FormGroup = new FormGroup({

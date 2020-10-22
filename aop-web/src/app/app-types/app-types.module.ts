@@ -11,6 +11,7 @@ import { AppTypesRoutingModule } from './app-types-routing.module'
 import { AppTypesService } from './app-types.service'
 import { AppTypesComponent } from './app-types.component'
 import { AppTypeListComponent } from './app-type-list.component'
+import { AppTypeEditComponent } from './app-type-edit.component'
 
 
 @NgModule({
@@ -20,7 +21,7 @@ import { AppTypeListComponent } from './app-type-list.component'
         HttpClientModule,
         VenderModule, NgbPaginationModule, NgbAlertModule, NgbModule,
         AccountModule, AppTypesRoutingModule],
-    declarations: [AppTypesComponent, AppTypeListComponent],
+    declarations: [AppTypesComponent, AppTypeListComponent, AppTypeEditComponent],
     entryComponents: [
 
     ],

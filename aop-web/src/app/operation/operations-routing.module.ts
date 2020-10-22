@@ -9,7 +9,7 @@ const routes: Routes = [
   {
     path: 'operations', component: OperationsComponent, canActivate: [AuthGuard],
     children: [
-      { path: '', component: OperationListComponent, canActivate: [AuthGuard] },
+      { path: ':id', component: OperationListComponent, canActivate: [AuthGuard] },
       { path: ':id/edit', component: OperationEditComponent, canActivate: [AuthGuard] },
       { path: ':id/edit/:appTypeId', component: OperationEditComponent, canActivate: [AuthGuard] }
     ]

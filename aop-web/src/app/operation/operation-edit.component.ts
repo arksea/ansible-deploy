@@ -146,7 +146,7 @@ export class OperationEditComponent implements OnInit {
     }
 
     public cancel() {
-        this.router.navigate(['/operations'])
+        this.router.navigate(['/operations/'+this.appTypeId])
     }
 
     get name() {

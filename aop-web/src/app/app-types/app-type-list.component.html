@@ -8,7 +8,8 @@
                 <div class="d-flex">
                     <div class="mr-auto"></div>
                     <button type="button" class="btn btn-success"
-                        [disabled]="account.perm('操作管理:修改') | async">新类型
+                        [disabled]="account.perm('操作管理:修改') | async"
+                        [routerLink]="['/app-types/new/edit']">新类型
                     </button>
                 </div>
             </li>
@@ -36,7 +37,7 @@
                     <div class="p-1 mt-1">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
                             [disabled]="account.perm('操作管理:查询') | async"
-                            [routerLink]="['/operations']">操作
+                            [routerLink]="['/operations/'+t.id]">操作
                         </button>
                     </div>
                 </div>

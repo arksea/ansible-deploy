@@ -12,11 +12,11 @@
                     </button>
                 </div>
             </li>
-            <li class="list-group-item">
+            <li class="list-group-item" *ngFor="let t of appTypes">
                 <div class="d-flex mt-2">
                     <div class="mr-auto">
-                        <strong>Tomcat</strong>                        
-                        <p>管理Tomcat应用部署相关操作</p>
+                        <strong>{{t.name}}</strong>
+                        <p>{{t.description}}</p>
                     </div>
                     <div class="p-1 mt-1">
                         <button type="button" class="btn btn-sm btn-outline-danger"

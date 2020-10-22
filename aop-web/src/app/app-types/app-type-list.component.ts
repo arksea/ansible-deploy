@@ -1,13 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { FormDataEvent } from '@angular/forms/esm2015';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AppTypesService } from './app-types.service';
-import { ConfirmDialog } from '../utils/confirm.dialog';
-import { MessageNotify } from '../utils/message-notify';
-import { App } from '../app.entity';
-import { AccountService } from '../account/account.service';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core'
+import { FormDataEvent } from '@angular/forms/esm2015'
+import { FormGroup, FormControl, Validators } from '@angular/forms'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { AppTypesService } from './app-types.service'
+import { ConfirmDialog } from '../utils/confirm.dialog'
+import { MessageNotify } from '../utils/message-notify'
+import { App, AppType } from '../app.entity'
+import { AccountService } from '../account/account.service'
+import { Router } from '@angular/router'
 
 @Component({
     selector: 'app-type-list',
@@ -15,12 +15,21 @@ import { Router } from '@angular/router';
 })
 export class AppTypeListComponent implements OnInit {
 
+    appTypes: Array<AppType> = [];
+
     constructor(
         public svc: AppTypesService,
         public account: AccountService,
         protected alert: MessageNotify,
         protected modal: NgbModal,
         private router: Router) {
+            this.svc.getAppTypes().subscribe(
+                ret => {
+                    if (ret.code == 0) {
+                        this.appTypes = ret.result
+                    }
+                }
+            )
     }
 
     searchForm: FormGroup = new FormGroup({
@@ -37,7 +46,7 @@ export class AppTypeListComponent implements OnInit {
     }
 
     onEditBtnClick(app: App) {
-        this.router.navigate(['/apps/'+app.id+'/edit'])
+        this.router.navigate(['/apps/' + app.id + '/edit'])
     }
 
     onViewBtnClick(app: App) {
@@ -86,7 +95,7 @@ export class AppTypeListComponent implements OnInit {
     // }
 
     onNewBtnClick(appType: string) {
-        this.router.navigate(['/app-types/new/edit',appType])
+        this.router.navigate(['/app-types/new/edit', appType])
     }
 
 }

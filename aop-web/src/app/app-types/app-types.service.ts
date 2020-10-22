@@ -13,4 +13,11 @@ export class AppTypesService {
 
     public constructor(private httpUtils: HttpUtils) {
     }
+
+
+    public getAppTypes(): Observable<ServiceResponse<Array<AppType>>> {
+        const url = environment.apiUrl + '/api/appTypes';
+        return this.httpUtils.httpGet('查询应用类型', url);
+    }
+
 }

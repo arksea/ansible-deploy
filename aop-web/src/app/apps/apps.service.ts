@@ -247,7 +247,7 @@ export class AppsService {
     }
 
     public getOperationsByAppTypeId(appTypeId: number): Observable<ServiceResponse<AppOperation[]>> {
-        const url = environment.apiUrl + '/api/operations/?appTypeId=' + appTypeId;
-        return this.httpUtils.httpGet('查询操作', url);
+        const url = environment.apiUrl + '/api/appTypes/'+appTypeId+'/operations';
+        return this.httpUtils.httpGet('查询应用操作', url);
     }
 }

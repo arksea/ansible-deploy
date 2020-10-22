@@ -29,10 +29,8 @@ public class OperationController {
 
     @RequiresPermissions("操作管理:查询")
     @RequestMapping(method = RequestMethod.GET, produces = MEDIA_TYPE)
-    public RestResult<Iterable<AppOperation>> getOperationsByAppTypeId(
-            @RequestParam(name="appTypeId",required = false) Long appTypeId,
-            final HttpServletRequest httpRequest) {
-        Iterable<AppOperation> list = appTypeId == null ? operationsService.getAll() : operationsService.getByAppTypeId(appTypeId);
+    public RestResult<Iterable<AppOperation>> getOperations(final HttpServletRequest httpRequest) {
+        Iterable<AppOperation> list = operationsService.getAll();
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         return new RestResult<>(0, list, reqid);
     }

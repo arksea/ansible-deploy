@@ -39,7 +39,7 @@ public class JobController {
         public Set<Long> hosts;
     }
 
-    @RequiresPermissions("应用:部署")
+    @RequiresPermissions("应用:操作")
     @RequestMapping(method = RequestMethod.POST, produces = MEDIA_TYPE)
     public RestResult<OperationJob> startJob(@RequestBody final StartOpeartionJob body,
                                               final HttpServletRequest httpRequest) {
@@ -50,7 +50,7 @@ public class JobController {
         return new RestResult<>(0, job, reqid);
     }
 
-    @RequiresPermissions("应用:部署")
+    @RequiresPermissions("应用:操作")
     @RequestMapping(path="{jobId}/logs/{index}", method = RequestMethod.GET, produces = MEDIA_TYPE)
     public DeferredResult<RestResult<JobPlayer.PollLogsResult>> pollJobLogs(@PathVariable(name="jobId") final long jobId,
                                                                             @PathVariable(name="index") final int index,

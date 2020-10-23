@@ -1,9 +1,14 @@
-<div id="groups-contain" class="container-xl mt-3">
-    <div id="group-head" class="d-flex mb-3">
-        <div class="mr-auto">
-            <h1>编辑[{{appType?.name}}]操作脚本</h1>
-        </div>
-    </div>
+<div class="container-xl mt-3">
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a [routerLink]="['/app-types']">应用类型</a></li>
+            <li class="breadcrumb-item"><a [routerLink]="['/app-types/'+appType.id+'/edit']">{{appType.name}}</a></li>
+            <li class="breadcrumb-item"><a [routerLink]="['/operations/'+appType.id]">操作</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{operation.name}}</li>
+        </ol>
+    </nav>
+
     <form (ngSubmit)="save()" [formGroup]="editForm">
         <div class="row mb-2">
             <div class="col-lg-4 form-group">
@@ -63,7 +68,7 @@
                         </ul>
                     </div>
                     <div class="card-body">
-                        <textarea id="code" class="form-control" rows="18" formControlName="codeContent"></textarea>
+                        <textarea id="code" class="form-control" rows="17" formControlName="codeContent"></textarea>
                     </div>
                 </div>
             </div>

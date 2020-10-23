@@ -107,7 +107,16 @@ export class AppsService {
     }
 
     public queryUserApps() {
-        let url = environment.apiUrl + '/api/user/apps';
+        let url = environment.apiUrl + '/api/varDefines';
+        this.httpUtils.httpGet('查询变量定义',url).subscribe(ret => {
+            if (ret.code == 0) {
+                for (let def of ret.result) {
+                    let key = '' + def.appTypeId + ':' + def.name;
+                    this.varDefineMap[key] = def;
+                }
+            }
+        })
+        url = environment.apiUrl + '/api/user/apps';
         this.httpUtils.httpGet('查询用户应用', url).subscribe(ret => {
             if (ret.code == 0) {
                 this.appsModel.opResetModels.next(ret.result);
@@ -119,15 +128,6 @@ export class AppsService {
                 this.userGroups.next(ret.result);
             }
         });
-        url = environment.apiUrl + '/api/varDefines';
-        this.httpUtils.httpGet('查询变量定义',url).subscribe(ret => {
-            if (ret.code == 0) {
-                for (let def of ret.result) {
-                    let key = '' + def.appType.id + ':' + def.name;
-                    this.varDefineMap[key] = def;
-                }
-            }
-        })
     }
 
     public createAppTemplate(appType: string): Observable<ServiceResponse<App>> {

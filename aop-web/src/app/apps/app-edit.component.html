@@ -1,3 +1,151 @@
+<div class="container-xl mt-3">
+    <div class="mb-5 ml-3">
+        <h2>我的应用 / 编辑</h2>
+    </div>
+    <div>
+        <form (ngSubmit)="save()" [formGroup]="appForm">
+            <div class="row">
+                <div class="col-lg-6 col-md-6 form-group mb-4">
+                    <label for="apptag">应用短名
+                        <ng-template #apptagPopContent>这是一个很基础的参数，系统会用这个名字创建Linux用户、SVN仓库、创建Haproxy节点名等</ng-template>
+                        <span class="mx-1" [ngbPopover]="apptagPopContent">
+                            <ng-container *ngTemplateOutlet="formInfoIcon"></ng-container>
+                        </span>
+                        <span class="text-danger" *ngIf="apptag.errors?.required">*</span>
+                        <span class="text-danger"
+                            *ngIf="apptag.errors?.minlength || apptag.errors?.maxlength">(长度4至30)</span>
+                    </label>
+                    <input type="text" id="apptag" formControlName="apptag" class="form-control"
+                        placeholder="以字母开头，由字母与下划线组成">
+                </div>
+                <div class="col-lg-6 col-md-6 form-group mb-4">
+                    <label for="deployPath">应用发布目标路径
+                        <ng-template #deployPathPopContent>
+                            发布时系统自动将文件更新到这个目录下，如果你到服务器上手工修改了其中的文件，请记得提交，或在发布前revert回原来的版本，SVN在检测到目标目录中有改动将会停止操作，以防止与SVN库中的版本发生意外的合并或冲突
+                        </ng-template>
+                        <span class="mx-1" [ngbPopover]="deployPathPopContent">
+                            <ng-container *ngTemplateOutlet="formInfoIcon"></ng-container>
+                        </span>
+                        <span class="text-danger" *ngIf="deployPath.invalid">(长度4至128)</span>
+                    </label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">$HOME/</span>
+                        </div>
+                        <input type="text" id="deployPath" formControlName="deployPath" class="form-control"
+                            placeholder="建议设置为应用短名">
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 form-group mb-4">
+                    <label for="appGroup">所属分组
+                        <span class="text-danger" *ngIf="appGroupId.errors?.required">*</span>
+                        <span class="text-danger" *ngIf="appGroupId.errors?.minlength">(长度大于1)</span>
+                    </label>
+                    <select id="appGroup" name="appGroup" class="form-control" formControlName="appGroupId">
+                        <option *ngFor="let g of (userGroups|async)" [value]="g.id">{{g.name}}</option>
+                    </select>
+                </div>
+                <div *ngFor="let v of app.vars" class="col-lg-6 col-md-6 form-group mb-4">
+                    <label for="var_{{v.name}}">{{getVarDesc(app, v)}}
+                        <span class="text-danger" *ngIf="appForm.get('var_'+v.name)?.invalid">(长度0至128)</span>
+                    </label>
+                    <div class="input-group">
+                        <div class="input-group-prepend" *ngIf="getInputAddon(app,v).length > 0">
+                            <span class="input-group-text">{{getInputAddon(app,v)}}</span>
+                        </div>
+                        <input [type]="getInputType(v)" id="var_{{v.name}}" formControlName="var_{{v.name}}"
+                            class="form-control" [placeholder]="v.isPort?'保存时自动分配':''">
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 form-group mb-4">
+                    <label for="inputJmx">JMX 监控</label>
+                    <div class="pt-2" id="inputJmx">
+                        <label for="enableJmx" class="form-check-label">允许系统监控应用</label>
+                        <input type="checkbox" id="enableJmx" formControlName="enableJmx" class="form-check-input ml-2" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <div class="form-group">
+                    <label for="description">应用描述
+                        <span class="text-danger" *ngIf="desc.errors?.required">*</span>
+                        <span class="text-danger" *ngIf="desc.errors?.minlength || desc?.errors?.maxlength">(长度5至256)</span>
+                    </label>
+                    <textarea id="description" class="form-control" rows="3" formControlName="description"></textarea>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <div class="d-flex">
+                    <div class="mr-auto">
+                        <h1>版本配置</h1>
+                    </div>
+                    <button type="button" class="btn btn-success mr-2 mb-3" [disabled]="account.perm('应用:修改') | async"
+                        (click)="onNewVersionBtnClick()">新增版本
+                    </button>
+                </div>
+            </div>
+            <div *ngFor="let v of app?.versions" class="mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex">
+                            <div class="mr-auto pt-2">
+                                <strong>版本: {{v.name}}</strong>
+                            </div>
+                            <div class="pl-1">
+                                <button type="button" class="btn btn-outline-secondary btn-sm"
+                                    [disabled]="account.perm('应用:修改') | async" (click)="onAddHostBtnClick(v)">添加主机</button>
+                            </div>
+                            <div class="pl-1">
+                                <button type="button" class="btn btn-outline-danger btn-sm"
+                                    [disabled]="account.perm('应用:修改') | async" (click)="onDeleteVersionBtnClick(v)">删除</button>
+                            </div>
+                            <div class="pl-1">
+                                <button type="button" class="btn btn-outline-secondary btn-sm"
+                                    [disabled]="account.perm('应用:修改') | async" (click)="onEditBtnClick(v)">修改</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-bordy">
+                        <ul class="mt-3">
+                            <li>部署包地址：svn://svn-server/{{apptag.value}}/{{v.repository}}</li>
+                            <li>Revistion：{{v.revision}}</li>
+                            <li>应用运行参数: {{v.execOpt}}</li>
+                        </ul>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col-sm-2">部署主机IP</div>
+                                <div class="col">描述</div>
+                            </div>
+                        </li>
+                        <li *ngFor="let h of v.targetHosts" class="list-group-item">
+                            <div class="row">
+                                <div class="col-sm-2">{{h.privateIp}}</div>
+                                <div class="col">{{h.description}}</div>
+                                <div class="col-sm-2 text-right" title="删除">
+                                    <a class="link text-danger" (click)="onDeleteHostBtnClick(h, v)">
+                                        <ng-container *ngTemplateOutlet="deleteIcon"></ng-container>
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row my-5">
+                <div class="col-lg-12 text-right">
+                    <button type="button" class="btn btn-outline-secondary mr-2" (click)="cancel()">取消</button>
+                    <button type="submit" class="btn btn-danger mr-2"
+                        [disabled]="appForm.invalid || appForm.pristine || (account.perm('应用:修改') | async)">保存</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 <ng-template #formInfoIcon>
     <svg width="1.2em" height="1.2em" viewBox="0 0 18 18" class="bi bi-question-circle" fill="currentColor"
         xmlns="http://www.w3.org/2000/svg">
@@ -11,153 +159,5 @@
     <svg width="1.2em" height="1.2em" viewBox="0 0 16 16" class="bi bi-trash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
     <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
     <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-  </svg>
+    </svg>
 </ng-template>
-<div id="groups-contain" class="container-xl mt-3">
-    <div id="group-head" class="d-flex mb-4">
-        <div class="mr-auto">
-            <h1>应用配置</h1>
-        </div>
-    </div>
-    <form (ngSubmit)="save()" [formGroup]="appForm">
-        <div class="row">
-            <div class="col-lg-6 col-md-6 form-group mb-4">
-                <label for="apptag">应用短名
-                    <ng-template #apptagPopContent>这是一个很基础的参数，系统会用这个名字创建Linux用户、SVN仓库、创建Haproxy节点名等</ng-template>
-                    <span class="mx-1" [ngbPopover]="apptagPopContent">
-                        <ng-container *ngTemplateOutlet="formInfoIcon"></ng-container>
-                    </span>
-                    <span class="text-danger" *ngIf="apptag.errors?.required">*</span>
-                    <span class="text-danger"
-                        *ngIf="apptag.errors?.minlength || apptag.errors?.maxlength">(长度4至30)</span>
-                </label>
-                <input type="text" id="apptag" formControlName="apptag" class="form-control"
-                    placeholder="以字母开头，由字母与下划线组成">
-            </div>
-            <div class="col-lg-6 col-md-6 form-group mb-4">
-                <label for="deployPath">应用发布目标路径
-                    <ng-template #deployPathPopContent>
-                        发布时系统自动将文件更新到这个目录下，如果你到服务器上手工修改了其中的文件，请记得提交，或在发布前revert回原来的版本，SVN在检测到目标目录中有改动将会停止操作，以防止与SVN库中的版本发生意外的合并或冲突
-                    </ng-template>
-                    <span class="mx-1" [ngbPopover]="deployPathPopContent">
-                        <ng-container *ngTemplateOutlet="formInfoIcon"></ng-container>
-                    </span>
-                    <span class="text-danger" *ngIf="deployPath.invalid">(长度4至128)</span>
-                </label>
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">$HOME/</span>
-                    </div>
-                    <input type="text" id="deployPath" formControlName="deployPath" class="form-control"
-                        placeholder="建议设置为应用短名">
-                </div>
-            </div>
-            <div class="col-lg-6 col-md-6 form-group mb-4">
-                <label for="appGroup">所属分组
-                    <span class="text-danger" *ngIf="appGroupId.errors?.required">*</span>
-                    <span class="text-danger" *ngIf="appGroupId.errors?.minlength">(长度大于1)</span>
-                </label>
-                <select id="appGroup" name="appGroup" class="form-control" formControlName="appGroupId">
-                    <option *ngFor="let g of (userGroups|async)" [value]="g.id">{{g.name}}</option>
-                </select>
-            </div>
-            <div *ngFor="let v of app.vars" class="col-lg-6 col-md-6 form-group mb-4">
-                <label for="var_{{v.name}}">{{getVarDesc(app, v)}}
-                    <span class="text-danger" *ngIf="appForm.get('var_'+v.name)?.invalid">(长度0至128)</span>
-                </label>
-                <div class="input-group">
-                    <div class="input-group-prepend" *ngIf="getInputAddon(app,v).length > 0">
-                        <span class="input-group-text">{{getInputAddon(app,v)}}</span>
-                    </div>
-                    <input [type]="getInputType(v)" id="var_{{v.name}}" formControlName="var_{{v.name}}"
-                        class="form-control" [placeholder]="v.isPort?'保存时自动分配':''">
-                </div>
-            </div>
-            <div class="col-lg-6 col-md-6 form-group mb-4">
-                <label for="inputJmx">JMX 监控</label>
-                <div class="pt-2" id="inputJmx">
-                    <label for="enableJmx" class="form-check-label">允许系统监控应用</label>
-                    <input type="checkbox" id="enableJmx" formControlName="enableJmx" class="form-check-input ml-2" />
-                </div>
-            </div>
-        </div>
-
-        <div class="mb-5">
-            <div class="form-group">
-                <label for="description">应用描述
-                    <span class="text-danger" *ngIf="desc.errors?.required">*</span>
-                    <span class="text-danger" *ngIf="desc.errors?.minlength || desc?.errors?.maxlength">(长度5至256)</span>
-                </label>
-                <textarea id="description" class="form-control" rows="3" formControlName="description"></textarea>
-            </div>
-        </div>
-
-        <div class="mb-4">
-            <div class="d-flex">
-                <div class="mr-auto">
-                    <h1>版本配置</h1>
-                </div>
-                <button type="button" class="btn btn-success mr-2 mb-3" [disabled]="account.perm('应用:修改') | async"
-                    (click)="onNewVersionBtnClick()">新增版本
-                </button>
-            </div>
-        </div>
-        <div *ngFor="let v of app?.versions" class="mb-4">
-            <div class="card">
-                <div class="card-header">
-                    <div class="d-flex">
-                        <div class="mr-auto pt-2">
-                            <strong>版本: {{v.name}}</strong>
-                        </div>
-                        <div class="pl-1">
-                            <button type="button" class="btn btn-outline-secondary btn-sm"
-                                [disabled]="account.perm('应用:修改') | async" (click)="onAddHostBtnClick(v)">添加主机</button>
-                        </div>
-                        <div class="pl-1">
-                            <button type="button" class="btn btn-outline-danger btn-sm"
-                                [disabled]="account.perm('应用:修改') | async" (click)="onDeleteVersionBtnClick(v)">删除</button>
-                        </div>
-                        <div class="pl-1">
-                            <button type="button" class="btn btn-outline-secondary btn-sm"
-                                [disabled]="account.perm('应用:修改') | async" (click)="onEditBtnClick(v)">修改</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-bordy">
-                    <ul class="mt-3">
-                        <li>部署包地址：svn://svn-server/{{apptag.value}}/{{v.repository}}</li>
-                        <li>Revistion：{{v.revision}}</li>
-                        <li>应用运行参数: {{v.execOpt}}</li>
-                    </ul>
-                </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <div class="row">
-                            <div class="col-sm-2">部署主机IP</div>
-                            <div class="col">描述</div>
-                        </div>
-                    </li>
-                    <li *ngFor="let h of v.targetHosts" class="list-group-item">
-                        <div class="row">
-                            <div class="col-sm-2">{{h.privateIp}}</div>
-                            <div class="col">{{h.description}}</div>
-                            <div class="col-sm-2 text-right" title="删除">
-                                <a class="link text-danger" (click)="onDeleteHostBtnClick(h, v)">
-                                    <ng-container *ngTemplateOutlet="deleteIcon"></ng-container>
-                                </a>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="row my-5">
-            <div class="col-lg-12 text-right">
-                <button type="button" class="btn btn-outline-secondary mr-2" (click)="cancel()">取消</button>
-                <button type="submit" class="btn btn-danger mr-2"
-                    [disabled]="appForm.invalid || appForm.pristine || (account.perm('应用:修改') | async)">保存</button>
-            </div>
-        </div>
-    </form>
-</div>

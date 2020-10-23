@@ -3,11 +3,12 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { OperationsService } from './operations.service';
 import { MessageNotify } from '../utils/message-notify';
-import { AppOperation, AppOperationCode } from '../app.entity';
+import { AppOperation, AppOperationCode, AppType } from '../app.entity';
 import { AccountService } from '../account/account.service';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { ConfirmDialog } from '../utils/confirm.dialog';
-import { NewCodeFileDialog } from './new-code-file.dialog';
+import { NewCodeFileDialog } from './new-code-file.dialog'
+import { AppTypesService } from '../app-types/app-types.service'
 
 @Component({
     selector: 'operation-edit',
@@ -18,10 +19,11 @@ export class OperationEditComponent implements OnInit {
     public operation: AppOperation = new AppOperation();
     public editForm: FormGroup;
     public isNewAction: boolean;
-    private appTypeId: number;
+    public appType: AppType = new AppType()
     private activeCode: AppOperationCode = new AppOperationCode();
 
     constructor(public svc: OperationsService,
+                private appTypesSvc: AppTypesService,
                 public account: AccountService,
                 protected alert: MessageNotify,
                 protected modal: NgbModal,
@@ -32,7 +34,12 @@ export class OperationEditComponent implements OnInit {
     ngOnInit(): void {
         let params: ParamMap =  this.route.snapshot.paramMap;
         let idStr = params.get('id');
-        this.appTypeId = Number(params.get('appTypeId'));
+        let appTypeId = Number(params.get('appTypeId'));
+        this.appTypesSvc.getAppType(appTypeId).subscribe(ret => {
+            if (ret.code == 0) {
+                this.appType = ret.result
+            }
+        })
         this.editForm = new FormGroup({
             name: new FormControl('',[Validators.required,Validators.maxLength(32),Validators.minLength(2)]),
             description: new FormControl('',[Validators.required,Validators.maxLength(128),Validators.minLength(1)]),
@@ -45,13 +52,12 @@ export class OperationEditComponent implements OnInit {
         } else {
             this.isNewAction = false;
             let opId = Number(idStr);
-            this.svc.getOperationById(opId).subscribe(
-                op => {
-                    if (op) {
-                        this.operation = op;
-                        this.name.setValue(op.name);
-                        this.desc.setValue(op.description);
-                        this.command.setValue(op.command);
+            this.svc.getOperationById(opId).subscribe(ret => {
+                    if (ret.code == 0) {
+                        this.operation = ret.result;
+                        this.name.setValue(this.operation.name);
+                        this.desc.setValue(this.operation.description);
+                        this.command.setValue(this.operation.command);
                         if (this.operation.codes.length > 0) {
                             this.setActiveCode(this.operation.codes[0])
                         }
@@ -75,7 +81,6 @@ export class OperationEditComponent implements OnInit {
         }
         this.svc.saveOperation(op).subscribe(ret => {
             if (ret.code == 0) {
-                this.svc.model.opSetModel.next(ret.result);
                 this.alert.success('保存脚本成功');
                 this.router.navigate(['/operations']);
             }
@@ -146,7 +151,7 @@ export class OperationEditComponent implements OnInit {
     }
 
     public cancel() {
-        this.router.navigate(['/operations/'+this.appTypeId])
+        this.router.navigate(['/operations/'+this.appType.id])
     }
 
     get name() {
@@ -160,9 +165,6 @@ export class OperationEditComponent implements OnInit {
     }
     get codeContent() {
         return this.editForm.get('codeContent');
-    }
-    get appType() {
-        return this.svc.appTypesMap[this.appTypeId];
     }
 }
 

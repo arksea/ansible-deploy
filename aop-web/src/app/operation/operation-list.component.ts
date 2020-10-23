@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core'
 import { FormGroup, FormControl, Validators } from '@angular/forms'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { Router, ActivatedRoute, ParamMap } from '@angular/router'
+import { ActivatedRoute, ParamMap } from '@angular/router'
 import { OperationsService } from './operations.service'
 import { ConfirmDialog } from '../utils/confirm.dialog'
 import { MessageNotify } from '../utils/message-notify'
 import { AccountService } from '../account/account.service'
 import { AppType, AppOperation } from '../app.entity'
+import { AppTypesService } from '../app-types/app-types.service'
 
 @Component({
     selector: 'operation-list',
@@ -14,16 +15,28 @@ import { AppType, AppOperation } from '../app.entity'
 })
 export class OperationListComponent implements OnInit {
 
-    appTypeId: number;
-    
-    constructor(private modal: NgbModal, public svc: OperationsService,
-            public account: AccountService,
-            private alert: MessageNotify,
-            private router: Router,
-            private route: ActivatedRoute) {
+    appType: AppType = new AppType()
+    operationList: Array<AppOperation> = []
+
+    constructor(private modal: NgbModal, 
+                public svc: OperationsService,
+                private appTypesSvc: AppTypesService,
+                public account: AccountService,
+                private alert: MessageNotify,
+                private route: ActivatedRoute) {
         let params: ParamMap =  this.route.snapshot.paramMap
         let idStr = params.get('id')
-        this.appTypeId = Number(idStr)
+        let appTypeId = Number(idStr)
+        this.appTypesSvc.getAppType(appTypeId).subscribe(ret => {
+            if (ret.code == 0) {
+                this.appType = ret.result
+            }
+        })
+        this.svc.getOperations(appTypeId).subscribe(ret => {
+            if (ret.code == 0) {
+                this.operationList = ret.result
+            }
+        })
     }
 
     searchForm: FormGroup = new FormGroup({
@@ -33,26 +46,14 @@ export class OperationListComponent implements OnInit {
     ngOnInit(): void {
     }
 
-    onSelectAppTypeBtnClick(appType: AppType) {
-        this.svc.setSelectedAppType(appType);
-    }
-
-    onNewOperationBtnClick() {
-        this.router.navigate(['/operations/new/edit', this.svc.appType.id])
-    }
-
-    onEditOperationBtnClick(operation: AppOperation) {
-        this.router.navigate(['/operations/' + operation.id + '/edit', this.svc.appType.id])
-    }
-
     onDeleteOperationBtnClick(operation: AppOperation) {
         let ref = this.modal.open(ConfirmDialog);
         ref.componentInstance.title = "删除应用操作: " + operation.name;
         ref.componentInstance.message = "确认要删除吗?"
         ref.result.then(result => {
             if (result == "ok") {
-                this.svc.deleteOperation(operation).subscribe(succeed => {
-                    if (succeed) {
+                this.svc.deleteOperation(operation).subscribe(ret => {
+                    if (ret.code == 0) {
                         this.alert.success('删除成功');
                     }
                 });

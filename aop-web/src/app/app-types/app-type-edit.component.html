@@ -1,9 +1,12 @@
-<div id="groups-contain" class="container-xl mt-3">
-    <div id="group-head" class="d-flex mb-4">
-        <div class="mr-auto">
-            <h1>应用类型</h1>
-        </div>
-    </div>
+<div class="container-xl mt-3">
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a [routerLink]="['/app-types']">应用类型</a></li>
+            <li class="breadcrumb-item active">{{appType.name}}</li>
+        </ol>
+    </nav>
+
     <form (ngSubmit)="save()" [formGroup]="typeForm">
         <div class="row mb-4">
             <div class="col-lg-4 form-group mb-4">

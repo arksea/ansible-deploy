@@ -53,28 +53,30 @@ export class AppTypeListComponent implements OnInit {
         this.router.navigate(['/apps', app.id])
     }
 
-    onDelBtnClick(app: App) {
-        // if (app.deleted) {
-        //     this.doUndelete(app);
-        // } else {
-        //     this.doDelete(app);
-        // }
+    onDelBtnClick(appType: AppType) {
+        let ref = this.modal.open(ConfirmDialog);
+        ref.componentInstance.title = "确认要删除吗?"
+        ref.componentInstance.message = "删除应用类型: "+appType.name;
+        ref.componentInstance.detail = "操作将删除此应用类型，删除前请先确认没有此类型下没有创建应用实例，或者删除所有相关应用"
+        ref.result.then(result => {
+            if (result == "ok") {
+                this.svc.deleteAppType(appType.id).subscribe(ret => {
+                    if (ret.code == 0) {
+                        let newAppTypes = this.appTypes.filter((t,index,list) => {
+                                return t.id != appType.id
+                        })
+                        this.appTypes = newAppTypes;
+                        this.alert.success('已删除应用类型：'+appType.name);
+                    }
+            });
+          }
+        }, resaon => {})
+
+
+        
     }
     // private doDelete(app: App) {
-    //     let ref = this.modal.open(ConfirmDialog);
-    //     ref.componentInstance.title = "删除应用: "+app.apptag;
-    //     ref.componentInstance.message = "确认要删除吗?"
-    //     ref.componentInstance.detail = "此操作将暂时把应用'"+app.apptag+"'标记为删除状态，其相关配置与文件会在之后的定时维护任务中集中删除"
-    //     ref.result.then(result => {
-    //       if (result == "ok") {
-    //         this.svc.updateDeleted(app.id, true).subscribe(succeed => {
-    //           if (succeed) {
-    //             app.deleted = true;
-    //             this.alert.success('已标记为删除状态');
-    //           }
-    //         });
-    //       }
-    //     }, resaon => {})
+
     // }
 
     // private doUndelete(app: App) {

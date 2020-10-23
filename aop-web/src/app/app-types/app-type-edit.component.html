@@ -66,15 +66,17 @@
                     <li class="list-group-item">
                         <div class="row">
                             <div class="col-sm-2">变量名</div>
+                            <div class="col-sm-2">默认值</div>
                             <div class="col-sm-3">表单标签</div>
                             <div class="col">输入控件前缀</div>
                         </div>
                     </li>
-                    <li class="list-group-item">
+                    <li class="list-group-item" *ngFor="let d of appType.appVarDefines">
                         <div class="row">
-                            <div class="col-sm-2">domain</div>
-                            <div class="col-sm-3">Tomcat域名</div>
-                            <div class="col">http://your_app_domain/</div>
+                            <div class="col-sm-2">{{d.name}}</div>
+                            <div class="col-sm-2">{{d.defaultValue}}</div>
+                            <div class="col-sm-3">{{d.formLabel}}</div>
+                            <div class="col">{{d.inputAddon}}</div>
                             <div class="col-sm-2 text-right">
                                 <a class="link text-danger" title="删除">
                                     <ng-container *ngTemplateOutlet="deleteIcon"></ng-container>

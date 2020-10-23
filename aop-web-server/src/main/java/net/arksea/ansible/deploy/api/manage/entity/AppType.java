@@ -1,6 +1,7 @@
 package net.arksea.ansible.deploy.api.manage.entity;
 
 import javax.persistence.*;
+import java.util.Set;
 
 /**
  * Create by xiaohaixing on 2020/9/24
@@ -10,6 +11,7 @@ import javax.persistence.*;
 public class AppType extends IdEntity {
     private String name;
     private String description;
+    private Set<AppVarDefine> appVarDefines;
 
     @Column(nullable = false, length = 64, unique = true)
     public String getName() {
@@ -27,5 +29,14 @@ public class AppType extends IdEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @OneToMany(mappedBy = "appTypeId", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    public Set<AppVarDefine> getAppVarDefines() {
+        return appVarDefines;
+    }
+
+    public void setAppVarDefines(Set<AppVarDefine> appVarDefines) {
+        this.appVarDefines = appVarDefines;
     }
 }

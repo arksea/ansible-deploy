@@ -17,8 +17,8 @@ repositories {
 }
 
 dependencies {
-    compile 'net.arksea:restapi-base:1.1.0-SNAPSHOT'
-    compile 'net.arksea:restapi-influx:1.1.0-SNAPSHOT'
+    compile 'net.arksea:restapi-base:1.1.2-SNAPSHOT'
+    compile 'net.arksea:restapi-influx:1.1.2-SNAPSHOT'
     compile 'net.arksea:httpclient-asker:1.1.0-SNAPSHOT'
 
     compile 'org.springframework:spring-core:4.3.27.RELEASE'

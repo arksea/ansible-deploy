@@ -1,6 +1,5 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
-import net.arksea.ansible.deploy.api.manage.dao.AppTypeDao;
 import net.arksea.ansible.deploy.api.manage.dao.AppVarDefineDao;
 import net.arksea.ansible.deploy.api.manage.dao.PortTypeDao;
 import net.arksea.ansible.deploy.api.manage.entity.AppType;
@@ -63,7 +62,7 @@ public class ConfigDataInitializer {
     private void initAppVarDefine(AppType type) {
         if (type.getName().equals("Tomcat")) {
             AppVarDefine def = new AppVarDefine();
-            def.setAppType(type);
+            def.setAppTypeId(type.getId());
             def.setName("domain");
             def.setDefaultValue("localhost");
             def.setFormLabel("Tomcat 域名");
@@ -72,7 +71,7 @@ public class ConfigDataInitializer {
         }
         if (type.getName().equals("Tomcat")) {
             AppVarDefine def = new AppVarDefine();
-            def.setAppType(type);
+            def.setAppTypeId(type.getId());
             def.setName("context_path");
             def.setDefaultValue("");
             def.setFormLabel("Tomcat ContextPath (URL路径)");
@@ -81,7 +80,7 @@ public class ConfigDataInitializer {
         }
         if (type.getName().equals("Tomcat")) {
             AppVarDefine def = new AppVarDefine();
-            def.setAppType(type);
+            def.setAppTypeId(type.getId());
             def.setName("http_port");
             def.setFormLabel("HTTP端口");
             def.setPortType(portTypeDao.findOne(PortTypeConfiger.HTTP_ID));
@@ -89,7 +88,7 @@ public class ConfigDataInitializer {
         }
         if (!type.getName().equals("Command")) {
             AppVarDefine def = new AppVarDefine();
-            def.setAppType(type);
+            def.setAppTypeId(type.getId());
             def.setName("server_port");
             boolean isTomcat = type.getName().equals("Tomcat");
             String formLabel = isTomcat?"服务管理端口":"应用服务端口";
@@ -100,7 +99,7 @@ public class ConfigDataInitializer {
         }
         if (!type.getName().equals("Command")) {
             AppVarDefine def = new AppVarDefine();
-            def.setAppType(type);
+            def.setAppTypeId(type.getId());
             def.setName("jmx_port");
             def.setFormLabel("JMX端口");
             def.setPortType(portTypeDao.findOne(PortTypeConfiger.JMX_ID));
@@ -108,7 +107,7 @@ public class ConfigDataInitializer {
         }
         if (type.getName().equals("Tomcat")) {
             AppVarDefine def = new AppVarDefine();
-            def.setAppType(type);
+            def.setAppTypeId(type.getId());
             def.setName("ajp_port");
             def.setFormLabel("AJP协议端口");
             def.setPortType(portTypeDao.findOne(PortTypeConfiger.COMMON_ID));
@@ -116,7 +115,7 @@ public class ConfigDataInitializer {
         }
         if (type.getName().equals("Tomcat")) {
             AppVarDefine def = new AppVarDefine();
-            def.setAppType(type);
+            def.setAppTypeId(type.getId());
             def.setName("https_port");
             def.setFormLabel("HTTPS端口");
             def.setPortType(portTypeDao.findOne(PortTypeConfiger.COMMON_ID));

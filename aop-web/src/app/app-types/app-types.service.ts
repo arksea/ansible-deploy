@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
-import { AppType } from '../app.entity'
+import { AppType, PortType } from '../app.entity'
 import { ServiceResponse } from '../utils/http-utils'
 import { HttpUtils } from '../utils/http-utils'
 import { environment } from '../../environments/environment'
@@ -29,5 +29,10 @@ export class AppTypesService {
     public saveAppType(appType: AppType): Observable<ServiceResponse<AppType>> {
         const url = environment.apiUrl + '/api/appTypes';
         return this.httpUtils.httpPost('保存应用类型', url, appType);
+    }
+
+    public getPortTypes(): Observable<ServiceResponse<Array<PortType>>> {
+        const url = environment.apiUrl + '/api/ports/types';
+        return this.httpUtils.httpGet('查询端口类型', url);
     }
 }

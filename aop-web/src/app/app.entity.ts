@@ -15,11 +15,11 @@ export class PortType {
 
 export class AppVarDefine {
     id: number;
-    appType: AppType;
+    appTypeId: number;
     name: string = '';// 变量名
-    formLabel: string;  //表单输入框标签
-    inputAddon: string; //表单输入框提示前缀
-    defaultValue: string;
+    formLabel: string = '';  //表单输入框标签
+    inputAddon: string = ''; //表单输入框提示前缀
+    defaultValue: string = '';
     portType: PortType;
 }
 

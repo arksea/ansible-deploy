@@ -31,7 +31,7 @@ public class AppType extends IdEntity {
         this.description = description;
     }
 
-    @OneToMany(mappedBy = "appTypeId", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "appTypeId", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     public Set<AppVarDefine> getAppVarDefines() {
         return appVarDefines;
     }

@@ -1,11 +1,15 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
+import net.arksea.ansible.deploy.api.manage.dao.AppVarDefineDao;
 import net.arksea.ansible.deploy.api.manage.entity.AppType;
+import net.arksea.ansible.deploy.api.manage.entity.AppVarDefine;
 import net.arksea.restapi.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Create by xiaohaixing on 2020/8/21
@@ -15,6 +19,8 @@ public class AppTypesService {
 
     @Autowired
     AppTypeDao appTypeDao;
+    @Autowired
+    AppVarDefineDao appVarDefineDao;
 
     public AppType findOne(long id) {
         try {
@@ -42,9 +48,22 @@ public class AppTypesService {
     }
 
     @Transactional
-    public void saveAppType(AppType type) {
+    public AppType saveAppType(AppType type) {
         try {
-            AppType t = appTypeDao.save(type);
+            Set<AppVarDefine> oldSet = type.getAppVarDefines();
+            if (type.getId() == null && oldSet.size() > 0) {
+                type.setAppVarDefines(new HashSet<>());
+                AppType saved = appTypeDao.save(type);
+                for (AppVarDefine d: oldSet) {
+                    d.setAppTypeId(saved.getId());
+                }
+                Set<AppVarDefine> newSet = new HashSet<>();
+                appVarDefineDao.save(oldSet).forEach(newSet::add);
+                saved.setAppVarDefines(newSet);
+                return saved;
+            } else {
+                return appTypeDao.save(type);
+            }
         } catch (Exception ex) {
             throw new RestException("保存应用类型失败", ex);
         }

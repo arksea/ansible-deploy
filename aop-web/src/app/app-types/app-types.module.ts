@@ -12,7 +12,7 @@ import { AppTypesService } from './app-types.service'
 import { AppTypesComponent } from './app-types.component'
 import { AppTypeListComponent } from './app-type-list.component'
 import { AppTypeEditComponent } from './app-type-edit.component'
-
+import { NewAppVarDefineDialog } from './new-var-define.dialog'
 
 @NgModule({
     imports: [
@@ -21,9 +21,9 @@ import { AppTypeEditComponent } from './app-type-edit.component'
         HttpClientModule,
         VenderModule, NgbPaginationModule, NgbAlertModule, NgbModule,
         AccountModule, AppTypesRoutingModule],
-    declarations: [AppTypesComponent, AppTypeListComponent, AppTypeEditComponent],
+    declarations: [AppTypesComponent, AppTypeListComponent, AppTypeEditComponent, NewAppVarDefineDialog],
     entryComponents: [
-
+        NewAppVarDefineDialog
     ],
     providers: [AppTypesService],
     exports: []

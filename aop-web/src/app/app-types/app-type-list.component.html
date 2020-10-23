@@ -27,7 +27,8 @@
                     </div>
                     <div class="p-1 mt-1">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
-                            [disabled]="account.perm('操作管理:修改') | async">编辑
+                            [disabled]="account.perm('操作管理:修改') | async"
+                            [routerLink]="['/app-types/'+t.id+'/edit']">编辑
                         </button>
                     </div>
                     <div class="p-1 mt-1">

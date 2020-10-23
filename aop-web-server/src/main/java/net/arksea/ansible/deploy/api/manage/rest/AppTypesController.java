@@ -44,7 +44,7 @@ public class AppTypesController {
     @RequiresPermissions("操作管理:修改")
     @RequestMapping(method = RequestMethod.POST, produces = MEDIA_TYPE)
     public RestResult<AppType> saveAppType(@RequestBody AppType body, HttpServletRequest httpRequest) {
-        return new RestResult<>(0, body, httpRequest);
+        return new RestResult<>(0, this.appTypesService.saveAppType(body), httpRequest);
     }
     //-------------------------------------------------------------------------
     @RequiresPermissions("操作管理:修改")

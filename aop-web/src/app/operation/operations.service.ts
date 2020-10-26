@@ -16,19 +16,9 @@ export class OperationsService {
         return this.httpUtils.httpPost('保存操作脚本', url, operation)
     }
 
-    public deleteOperation(operation: AppOperation): Observable<ServiceResponse<boolean>> {
-        const url = environment.apiUrl + '/api/operations/' + operation.id
-        return this.httpUtils.httpDelete('删除操作', url)
-    }
-
     public deleteOperationCode(code: AppOperationCode):Observable<ServiceResponse<boolean>> {
         const url = environment.apiUrl + '/api/operations/codes/' + code.id
         return this.httpUtils.httpDelete('删除操作脚本', url)
-    }
-
-    public getOperations(appTypeId: number): Observable<ServiceResponse<Array<AppOperation>>> {
-        const url = environment.apiUrl + '/api/appTypes/'+appTypeId + '/operations'
-        return this.httpUtils.httpGet('查询操作', url)
     }
 
     public getOperationById(id: number): Observable<ServiceResponse<AppOperation>> {

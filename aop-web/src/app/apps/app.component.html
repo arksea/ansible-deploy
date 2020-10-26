@@ -20,7 +20,7 @@
                             <div class="btn-group btn-group-sm" role="group" [title] = "hasHostChecked(v)?'':'请选择要操作的目标主机'">
                                 <button type="button" class="btn btn-outline-dark"
                                     *ngFor="let op of operations"
-                                    [hidden]="op.description.startsWith('@@')"
+                                    [hidden]="op.type != 'COMMON'"
                                     [disabled]="(account.perm('应用:操作') | async) || !hasHostChecked(v)"
                                     (click)="onOperationClick(v, op)">
                                     {{op.name}}
@@ -34,7 +34,7 @@
                                     <div class="col-sm-2">内网IP</div>
                                     <div class="col">描述</div>
                                     <div class="col-sm-2 text-center">
-                                        <div class="btn-group btn-group-xs" role="group" *ngFor="let op of operations" [hidden]="!op.description.startsWith('@@')">
+                                        <div class="btn-group btn-group-xs" role="group" *ngFor="let op of operations" [hidden]="op.type!='STATUS'">
                                             <button type="button" class="btn btn-outline-dark" 
                                                     [disabled]="(account.perm('应用:操作') | async)"
                                                     (click)="onStatusOperationClick(v, op)">
@@ -56,7 +56,7 @@
                                 <div class="col-sm-2">{{h.privateIp}}</div>
                                 <div class="col">{{h.description}}</div>
                                 <div class="col-sm-2 text-center">
-                                    <div *ngFor="let op of operations" [hidden]="!op.description.startsWith('@@')">
+                                    <div *ngFor="let op of operations" [hidden]="op.type!='STATUS'">
                                         <span class="badge" [class]="getHostStatusStyle(h.status[op.name])">{{getHostStatusValue(h.status[op.name])}}</span>
                                     </div>
                                 </div>

@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core'
 import { FormGroup, FormControl, Validators } from '@angular/forms'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { ActivatedRoute, ParamMap } from '@angular/router'
-import { OperationsService } from './operations.service'
 import { ConfirmDialog } from '../utils/confirm.dialog'
 import { MessageNotify } from '../utils/message-notify'
 import { AccountService } from '../account/account.service'
@@ -19,15 +18,14 @@ export class OperationListComponent implements OnInit {
     operationList: Array<AppOperation> = []
 
     constructor(private modal: NgbModal, 
-                public svc: OperationsService,
-                private appTypesSvc: AppTypesService,
+                private svc: AppTypesService,
                 public account: AccountService,
                 private alert: MessageNotify,
                 private route: ActivatedRoute) {
         let params: ParamMap =  this.route.snapshot.paramMap
         let idStr = params.get('id')
         let appTypeId = Number(idStr)
-        this.appTypesSvc.getAppType(appTypeId).subscribe(ret => {
+        this.svc.getAppType(appTypeId).subscribe(ret => {
             if (ret.code == 0) {
                 this.appType = ret.result
             }

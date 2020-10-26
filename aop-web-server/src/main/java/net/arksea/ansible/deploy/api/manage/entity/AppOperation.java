@@ -15,6 +15,7 @@ public class AppOperation extends IdEntity {
     private String command;
     private Set<AppOperationCode> codes;
     private Boolean released;
+    private AppOperationType type;
 
     @ManyToOne
     @JoinColumn(name="app_type_id", nullable = false)
@@ -69,5 +70,15 @@ public class AppOperation extends IdEntity {
 
     public void setReleased(Boolean released) {
         this.released = released;
+    }
+
+    @Column(columnDefinition = "VARCHAR(32) NOT NULL DEFAULT 'COMMON'")
+    @Enumerated(EnumType.STRING)
+    public AppOperationType getType() {
+        return type;
+    }
+
+    public void setType(AppOperationType type) {
+        this.type = type;
     }
 }

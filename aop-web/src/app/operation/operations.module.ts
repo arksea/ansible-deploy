@@ -10,7 +10,6 @@ import { OperationsRoutingModule } from './operations-routing.module'
 import { OperationsComponent } from './operations.component'
 import { AccountModule } from '../account/account.module'
 import { OperationsService } from './operations.service'
-import { OperationListComponent } from './operation-list.component'
 import { OperationEditComponent } from './operation-edit.component'
 import { NewCodeFileDialog } from './new-code-file.dialog'
 
@@ -22,7 +21,7 @@ import { NewCodeFileDialog } from './new-code-file.dialog'
     VenderModule, NgbPaginationModule, NgbAlertModule, NgbModule,
     AccountModule, OperationsRoutingModule],
   declarations: [
-    OperationsComponent, OperationListComponent, OperationEditComponent,
+    OperationsComponent, OperationEditComponent,
     NewCodeFileDialog
   ],
   entryComponents: [

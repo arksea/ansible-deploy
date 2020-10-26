@@ -2,7 +2,7 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a [routerLink]="['/app-types']">应用类型</a></li>
-            <li class="breadcrumb-item"><a [routerLink]="['/app-types/'+appType.id+'/edit']">{{appType.name}}</a></li>
+            <li class="breadcrumb-item"><a [routerLink]="['/app-types',appType.id]">{{appType.name}}</a></li>
             <li class="breadcrumb-item active">操作</li>
         </ol>
     </nav>
@@ -14,7 +14,7 @@
                     </div>
                     <button type="button" class="btn btn-success"
                         [disabled]="account.perm('操作管理:修改') | async"
-                        [routerLink]="['/operations/new/edit', appType.id]">新操作
+                        [routerLink]="['/operations/new/app-type', appType.id]">新操作
                     </button>
                 </div>
             </li>
@@ -41,7 +41,7 @@
                     <div class="p-1 mt-1">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
                             [disabled]="account.perm('操作管理:修改') | async"
-                            [routerLink]="['/operations', o.id, 'edit', appType.id]">编辑
+                            [routerLink]="['/operations', o.id]">编辑
                         </button>
                     </div>
                 </div>

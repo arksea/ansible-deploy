@@ -97,9 +97,10 @@
                                 <button type="button" class="btn btn-outline-secondary btn-sm"
                                     [disabled]="account.perm('应用:修改') | async" (click)="onAddHostBtnClick(v)">添加主机</button>
                             </div>
-                            <div class="pl-1">
+                            <div class="pl-1" [title] = "v.targetHosts.length > 0 ? '请先删除此版本的所有目标主机' : ''">
                                 <button type="button" class="btn btn-outline-danger btn-sm"
-                                    [disabled]="account.perm('应用:修改') | async" (click)="onDeleteVersionBtnClick(v)">删除</button>
+                                    [disabled]="(account.perm('应用:修改') | async) || v.targetHosts.length > 0" 
+                                    (click)="onDeleteVersionBtnClick(v)">删除</button>
                             </div>
                             <div class="pl-1">
                                 <button type="button" class="btn btn-outline-secondary btn-sm"

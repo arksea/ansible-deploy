@@ -30,18 +30,18 @@
                     <div class="p-1 mt-1">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
                             [disabled]="account.perm('操作管理:修改') | async"
-                            [routerLink]="['/app-types/'+t.id+'/edit']">编辑
+                            [routerLink]="['/app-types/',t.id]">编辑
                         </button>
                     </div>
-                    <div class="p-1 mt-1">
+                    <!-- <div class="p-1 mt-1">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
                             [disabled]="account.perm('系统:查询') | async">应用
                         </button>
-                    </div>
+                    </div> -->
                     <div class="p-1 mt-1">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
                             [disabled]="account.perm('操作管理:查询') | async"
-                            [routerLink]="['/operations/'+t.id]">操作
+                            [routerLink]="['/app-types/',t.id,'operations']">操作
                         </button>
                     </div>
                 </div>

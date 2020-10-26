@@ -3,8 +3,8 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a [routerLink]="['/app-types']">应用类型</a></li>
-            <li class="breadcrumb-item"><a [routerLink]="['/app-types/'+appType.id+'/edit']">{{appType.name}}</a></li>
-            <li class="breadcrumb-item"><a [routerLink]="['/operations/'+appType.id]">操作</a></li>
+            <li class="breadcrumb-item"><a [routerLink]="['/app-types',operation.appType.id]">{{operation.appType?.name}}</a></li>
+            <li class="breadcrumb-item"><a [routerLink]="['/app-types',operation.appType.id,'operations']">操作</a></li>
             <li class="breadcrumb-item active" aria-current="page">{{operation.name}}</li>
         </ol>
     </nav>
@@ -28,14 +28,23 @@
                 <input type="text" id="description" class="form-control" formControlName="description">
             </div>
         </div>
-        <div class="mb-4">
-            <div class="form-group">
+        <div class="row mb-4">
+            <div class="col-lg-4">
+                <label for="opType">操作类型</label>
+                <select id="opType" name="opType" class="form-control" formControlName="opType">
+                    <option value="COMMON">普通操作 ： 显示在版本操作栏上</option>
+                    <option value="STATUS">状态测试 ： 显示在目标主机状态栏</option>
+                    <option value="DELETE">删除操作 ： 删除目标主机时调用</option>
+                </select>
+            </div>
+            <div class="col-lg-8 form-group">
                 <label for="command">启动命令行
                     <span class="text-danger" *ngIf="command.errors?.required">*</span>
                     <span class="text-danger" *ngIf="command.errors?.minlength || command?.errors?.maxlength">(长度1至256)</span>
                 </label>
                 <input type="text" id="command" class="form-control" formControlName="command">
             </div>
+
         </div>
         <div class="mb-3">
             <div class="form-group">

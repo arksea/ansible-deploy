@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
-import { AppType, PortType } from '../app.entity'
+import { AppType, PortType, AppOperation } from '../app.entity'
 import { ServiceResponse } from '../utils/http-utils'
 import { HttpUtils } from '../utils/http-utils'
 import { environment } from '../../environments/environment'
@@ -34,5 +34,15 @@ export class AppTypesService {
     public getPortTypes(): Observable<ServiceResponse<Array<PortType>>> {
         const url = environment.apiUrl + '/api/ports/types';
         return this.httpUtils.httpGet('查询端口类型', url);
+    }
+
+    public getOperations(appTypeId: number): Observable<ServiceResponse<Array<AppOperation>>> {
+        const url = environment.apiUrl + '/api/appTypes/'+appTypeId + '/operations'
+        return this.httpUtils.httpGet('查询操作', url)
+    }
+
+    public deleteOperation(operation: AppOperation): Observable<ServiceResponse<boolean>> {
+        const url = environment.apiUrl + '/api/operations/' + operation.id
+        return this.httpUtils.httpDelete('删除操作', url)
     }
 }

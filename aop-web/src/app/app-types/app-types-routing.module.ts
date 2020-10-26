@@ -4,15 +4,15 @@ import { AppTypesComponent } from './app-types.component'
 import { AuthGuard } from '../account/auth-guard'
 import { AppTypeListComponent } from './app-type-list.component'
 import { AppTypeEditComponent } from './app-type-edit.component'
+import { OperationListComponent } from './operation-list.component';
 
 const routes: Routes = [
   {
     path: 'app-types', component: AppTypesComponent, canActivate: [AuthGuard],
     children: [
       { path: '', component: AppTypeListComponent, canActivate: [AuthGuard] },
-      { path: ':id/edit', component: AppTypeEditComponent, canActivate: [AuthGuard] },
-      // { path: ':id/edit/:appType', component: AppEditComponent, canActivate: [AuthGuard] },
-      // { path: ':id', component: AppComponent, canActivate: [AuthGuard] },
+      { path: ':id', component: AppTypeEditComponent, canActivate: [AuthGuard] },
+      { path: ':id/operations', component: OperationListComponent, canActivate: [AuthGuard] },
     ]
   }
 ];

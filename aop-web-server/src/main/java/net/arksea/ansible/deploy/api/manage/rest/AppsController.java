@@ -56,11 +56,10 @@ public class AppsController {
     }
     //-------------------------------------------------------------------------
     @RequiresPermissions("应用:修改")
-    @RequestMapping(path="{appId}/deleted", method = RequestMethod.PUT, produces = MEDIA_TYPE)
+    @RequestMapping(path="{appId}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
     public RestResult<Long> updateDeletedById(@PathVariable("appId") long appId,
-                                       @RequestBody boolean deleted,
                                        HttpServletRequest httpRequest) {
-        appService.updateDeletedById(appId, deleted);
+        appService.deletedById(appId);
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         return new RestResult<>(0, appId, reqid);
     }

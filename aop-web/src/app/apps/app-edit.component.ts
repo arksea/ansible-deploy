@@ -12,7 +12,7 @@ import { HostsService } from '../hosts/hosts.service';
 import { AddHostDialog } from './add-host.dialog';
 import { Version } from '../app.entity';
 import { ConfirmDialog } from '../utils/confirm.dialog';
-
+import { JobPlayDialog } from './job-play.dialog';
 
 @Component({
     selector: 'app-edit',
@@ -168,15 +168,46 @@ export class AppEditComponent implements OnInit {
             ref.componentInstance.message = "确认要移除吗?"
             ref.result.then(result => {
                 if (result == "ok") {
-                    this.svc.removeHostFromVersion(version.id, host.id).subscribe(success => {
-                        if (success) {
-                            version.targetHosts = version.targetHosts.filter((h,i,a) => h.id != host.id)
-                            this.alert.success("已移除");
-                        }
-                    });
+                    this.doDeleteOperation(host, version)
                 }
             }, resaon => {})
         }
+    }
+
+    private doDeleteOperation(host: Host, ver: Version) {
+        this.svc.getOperationsByAppTypeId(this.app.appType.id).subscribe(ret => {
+            if (ret.code == 0) {
+                let operations = ret.result
+                for (let op of operations) {
+                    if (op.type == 'DELETE') {
+                        let ref = this.modal.open(JobPlayDialog, {size: 'lg', scrollable: true})
+                        ref.componentInstance.operation = op
+                        ref.componentInstance.app = this.app
+                        ref.componentInstance.hosts = [host];
+                        ref.result.then(result => {
+                            if (result == "ok") {
+                                this.doDeleteHostFromVersion(host, ver)
+                            }
+                        }, reason => {
+                            if (reason == 'cancel') {
+                                this.alert.warning("已取消")
+                            } else {
+                                this.alert.error("删除失败: " + reason);
+                            }
+                        })
+                    }
+                }
+            }
+        })
+    }
+
+    private doDeleteHostFromVersion (host: Host, version: Version) {
+        this.svc.removeHostFromVersion(version.id, host.id).subscribe(success => {
+            if (success) {
+                version.targetHosts = version.targetHosts.filter((h,i,a) => h.id != host.id)
+                this.alert.success("成功移除");
+            }
+        });
     }
 
     getVarDesc(app: App, variable: AppVariable): string {

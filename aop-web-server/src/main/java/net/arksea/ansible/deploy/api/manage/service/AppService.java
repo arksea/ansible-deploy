@@ -171,9 +171,8 @@ public class AppService {
     }
 
     @Transactional
-    public void updateDeletedById(final long id, boolean deleted) {
-        //appDao.updateDeletedById(id, deleted);
-        deleteApp(id); //todo: 直接删除，测试完成后改回来
+    public void deletedById(final long id) {
+        deleteApp(id);
     }
 
     public List<App> findByUserId(long userId) {

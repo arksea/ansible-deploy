@@ -30,14 +30,14 @@
                             (click)="onDeleteOperationBtnClick(o)">删除
                         </button>
                     </div>
-                    <div class="p-1 mt-1">
-                            <button type="button" class="btn btn-sm"
-                                [class.btn-outline-danger]="o.released"
-                                [class.btn-outline-info]="!o.released"
-                                [disabled]="account.perm('操作管理:修改') | async"
-                                >{{o.released?'禁用':'发布'}}
-                            </button>
-                        </div>
+                    <!-- <div class="p-1 mt-1">
+                        <button type="button" class="btn btn-sm"
+                            [class.btn-outline-danger]="o.released"
+                            [class.btn-outline-info]="!o.released"
+                            [disabled]="account.perm('操作管理:修改') | async"
+                            >{{o.released?'禁用':'发布'}}
+                        </button>
+                    </div> -->
                     <div class="p-1 mt-1">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
                             [disabled]="account.perm('操作管理:修改') | async"

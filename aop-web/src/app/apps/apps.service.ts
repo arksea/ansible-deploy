@@ -90,9 +90,9 @@ export class AppsService {
         )
     }
 
-    public updateDeleted(appId: number, deleted: boolean): Observable<boolean> {
-        let url = environment.apiUrl + '/api/apps/' + appId + '/deleted';
-        let ret: Observable<ServiceResponse<number>> = this.httpUtils.httpPut('修改应用删除状态', url, deleted);
+    public deleteApp(appId: number): Observable<boolean> {
+        let url = environment.apiUrl + '/api/apps/' + appId;
+        let ret: Observable<ServiceResponse<number>> = this.httpUtils.httpDelete('修改应用删除状态', url);
         return ret.pipe(
             map (
                 resp => {

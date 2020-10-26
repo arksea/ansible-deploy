@@ -60,7 +60,7 @@ export class JobPlayDialog implements OnInit, OnDestroy {
                 })
             }
             if (data.index == -1 && this.isStatusTestJob) {
-                this.modal.dismiss('cancel')
+                this.modal.close('ok')
             }
         })
     }

@@ -1,6 +1,6 @@
 package net.arksea.ansible.deploy.api.manage.rest;
 
-import net.arksea.ansible.deploy.api.ResultCode;
+import static net.arksea.ansible.deploy.api.ResultCode.*;
 import net.arksea.ansible.deploy.api.manage.dao.AppOperationDao;
 import net.arksea.ansible.deploy.api.manage.entity.AppOperation;
 import net.arksea.ansible.deploy.api.manage.entity.AppOperationCode;
@@ -32,7 +32,7 @@ public class OperationController {
     public RestResult<Iterable<AppOperation>> getOperations(final HttpServletRequest httpRequest) {
         Iterable<AppOperation> list = operationsService.getAll();
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        return new RestResult<>(0, list, reqid);
+        return new RestResult<>(SUCCEED, list, reqid);
     }
 
     @RequiresPermissions("操作管理:查询")
@@ -45,7 +45,7 @@ public class OperationController {
             throw new RestException("查询的操作不存在");
         } else {
             String reqid = (String) httpRequest.getAttribute("restapi-requestid");
-            return new RestResult<>(0, op, reqid);
+            return new RestResult<>(SUCCEED, op, reqid);
         }
     }
 
@@ -55,7 +55,7 @@ public class OperationController {
                            final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         AppOperation saved = operationsService.saveOperation(operation);
-        return new RestResult<>(0, saved, reqid);
+        return new RestResult<>(SUCCEED, saved, reqid);
     }
 
     @RequiresPermissions("操作管理:修改")
@@ -63,7 +63,7 @@ public class OperationController {
     public String delete(@PathVariable("id") final long id, final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         operationDao.delete(id);
-        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+        return RestUtils.createResult(SUCCEED, reqid);
     }
 
     @RequiresPermissions("操作管理:修改")
@@ -72,7 +72,7 @@ public class OperationController {
                        final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         AppOperationCode saved = operationsService.saveOperationCode(code);
-        return RestUtils.createResult(ResultCode.SUCCEED, saved.getId(), reqid);
+        return RestUtils.createResult(SUCCEED, saved.getId(), reqid);
     }
 
     @RequiresPermissions("操作管理:修改")
@@ -80,6 +80,6 @@ public class OperationController {
     public String deleteOperationCode(@PathVariable(name = "id") final Long id, final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         operationsService.deleteOperationCode(id);
-        return RestUtils.createResult(ResultCode.SUCCEED, "", reqid);
+        return RestUtils.createResult(SUCCEED, "", reqid);
     }
 }

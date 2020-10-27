@@ -1,6 +1,6 @@
 package net.arksea.ansible.deploy.api.manage.rest;
 
-import net.arksea.ansible.deploy.api.ResultCode;
+import static net.arksea.ansible.deploy.api.ResultCode.*;
 import net.arksea.ansible.deploy.api.manage.entity.App;
 import net.arksea.ansible.deploy.api.manage.service.AppService;
 import net.arksea.restapi.BaseResult;
@@ -31,7 +31,7 @@ public class AppsController {
     public RestResult<App> getAppTemplate(@PathVariable("typeName") String typeName, HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         App app = appService.createAppTemplate(typeName);
-        return new RestResult<>(0, app, reqid);
+        return new RestResult<>(SUCCEED, app, reqid);
     }
 
     @RequiresPermissions("应用:修改")
@@ -39,7 +39,7 @@ public class AppsController {
     public String save(@RequestBody final App app,final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         App stored = appService.save(app);
-        return RestUtils.createResult(ResultCode.SUCCEED, stored, reqid);
+        return RestUtils.createResult(SUCCEED, stored, reqid);
     }
 
     //-------------------------------------------------------------------------
@@ -49,9 +49,9 @@ public class AppsController {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         App app = appService.findOne(appId);
         if (app == null) {
-            return new ErrorResult(1, reqid, "应用不存在");
+            return new ErrorResult(FAILED, reqid, "应用不存在");
         } else {
-            return new RestResult<>(0, app, reqid);
+            return new RestResult<>(SUCCEED, app, reqid);
         }
     }
     //-------------------------------------------------------------------------
@@ -61,7 +61,7 @@ public class AppsController {
                                        HttpServletRequest httpRequest) {
         appService.deletedById(appId);
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        return new RestResult<>(0, appId, reqid);
+        return new RestResult<>(SUCCEED, appId, reqid);
     }
     //-------------------------------------------------------------------------
     @RequiresPermissions("应用:查询")
@@ -69,7 +69,7 @@ public class AppsController {
     public RestResult<Iterable<App>> getAppsNotInGroup(HttpServletRequest httpRequest) {
         Iterable<App> apps = appService.findNotInGroup();
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        return new RestResult<>(0, apps, reqid);
+        return new RestResult<>(SUCCEED, apps, reqid);
     }
     //-------------------------------------------------------------------------
 

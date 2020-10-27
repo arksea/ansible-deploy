@@ -1,6 +1,6 @@
 package net.arksea.ansible.deploy.api.manage.rest;
 
-import net.arksea.ansible.deploy.api.ResultCode;
+import static net.arksea.ansible.deploy.api.ResultCode.*;
 import net.arksea.ansible.deploy.api.manage.entity.PortSection;
 import net.arksea.ansible.deploy.api.manage.entity.PortType;
 import net.arksea.ansible.deploy.api.manage.service.PortsService;
@@ -8,8 +8,8 @@ import net.arksea.restapi.RestResult;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
+
 
 /**
  * Create by xiaohaixing on 2020/9/17
@@ -33,7 +33,7 @@ public class PortsController {
         } else {
             saved = portsService.modifyPortSection(portSection);
         }
-        return new RestResult<>(ResultCode.SUCCEED, saved, reqid);
+        return new RestResult<>(SUCCEED, saved, reqid);
     }
 
     @RequiresPermissions("端口管理:修改")
@@ -43,7 +43,7 @@ public class PortsController {
             final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         portsService.deletePortSection(id);
-        return new RestResult<>(ResultCode.SUCCEED, true, reqid);
+        return new RestResult<>(SUCCEED, true, reqid);
     }
 
     @RequiresPermissions("端口管理:查询")
@@ -59,6 +59,6 @@ public class PortsController {
     public RestResult<Iterable<PortType>> getPortTypes(final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         Iterable<PortType> types = portsService.getPortTypes();
-        return new RestResult<>(ResultCode.SUCCEED, types, reqid);
+        return new RestResult<>(SUCCEED, types, reqid);
     }
 }

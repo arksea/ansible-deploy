@@ -1,6 +1,6 @@
 package net.arksea.ansible.deploy.api.manage.rest;
 
-import net.arksea.ansible.deploy.api.ResultCode;
+import static net.arksea.ansible.deploy.api.ResultCode.*;
 import net.arksea.ansible.deploy.api.manage.entity.Version;
 import net.arksea.ansible.deploy.api.manage.service.VersionService;
 import net.arksea.restapi.RestUtils;
@@ -30,7 +30,7 @@ public class VersionController {
                              final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         versionService.removeHostFromVersion(verId, hostId);
-        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+        return RestUtils.createResult(SUCCEED, reqid);
     }
 
     @RequiresPermissions("应用:修改")
@@ -40,7 +40,7 @@ public class VersionController {
                            final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         versionService.addHosts(verId, hosts);
-        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+        return RestUtils.createResult(SUCCEED, reqid);
     }
 
     @RequiresPermissions("应用:修改")
@@ -49,7 +49,7 @@ public class VersionController {
                            final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         versionService.deleteById(verId);
-        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+        return RestUtils.createResult(SUCCEED, reqid);
     }
 
     @RequiresPermissions("应用:修改")
@@ -58,6 +58,6 @@ public class VersionController {
                                 final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         Version created = versionService.saveVersion(version);
-        return RestUtils.createResult(ResultCode.SUCCEED, created.getId(), reqid);
+        return RestUtils.createResult(SUCCEED, created.getId(), reqid);
     }
 }

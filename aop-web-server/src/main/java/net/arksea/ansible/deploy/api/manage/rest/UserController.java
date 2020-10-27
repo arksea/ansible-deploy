@@ -1,5 +1,6 @@
 package net.arksea.ansible.deploy.api.manage.rest;
 
+import static net.arksea.ansible.deploy.api.ResultCode.*;
 import net.arksea.ansible.deploy.api.auth.info.ClientInfo;
 import net.arksea.ansible.deploy.api.auth.service.UserService;
 import net.arksea.ansible.deploy.api.manage.entity.App;
@@ -40,7 +41,7 @@ public class UserController {
         ClientInfo info = userService.getClientInfo(httpRequest);
         Iterable<AppGroup> groups = groupsService.getUserGroups(info.userId);
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        return new RestResult<>(0, groups, reqid);
+        return new RestResult<>(SUCCEED, groups, reqid);
     }
 
     //-------------------------------------------------------------------------
@@ -50,6 +51,6 @@ public class UserController {
         ClientInfo info = userService.getClientInfo(httpRequest);
         List<App> apps = appService.findByUserId(info.userId);
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        return new RestResult<>(0, apps, reqid);
+        return new RestResult<>(SUCCEED, apps, reqid);
     }
 }

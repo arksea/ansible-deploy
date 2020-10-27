@@ -1,6 +1,6 @@
 package net.arksea.ansible.deploy.api.manage.rest;
 
-import net.arksea.ansible.deploy.api.ResultCode;
+import static net.arksea.ansible.deploy.api.ResultCode.*;
 import net.arksea.ansible.deploy.api.auth.service.UserService;
 import net.arksea.ansible.deploy.api.manage.entity.AppGroup;
 import net.arksea.ansible.deploy.api.manage.service.GroupsService;
@@ -34,7 +34,7 @@ public class GroupsController {
                               final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         AppGroup group = groupsService.createGroup(name, desc);
-        return RestUtils.createResult(ResultCode.SUCCEED, group.getId(), reqid);
+        return RestUtils.createResult(SUCCEED, group.getId(), reqid);
     }
 
     @RequiresPermissions("组管理:查询")
@@ -42,7 +42,7 @@ public class GroupsController {
     public RestResult<Iterable<AppGroup>> getAppGroups(final HttpServletRequest httpRequest) {
         Iterable<AppGroup> groups = groupsService.getAppGroups();
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        return new RestResult<>(0, groups, reqid);
+        return new RestResult<>(SUCCEED, groups, reqid);
     }
 
     @RequiresPermissions("组管理:查询")
@@ -51,7 +51,7 @@ public class GroupsController {
                                              final HttpServletRequest httpRequest) {
         AppGroup group = groupsService.getAppGroupById(groupId);
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        return new RestResult<>(0, group, reqid);
+        return new RestResult<>(SUCCEED, group, reqid);
     }
 
     @RequiresPermissions("组管理:修改")
@@ -60,7 +60,7 @@ public class GroupsController {
                               final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         groupsService.deleteAppGroup(groupId);
-        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+        return RestUtils.createResult(SUCCEED, reqid);
     }
 
     @RequiresPermissions("组管理:修改")
@@ -70,7 +70,7 @@ public class GroupsController {
                           final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         groupsService.addHost(groupId, hostId);
-        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+        return RestUtils.createResult(SUCCEED, reqid);
     }
 
     @RequiresPermissions("组管理:修改")
@@ -80,7 +80,7 @@ public class GroupsController {
                           final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         groupsService.removeHost(groupId, hostId);
-        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+        return RestUtils.createResult(SUCCEED, reqid);
     }
 
     @RequiresPermissions("组管理:修改")
@@ -90,7 +90,7 @@ public class GroupsController {
                           final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         groupsService.addMember(groupId, userId);
-        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+        return RestUtils.createResult(SUCCEED, reqid);
     }
 
     @RequiresPermissions("组管理:修改")
@@ -100,7 +100,7 @@ public class GroupsController {
                              final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         groupsService.removeMember(groupId, userId);
-        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+        return RestUtils.createResult(SUCCEED, reqid);
     }
 
     @RequiresPermissions("组管理:修改")
@@ -110,7 +110,7 @@ public class GroupsController {
                           final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         groupsService.addApp(groupId, appId);
-        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+        return RestUtils.createResult(SUCCEED, reqid);
     }
 
     @RequiresPermissions("组管理:修改")
@@ -120,6 +120,6 @@ public class GroupsController {
                              final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         groupsService.removeApp(groupId, appId);
-        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+        return RestUtils.createResult(SUCCEED, reqid);
     }
 }

@@ -3,6 +3,7 @@ package net.arksea.ansible.deploy.api.manage.rest;
 import net.arksea.ansible.deploy.api.manage.dao.AppVarDefineDao;
 import net.arksea.ansible.deploy.api.manage.entity.AppVarDefine;
 import net.arksea.restapi.RestResult;
+import static net.arksea.ansible.deploy.api.ResultCode.*;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +29,6 @@ public class AppVarDefineController {
     public RestResult<Iterable<AppVarDefine>> getAppVarDefines(final HttpServletRequest httpRequest) {
         Iterable<AppVarDefine> defines = appVarDefineDao.findAll();
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        return new RestResult<>(0, defines, reqid);
+        return new RestResult<>(SUCCEED, defines, reqid);
     }
 }

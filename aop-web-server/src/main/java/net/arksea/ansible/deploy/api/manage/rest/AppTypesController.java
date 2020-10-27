@@ -6,6 +6,7 @@ import net.arksea.ansible.deploy.api.manage.service.AppTypesService;
 import net.arksea.ansible.deploy.api.manage.service.OperationsService;
 import net.arksea.restapi.BaseResult;
 import net.arksea.restapi.RestResult;
+import static net.arksea.ansible.deploy.api.ResultCode.*;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -31,20 +32,20 @@ public class AppTypesController {
     @RequiresPermissions("应用:查询")
     @RequestMapping(method = RequestMethod.GET, produces = MEDIA_TYPE)
     public RestResult<Iterable<AppType>> getAppTypes(HttpServletRequest httpRequest) {
-        return new RestResult<>(0, appTypesService.findAll(), httpRequest);
+        return new RestResult<>(SUCCEED, appTypesService.findAll(), httpRequest);
     }
     //-------------------------------------------------------------------------
     @RequiresPermissions("应用:查询")
     @RequestMapping(path="{typeId}", method = RequestMethod.GET, produces = MEDIA_TYPE)
     public RestResult<AppType> findOne(@PathVariable(name = "typeId") final long typeId,
                                        HttpServletRequest httpRequest) {
-        return new RestResult<>(0, appTypesService.findOne(typeId), httpRequest);
+        return new RestResult<>(SUCCEED, appTypesService.findOne(typeId), httpRequest);
     }
     //-------------------------------------------------------------------------
     @RequiresPermissions("操作管理:修改")
     @RequestMapping(method = RequestMethod.POST, produces = MEDIA_TYPE)
     public RestResult<AppType> saveAppType(@RequestBody AppType body, HttpServletRequest httpRequest) {
-        return new RestResult<>(0, this.appTypesService.saveAppType(body), httpRequest);
+        return new RestResult<>(SUCCEED, this.appTypesService.saveAppType(body), httpRequest);
     }
     //-------------------------------------------------------------------------
     @RequiresPermissions("操作管理:修改")
@@ -52,7 +53,7 @@ public class AppTypesController {
     public BaseResult delAppType(@PathVariable(name="typeId") final long typeId,
                                  HttpServletRequest httpRequest) {
         appTypesService.deleteAppType(typeId);
-        return new BaseResult(0, httpRequest);
+        return new BaseResult(SUCCEED, httpRequest);
     }
     //-------------------------------------------------------------------------
     @RequiresPermissions("应用:查询")
@@ -60,7 +61,7 @@ public class AppTypesController {
     public RestResult<Iterable<AppOperation>> getOperationsByAppTypeId(
                 @PathVariable(name="appTypeId") Long appTypeId,
                 final HttpServletRequest httpRequest) {
-        return new RestResult<>(0, operationsService.getByAppTypeId(appTypeId), httpRequest);
+        return new RestResult<>(SUCCEED, operationsService.getByAppTypeId(appTypeId), httpRequest);
     }
 
 }

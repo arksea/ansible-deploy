@@ -1,10 +1,8 @@
 package net.arksea.ansible.deploy.api.manage.rest;
 
-import net.arksea.ansible.deploy.api.ResultCode;
+import static net.arksea.ansible.deploy.api.ResultCode.*;
 import net.arksea.ansible.deploy.api.auth.entity.Role;
 import net.arksea.ansible.deploy.api.auth.entity.User;
-import net.arksea.ansible.deploy.api.auth.info.ClientInfo;
-import net.arksea.ansible.deploy.api.manage.entity.App;
 import net.arksea.ansible.deploy.api.manage.service.UsersService;
 import net.arksea.restapi.RestResult;
 import net.arksea.restapi.RestUtils;
@@ -33,7 +31,7 @@ public class UsersController {
     public RestResult<Iterable<User>> getActiveUsers(final HttpServletRequest httpRequest) {
         Iterable<User> users = usersService.getUsers(true);
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        return new RestResult<>(0, users, reqid);
+        return new RestResult<>(SUCCEED, users, reqid);
     }
 
     @RequiresPermissions("用户管理:修改")
@@ -42,7 +40,7 @@ public class UsersController {
                                final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         usersService.blockUser(userId);
-        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+        return RestUtils.createResult(SUCCEED, reqid);
     }
 
     @RequiresPermissions("用户管理:查询")
@@ -50,7 +48,7 @@ public class UsersController {
     public RestResult<Iterable<User>> getBlockedUsers(final HttpServletRequest httpRequest) {
         Iterable<User> users = usersService.getUsers(false);
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        return new RestResult<>(0, users, reqid);
+        return new RestResult<>(SUCCEED, users, reqid);
     }
 
     @RequiresPermissions("用户管理:修改")
@@ -58,8 +56,7 @@ public class UsersController {
     public String deleteUser(@PathVariable(name="userId") long userId,
                               final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        //manageService.deleteUser(userId);
-        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+        return RestUtils.createResult(SUCCEED, reqid);
     }
 
     @RequiresPermissions("用户管理:修改")
@@ -68,7 +65,7 @@ public class UsersController {
                              final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         usersService.unblockUser(userId);
-        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+        return RestUtils.createResult(SUCCEED, reqid);
     }
 
     @RequiresPermissions("用户管理:查询")
@@ -76,7 +73,7 @@ public class UsersController {
     public RestResult<Iterable<Role>> getRoles(final HttpServletRequest httpRequest) {
         Iterable<Role> roles = usersService.getRoles();
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        return new RestResult<>(0, roles, reqid);
+        return new RestResult<>(SUCCEED, roles, reqid);
     }
 
     //-------------------------------------------------------------------------
@@ -88,6 +85,6 @@ public class UsersController {
             HttpServletRequest httpRequest) {
         usersService.updateUserRoles(userId, roleIdList);
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        return new RestResult<>(0, true, reqid);
+        return new RestResult<>(SUCCEED, true, reqid);
     }
 }

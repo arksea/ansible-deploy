@@ -1,6 +1,6 @@
 package net.arksea.ansible.deploy.api.manage.rest;
 
-import net.arksea.ansible.deploy.api.ResultCode;
+import static net.arksea.ansible.deploy.api.ResultCode.*;
 import net.arksea.ansible.deploy.api.manage.entity.Host;
 import net.arksea.ansible.deploy.api.manage.service.HostsService;
 import net.arksea.restapi.RestResult;
@@ -29,7 +29,7 @@ public class HostsController {
                               final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         Host saved = hostsService.saveHost(host);
-        return RestUtils.createResult(ResultCode.SUCCEED, saved.getId(), reqid);
+        return RestUtils.createResult(SUCCEED, saved.getId(), reqid);
     }
 
     @RequiresPermissions("组管理:查询")
@@ -39,7 +39,7 @@ public class HostsController {
             final HttpServletRequest httpRequest) {
         Iterable<Host> hosts = groupId==null ? hostsService.getHosts() : hostsService.getInGroup(groupId);
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        return new RestResult<>(0, hosts, reqid);
+        return new RestResult<>(SUCCEED, hosts, reqid);
     }
 
     @RequiresPermissions("组管理:查询")
@@ -47,7 +47,7 @@ public class HostsController {
     public RestResult<Iterable<Host>> getHostsNotInGroup(final HttpServletRequest httpRequest) {
         Iterable<Host> hosts = hostsService.getNotInGroup();
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        return new RestResult<>(0, hosts, reqid);
+        return new RestResult<>(SUCCEED, hosts, reqid);
     }
 
     @RequiresPermissions("组管理:修改")
@@ -56,6 +56,6 @@ public class HostsController {
                               final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         hostsService.deleteHost(hostId);
-        return RestUtils.createResult(ResultCode.SUCCEED, reqid);
+        return RestUtils.createResult(SUCCEED, reqid);
     }
 }

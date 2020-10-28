@@ -6,7 +6,7 @@ import { HttpUtils } from '../utils/http-utils';
 import { environment } from '../../environments/environment';
 import { map, first } from 'rxjs/operators';
 import { CrudModel, IModelInfo } from '../utils/crud-model';
-import { Version, AppVarDefine, AppOperation, Host } from '../app.entity';
+import { Version, AppVarDefine, AppOperation, Host, Port } from '../app.entity';
 
 class AppsModelInfo implements IModelInfo<number, App> {
     private sortType: string;
@@ -249,5 +249,15 @@ export class AppsService {
     public getOperationsByAppTypeId(appTypeId: number): Observable<ServiceResponse<AppOperation[]>> {
         const url = environment.apiUrl + '/api/appTypes/'+appTypeId+'/operations';
         return this.httpUtils.httpGet('查询应用操作', url);
+    }
+
+    public searchPortsByPrefix(prefix: string, limit: number): Observable<ServiceResponse<Array<Port>>> {
+        const url = environment.apiUrl + '/api/ports/prefix/'+prefix+"?limit="+limit;
+        return this.httpUtils.httpGet('搜索端口', url);
+    }
+
+    public getPortByValue(value: number): Observable<ServiceResponse<Array<Port>>> {
+        const url = environment.apiUrl + '/api/ports/'+value
+        return this.httpUtils.httpGet('查询端口', url);
     }
 }

@@ -1,4 +1,4 @@
-package net.arksea.ansible.deploy.api.manage.dao;
+package net.arksea.ansible.deploy.api.manage.service;
 
 import net.arksea.ansible.deploy.api.manage.entity.Port;
 import org.springframework.data.jpa.repository.Modifying;
@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Create by xiaohaixing on 2020/9/17
  */
-public interface PortDao extends CrudRepository<Port, Long> {
+interface PortDao extends CrudRepository<Port, Long> {
     @Query(value="select count(1) from Port p where p.value>=?1 and p.value <=?2")
     long countByRange(int minValue, int maxValue);
 
@@ -32,4 +32,20 @@ public interface PortDao extends CrudRepository<Port, Long> {
     int releaseByAppId(long appId);
 
     List<Port> findByAppId(long appId);
+
+    @Query(nativeQuery = true,
+           value="select * from dp2_port where value like ?1 limit ?2")
+    List<Port> searchByPrefix(String prefix, int limit);
+
+    List<Port> findByValue(int value);
+
+    @Modifying
+    @Query(nativeQuery = true,
+           value = "update dp2_port p set p.app_id = NULL where p.value = ?1")
+    void releasePortByValue(int value);
+
+    @Modifying
+    @Query(nativeQuery = true,
+           value = "update dp2_port p set p.app_id = ?2 where p.value = ?1")
+    void holdPortByValue(int value, long appId);
 }

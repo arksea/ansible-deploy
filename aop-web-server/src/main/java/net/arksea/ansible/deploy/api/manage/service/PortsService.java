@@ -1,6 +1,5 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
-import net.arksea.ansible.deploy.api.manage.dao.PortDao;
 import net.arksea.ansible.deploy.api.manage.dao.PortSectionDao;
 import net.arksea.ansible.deploy.api.manage.dao.PortTypeDao;
 import net.arksea.ansible.deploy.api.manage.dao.PortsStatDao;
@@ -8,6 +7,7 @@ import net.arksea.ansible.deploy.api.manage.entity.Port;
 import net.arksea.ansible.deploy.api.manage.entity.PortSection;
 import net.arksea.ansible.deploy.api.manage.entity.PortType;
 import net.arksea.ansible.deploy.api.manage.entity.PortsStat;
+import net.arksea.restapi.RestException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -214,4 +214,11 @@ public class PortsService {
         portsStatDao.incAllCount(-all, typeId);
     }
 
+    public List<Port> searchByPrefix(String prefix,int limit) {
+        return portDao.searchByPrefix(prefix, Math.min(100, limit));
+    }
+
+    public List<Port> getByValue(int value) {
+        return portDao.findByValue(value);
+    }
 }

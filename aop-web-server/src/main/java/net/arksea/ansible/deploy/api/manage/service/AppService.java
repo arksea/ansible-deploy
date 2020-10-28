@@ -96,6 +96,10 @@ public class AppService {
             }
         }
         try {
+            if (!isNewAction) {
+                App old = appDao.findOne(app.getId());
+                updateAppPort(old, app);
+            }
             App saved = appDao.save(app);
             if (isNewAction) {//分配端口
                 setPortsAndVars(saved);
@@ -116,7 +120,36 @@ public class AppService {
         } catch (ServiceException ex) {
             throw ex;
         } catch (Exception ex) {
-            throw new RestException("保存应用失败", ex);
+            throw new ServiceException("保存应用失败", ex);
+        }
+    }
+
+    private void updateAppPort(App old, App updated) {
+        for (AppVariable u : updated.getVars()) {
+            for (AppVariable o : old.getVars()) {
+                if (u.getId().equals(o.getId()) && !u.getValue().equals(o.getValue())) {
+                    if (!u.getIsPort()) {
+                        throw new ServiceException("变量非端口类型:"+u.getName());
+                    }
+                    int updateValue = Integer.parseInt(u.getValue());
+                    List<Port> l = portDao.findByValue(updateValue);
+                    if (l.size() == 1) {
+                        Port updatePort = l.get(0);
+                        if (updatePort.getAppId() != null) {
+                            throw new ServiceException("目标端口已被占用:"+updateValue);
+                        }
+                        if (!updatePort.getEnabled()) {
+                            throw new ServiceException("目标端口已被禁用:"+updateValue);
+                        }
+                        int oldValue = Integer.parseInt(o.getValue());
+                        portDao.releasePortByValue(oldValue);
+                        portDao.holdPortByValue(updateValue, updated.getId());
+                    } else {
+                        throw new ServiceException("目标端口不存在:"+updateValue);
+                    }
+
+                }
+            }
         }
     }
 

@@ -7,7 +7,8 @@
             <input id="typeahead-basic" type="text" class="form-control" [(ngModel)]="model" #host
                 [ngbTypeahead]="searchHost" />
             <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" [disabled]="account.perm('组管理:修改') | async"
+                <button class="btn btn-outline-secondary" type="button"
+                    [disabled]="(account.perm('组管理:修改') | async)  || host.value == ''"
                     (click)="addHost(host.value)">添加</button>
             </div>
         </div>

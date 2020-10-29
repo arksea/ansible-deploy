@@ -7,7 +7,8 @@
             <input id="typeahead-basic" type="text" class="form-control" [(ngModel)]="model" [ngbTypeahead]="searchUser" #user/>
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary" type="button"
-                    [disabled]="(perm('组管理:修改') | async) || user.value == ''" (click)="addMember(user.value)">添加</button>
+                    [disabled]="(perm('组管理:修改') | async) || user.value == ''" 
+                    (click)="addMember(user.value)">添加</button>
             </div>
         </div>
     </div>

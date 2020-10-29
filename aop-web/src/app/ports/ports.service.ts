@@ -1,95 +1,55 @@
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { Subject, Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { PortSection, PortType } from '../app.entity';
-import { ServiceResponse } from '../utils/http-utils';
-import { HttpUtils } from '../utils/http-utils';
-import { MessageNotify } from "../utils/message-notify";
-import { environment } from '../../environments/environment';
-import { CrudModel, IModelInfo } from '../utils/crud-model';
-
-class SectionModelInfo implements IModelInfo<number, PortSection> {
-    public getModelMapKey(t: PortSection): number {
-        return t.id;
-    }
-    public getSortKey(t: PortSection): any {
-        return t.minValue;
-    }
-    public needSort(): boolean {
-        return true;
-    }
-    public getSortOrder(): string {
-        return 'asc';
-    }
-}
+import { Injectable } from '@angular/core'
+import { Observable } from 'rxjs'
+import { map } from 'rxjs/operators'
+import { PortSection, PortType } from '../app.entity'
+import { ServiceResponse } from '../utils/http-utils'
+import { HttpUtils } from '../utils/http-utils'
+import { environment } from '../../environments/environment'
 
 @Injectable()
 export class PortsService {
-    public model: CrudModel<number, PortSection> = new CrudModel<number, PortSection>(new SectionModelInfo());
-    public sectionList: Subject<PortSection[]> = this.model.modelList;
-    public _portTypes: Array<PortType>;
-    public portTypesMap: Map<number,PortType> = new Map();
 
-    public constructor(private httpUtils: HttpUtils, 
-        private router: Router, 
-        private alert: MessageNotify) {
+    public portTypes: Array<PortType> = []
+    public portTypesMap: Map<number,PortType> = new Map()
+
+    public constructor(private httpUtils: HttpUtils) {
+        this.queryPortTypes()
     }
 
-    private update() {
-        this.querySections();
-        this.queryPortTypes();
-    }
-    public savePortSection(section: PortSection): Observable<boolean> {
-        const url = environment.apiUrl + '/api/ports/sections';
-        return this.httpUtils.httpPut('保存端口区间', url, section).pipe(
-            map(response => {
-                    if (response.code === 0) {
-                        this.update();
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            )
-        );
-    }
-
-    public querySections() {
-        const url = environment.apiUrl + '/api/ports/sections';
-        let ret: Observable<ServiceResponse<Array<PortSection>>> = this.httpUtils.httpGet('查询端口区间', url);
-        ret.subscribe(data => {
-            if (data.code == 0) {
-                this.model.opResetModels.next(data.result);
+    //更新各类型端口使用情况的统计数据
+    private queryPortTypes() {
+        this.getPortTypes().subscribe(ret => {
+            if (ret.code == 0) {
+                this.portTypes = ret.result
+                this.portTypesMap.clear()
+                this.portTypes.forEach(t => this.portTypesMap[t.id]=t)
             }
-        });
+        })
     }
 
-    public deleteSection(section: PortSection): Observable<boolean> {
-        const url = environment.apiUrl + '/api/ports/sections/'+section.id;
-        let ret: Observable<ServiceResponse<boolean>> = this.httpUtils.httpDelete('删除端口区间', url);
-        return ret.pipe(map(data => {
-            if (data.code == 0) {
-                this.update();
-                return true;
-            } else {
-                return false;
-            }
-        }));
+    public savePortSection(section: PortSection): Observable<ServiceResponse<PortSection>> {
+        const url = environment.apiUrl + '/api/ports/sections'
+        return this.httpUtils.httpPut('保存端口区间', url, section).pipe(map(ret => {
+            this.queryPortTypes()
+            return ret
+        }))
     }
 
-    public queryPortTypes() {
-        const url = environment.apiUrl + '/api/ports/types';
-        let ret: Observable<ServiceResponse<Array<PortType>>> = this.httpUtils.httpGet('查询端口类型', url);
-        ret.subscribe(data => {
-            if (data.code == 0) {
-                this._portTypes = data.result;
-                this._portTypes.forEach(t => this.portTypesMap[t.id]=t);
-            }
-        });
+    public getSections() {
+        const url = environment.apiUrl + '/api/ports/sections'
+        return this.httpUtils.httpGet('查询端口区间', url)
     }
 
-    get portTypes() {
-        return this._portTypes;
+    public deleteSection(section: PortSection): Observable<ServiceResponse<boolean>> {
+        const url = environment.apiUrl + '/api/ports/sections/'+section.id
+        return this.httpUtils.httpDelete('删除端口区间', url).pipe(map(ret => {
+            this.queryPortTypes()
+            return ret
+        }))
+    }
+
+    public getPortTypes(): Observable<ServiceResponse<Array<PortType>>> {
+        const url = environment.apiUrl + '/api/ports/types'
+        return this.httpUtils.httpGet('查询端口类型', url)
     }
 }

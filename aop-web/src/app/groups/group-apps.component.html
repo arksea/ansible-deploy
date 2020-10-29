@@ -7,7 +7,8 @@
             <input id="typeahead-basic" type="text" class="form-control" [(ngModel)]="model" #apptag
                 [ngbTypeahead]="search" />
             <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" [disabled]="account.perm('组管理:修改') | async"
+                <button class="btn btn-outline-secondary" type="button"
+                    [disabled]="(account.perm('组管理:修改') | async) || apptag.value == ''"
                     (click)="addApp(apptag.value)">添加</button>
             </div>
         </div>

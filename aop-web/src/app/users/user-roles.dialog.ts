@@ -51,6 +51,8 @@ export class UserRolesDialog implements OnInit {
             if (ret.code == 0) {
                 this._user.roles = roles
                 this.modal.close('ok')
+            } else {
+                this.modal.close('failed')
             }
         });
     }

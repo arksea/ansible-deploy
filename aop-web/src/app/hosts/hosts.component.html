@@ -22,7 +22,7 @@
                     </button>
                 </div>
             </li>
-            <li *ngFor="let h of svc.hostList | async;index as i;" class="list-group-item">
+            <li *ngFor="let h of hostList;index as i;" class="list-group-item">
                 <div class="d-flex mt-2">
                     <div class="mr-auto">
                         <strong>{{h.privateIp}}</strong><span [hidden]="h.enabled" class="text-danger"> (已禁用)</span>

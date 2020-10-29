@@ -1,16 +1,16 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { VenderModule } from '../vender.module';
-import { NgbPaginationModule, NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { RouterModule } from '@angular/router';
-import { AccountModule } from '../account/account.module';
-import { PortsRoutingModule } from './ports-routing.module';
-import { PortsComponent } from './ports.component';
-import { PortsService } from './ports.service';
-import { EditSectionDialog } from './edit-section.dialog';
+import { NgModule } from '@angular/core'
+import { CommonModule } from '@angular/common'
+import { HttpClientModule } from '@angular/common/http'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { VenderModule } from '../vender.module'
+import { NgbPaginationModule, NgbAlertModule } from '@ng-bootstrap/ng-bootstrap'
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap'
+import { RouterModule } from '@angular/router'
+import { AccountModule } from '../account/account.module'
+import { PortsRoutingModule } from './ports-routing.module'
+import { PortsComponent } from './ports.component'
+import { PortsService } from './ports.service'
+import { EditSectionDialog } from './edit-section.dialog'
 
 @NgModule({
   imports: [

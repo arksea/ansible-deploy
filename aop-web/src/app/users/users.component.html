@@ -22,24 +22,14 @@
                         <button type="button" class="btn btn-light" routerLinkActive="active" [routerLink]="['/users/active']">活跃的账号</button>
                         <button type="button" class="btn btn-light" routerLinkActive="active" [routerLink]="['/users/blocked']">禁用的账号</button>
                     </div>
-
-                    <div class="pr-2 dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            {{(svc.selectedSortType | async).desc}}
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a *ngFor="let c of svc.sortTypes" class="dropdown-item"
-                                (click)="svc.setSortType(c)">{{c.desc}}</a>
-                        </div>
-                    </div>                    
+        
                     <button type="button" class="btn btn-success" 
                         [disabled]="account.perm('用户管理:修改') | async"
                         (click)="newUser()">新建用户
                     </button>
                 </div>
             </li>
-            <li *ngFor="let u of svc.userList | async;index as i;" class="list-group-item">
+            <li *ngFor="let u of userList;index as i;" class="list-group-item">
                 <div class="d-flex mt-2">
                     <div class="mr-auto">
                         <strong>{{u.name}}</strong>

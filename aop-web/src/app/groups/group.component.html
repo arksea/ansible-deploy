@@ -3,14 +3,13 @@
     <div class="col-sm-1 text-right border-right">
         <ul class="nav flex-column nav-pills">
             <li class="nav-item">
-                <a class="nav-link active" routerLinkActive="active"
-                    [routerLink]="['/groups/'+groupId+'/members']">成员</a>
+                <a class="nav-link" routerLinkActive="active" [routerLink]="['/groups',groupId,'members']">成员</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" routerLinkActive="active" [routerLink]="['/groups/'+groupId+'/hosts']">主机</a>
+                <a class="nav-link" routerLinkActive="active" [routerLink]="['/groups',groupId,'hosts']">主机</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" routerLinkActive="active" [routerLink]="['/groups/'+groupId+'/apps']">应用</a>
+                <a class="nav-link" routerLinkActive="active" [routerLink]="['/groups',groupId,'apps']">应用</a>
             </li>
         </ul>
     </div>

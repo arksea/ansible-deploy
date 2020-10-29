@@ -26,6 +26,7 @@ public class UsersController {
     UsersService usersService;
 
     //-------------------------------------------------------------------------
+
     @RequiresPermissions("用户管理:查询")
     @RequestMapping(path="users/active", method = RequestMethod.GET, produces = MEDIA_TYPE)
     public RestResult<Iterable<User>> getActiveUsers(final HttpServletRequest httpRequest) {
@@ -33,7 +34,14 @@ public class UsersController {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         return new RestResult<>(SUCCEED, users, reqid);
     }
-
+    //-------------------------------------------------------------------------
+    @RequiresPermissions("用户管理:查询")
+    @RequestMapping(path="users/notInGroup/{groupId}", method = RequestMethod.GET, produces = MEDIA_TYPE)
+    public RestResult<Iterable<User>> getUsersNotInGroup(@PathVariable("groupId")final long groupId, final HttpServletRequest httpRequest) {
+        Iterable<User> users = usersService.getUsersNotInGroup(groupId);
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        return new RestResult<>(SUCCEED, users, reqid);
+    }
     @RequiresPermissions("用户管理:修改")
     @RequestMapping(path="users/active/{userId}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
     public String blockUser(@PathVariable(name="userId") long userId,

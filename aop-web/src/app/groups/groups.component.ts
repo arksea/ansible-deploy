@@ -1,16 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { GroupsService } from './groups.service';
+import { Component } from '@angular/core';
 
 @Component({
     selector: 'groups',
     templateUrl: './groups.component.html'
 })
-export class GroupsComponent implements OnInit {
+export class GroupsComponent {
 
-    constructor(private svc: GroupsService) {
-    }
-
-    ngOnInit(): void {
-        this.svc.queryGroups();
-    }
 }

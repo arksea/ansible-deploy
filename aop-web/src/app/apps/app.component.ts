@@ -24,21 +24,20 @@ export class AppComponent implements OnInit {
                 private modal: NgbModal,
                 private alert: MessageNotify) {
         let appId = Number(this.route.snapshot.paramMap.get('id'));
-        this.svc.getAppById(appId).subscribe(a => {
-            if (a == null) {
-                this.alert.warning("应用不存在或无权限(id="+appId+")");
-                this.router.navigate(["/apps"]);
-            } else {
-                this.app = a;
-                this.initHostCheckedStatus(a);
-                this.svc.getOperationsByAppTypeId(a.appType.id).subscribe(ret => {
+        this.svc.getAppById(appId).subscribe(ret => {
+            if (ret.code == 0) {
+                this.app = ret.result;
+                this.initHostCheckedStatus(this.app);
+                this.svc.getOperationsByAppTypeId(this.app.appType.id).subscribe(ret => {
                     if (ret.code == 0) {
                         this.operations = ret.result;
                     }
                 })
+            } else {
+                this.alert.warning("应用不存在或无权限(id="+appId+")");
+                this.router.navigate(["/apps"]);
             }
         });
-
     }
 
     ngOnInit() {}

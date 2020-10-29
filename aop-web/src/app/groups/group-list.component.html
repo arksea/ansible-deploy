@@ -16,25 +16,12 @@
                             </div>
                         </form>
                     </div>
-                    <div class="pr-2 dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            排序方式
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item">最近创建</a>
-                            <a class="dropdown-item">组名</a>
-                            <a class="dropdown-item">用户数</a>
-                            <a class="dropdown-item">应用数</a>
-                            <a class="dropdown-item">主机数</a>
-                        </div>
-                    </div>
                     <button type="button" class="btn btn-success" (click)="newGroup()"
                         [disabled]="account.perm('组管理:修改') | async">新建分组
                     </button>
                 </div>
             </li>
-            <li *ngFor="let g of svc.groupList | async;index as i;" class="list-group-item">
+            <li *ngFor="let g of groupList; index as i;" class="list-group-item">
                 <div class="d-flex mt-2">
                     <div class="mr-auto">
                         <a (click)="onViewBtnClick(g)" class="btn btn-link p-0 m-0"><strong>{{g.name}}</strong></a>

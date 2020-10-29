@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core'
 import { FormGroup, FormControl, AbstractControl, Validators } from '@angular/forms'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { Observable } from 'rxjs'
 import { AppsService } from './apps.service'
 import { MessageNotify } from '../utils/message-notify'
-import { App,AppGroup, Host, AppVariable, AppVarDefine } from '../app.entity'
+import { App,AppGroup, Host, AppVariable } from '../app.entity'
 import { AccountService } from '../account/account.service'
 import { Router, ActivatedRoute, ParamMap } from '@angular/router'
 import { NewVersionDialog } from './new-version.dialog'
@@ -25,7 +24,7 @@ export class AppEditComponent implements OnInit {
     public app: App
     public appForm: FormGroup
     public isNewAction: boolean
-    public userGroups: Observable<AppGroup[]>
+    public userGroups: AppGroup[]
     portModifyed: boolean = false
 
     constructor(private svc: AppsService,
@@ -35,15 +34,23 @@ export class AppEditComponent implements OnInit {
                 protected modal: NgbModal,
                 private router: Router,
                 private route: ActivatedRoute) {
-        this.userGroups = this.svc.userGroups
-        let params: ParamMap =  this.route.snapshot.paramMap
-        let idStr = params.get('id')
-        let appType = params.get('appType')
-        this.app = svc.createDefAppTemplate()
+        this.app = this.svc.createDefAppTemplate()
         this.appForm = this.makeFormGroup(this.app)
+        this.svc.getUserGroups().subscribe(ret => {
+            if (ret.code == 0) {
+                this.userGroups = ret.result
+                let params: ParamMap =  this.route.snapshot.paramMap
+                let idStr = params.get('id')
+                let appType = params.get('appType')
+                this.queryApp(idStr, appType)
+            }
+        })
+    }
+
+    private queryApp(idStr: string, appType: string) {
         if (idStr == 'new') {
             this.isNewAction = true
-            svc.createAppTemplate(appType).subscribe(
+            this.svc.createAppTemplate(appType).subscribe(
                 ret => {
                     if (ret.code == 0) {
                         this.app = ret.result
@@ -54,13 +61,12 @@ export class AppEditComponent implements OnInit {
         } else {
             this.isNewAction = false
             let appId = Number(idStr)
-            this.svc.getAppById(appId).subscribe(a => {
-                if (a == null) {
-                    this.alert.warning("应用不存在或无权限(id="+appId+")")
-                    this.router.navigate(["/apps"])
+            this.svc.getAppById(appId).subscribe(ret => {
+                if (ret.code == 0) {
+                    this.app = ret.result
+                    this.appForm = this.makeFormGroup(this.app)
                 } else {
-                    this.app = a
-                    this.appForm = this.makeFormGroup(a)
+                    this.router.navigate(["/apps"])
                 }
             })
         }
@@ -99,12 +105,8 @@ export class AppEditComponent implements OnInit {
             let c = f.get('var_' + i.name)
             i.value = c.value
         }
-        this.svc.saveApp(a).subscribe(
-            app => {
-                if (app) {
-                    if (this.isNewAction) {
-                        this.svc.appsModel.opSetModel.next(app)
-                    }
+        this.svc.saveApp(a).subscribe(ret => {
+                if (ret.code == 0) {
                     this.alert.success('保存应用成功')
                     this.router.navigate(['/apps'])
                 }
@@ -148,14 +150,14 @@ export class AppEditComponent implements OnInit {
             ref.componentInstance.title = "删除版本: "+version.name
             ref.componentInstance.message = "确认要删除吗?"
             ref.result.then(result => {
-            if (result == "ok") {
-                this.svc.deleteVersionById(version.id).subscribe(success => {
-                    if (success) {
-                        this.app.versions = this.app.versions.filter((v,i,a) => v.id != version.id)
-                        this.alert.success("已删除")
-                    }
-                })
-            }
+                if (result == "ok") {
+                    this.svc.deleteVersionById(version.id).subscribe(success => {
+                        if (success) {
+                            this.app.versions = this.app.versions.filter((v,i,a) => v.id != version.id)
+                            this.alert.success("已删除")
+                        }
+                    })
+                }
             }, resaon => {})
         }
     }

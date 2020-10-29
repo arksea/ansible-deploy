@@ -1,6 +1,8 @@
 package net.arksea.ansible.deploy.api.manage.rest;
 
 import static net.arksea.ansible.deploy.api.ResultCode.*;
+
+import net.arksea.ansible.deploy.api.auth.entity.User;
 import net.arksea.ansible.deploy.api.auth.info.ClientInfo;
 import net.arksea.ansible.deploy.api.auth.service.UserService;
 import net.arksea.ansible.deploy.api.manage.entity.App;
@@ -12,6 +14,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +38,16 @@ public class UserController {
     @Autowired
     UserService userService;
 
+
+    //-------------------------------------------------------------------------
+
+    @RequiresPermissions("用户管理:查询")
+    @RequestMapping(path="user", method = RequestMethod.GET, produces = MEDIA_TYPE)
+    public RestResult<User> getUserByName(@RequestParam("name") String name, HttpServletRequest httpRequest) {
+        return new RestResult<>(SUCCEED, userService.getUserByName(name), httpRequest);
+    }
+
+    //-------------------------------------------------------------------------
     @RequiresPermissions("应用:查询")
     @RequestMapping(path="user/groups", method = RequestMethod.GET, produces = MEDIA_TYPE)
     public RestResult<Iterable<AppGroup>> getUserGroups(final HttpServletRequest httpRequest) {

@@ -15,12 +15,19 @@ import { Router } from '@angular/router'
 })
 export class AppListComponent implements OnInit {
 
+    appList : App[] = []
+
     constructor(
         public svc: AppsService,
         public account: AccountService,
         protected alert: MessageNotify,
         protected modal: NgbModal,
         private router: Router) {
+            this.svc.getUserApps().subscribe(ret => {
+                if (ret.code == 0) {
+                    this.appList = ret.result
+                }
+            })
     }
 
     searchForm: FormGroup = new FormGroup({

@@ -8,7 +8,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
   canActivate(): boolean {
     const exp = localStorage.getItem('token_expires');
     const now = new Date().valueOf();
-    console.debug('token_expires=' + exp + ', now=' + now);
+    //console.debug('token_expires=' + exp + ', now=' + now);
     if (exp && parseInt(exp, 10) > now) {
       return true;
     }

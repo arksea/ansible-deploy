@@ -42,6 +42,14 @@ public class UsersService {
         }
     }
 
+    public Iterable<User> getUsersNotInGroup(long groupId) {
+        try {
+            return userDao.findUsersNotInGroup(groupId);
+        } catch (Exception ex) {
+            throw new RestException("查询用户信息失败", ex);
+        }
+    }
+
     @Transactional
     public void blockUser(long id) {
         try {

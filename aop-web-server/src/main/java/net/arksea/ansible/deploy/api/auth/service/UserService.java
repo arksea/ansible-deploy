@@ -1,5 +1,6 @@
 package net.arksea.ansible.deploy.api.auth.service;
 
+import net.arksea.ansible.deploy.api.ServiceException;
 import net.arksea.ansible.deploy.api.auth.entity.User;
 import net.arksea.ansible.deploy.api.auth.info.ClientInfo;
 import net.arksea.ansible.deploy.api.auth.dao.UserDao;
@@ -38,5 +39,13 @@ public class UserService implements IUserService {
         }
         final String remoteIp = httpRequest.getRemoteAddr();
         return new ClientInfo(userId, userName, remoteIp);
+    }
+
+    public User getUserByName(String name) {
+        try {
+            return userDao.findOneByName(name);
+        } catch (Exception ex) {
+            throw new ServiceException("查询用户失败", ex);
+        }
     }
 }

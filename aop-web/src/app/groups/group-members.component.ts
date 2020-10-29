@@ -1,12 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { GroupsService } from './groups.service';
-import { MessageNotify } from '../utils/message-notify';
-import { AccountService } from '../account/account.service';
-import { UsersService } from '../users/users.service';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { User } from '../users/users.entity';
-import { AppGroup } from '../app.entity';
+import { Component, OnInit } from '@angular/core'
+import { GroupsService } from './groups.service'
+import { MessageNotify } from '../utils/message-notify'
+import { AccountService } from '../account/account.service'
+import { Observable } from 'rxjs'
+import { map } from 'rxjs/operators'
+import { User } from '../users/users.entity'
+import { AppGroup } from '../app.entity'
 
 
 @Component({
@@ -15,49 +14,54 @@ import { AppGroup } from '../app.entity';
 })
 export class GroupMembersComponent implements OnInit {
 
-    public model: any;
+    public model: any
+    public group: AppGroup
 
-    public group: Observable<AppGroup>;
-
-    searchUser = (text: Observable<string>) => this.svc.search(text, '', this.usersSvc.userList.pipe(map(users => {
-        let names: string[] = [];
-        for (let u of users) {
-            names.push(u.name)
-        }
-        return names;
-    })));
+    searchUser = (text: Observable<string>) => this.svc.search(text, this.svc.getUsersNotInCurrentGroup().pipe(
+        map(ret => ret.code == 0 ? ret.result.map(it => it.name) : [])  
+    ))
 
     constructor(private svc: GroupsService,
-        private account: AccountService,
-        public usersSvc: UsersService,
-        private alert: MessageNotify) {
-            this.usersSvc.getUsers('active');
-            this.group = this.svc.model.selected
+            private account: AccountService,
+            private alert: MessageNotify) {
+        this.svc.getCurrentGroup().subscribe(ret => {
+            if (ret.code == 0) {
+                this.group = ret.result
+            }
+        })
     }
 
-    ngOnInit() { }
+    ngOnInit() {}
 
     addMember(name: string) {
-        this.usersSvc.getUserByName(name).subscribe(u => {
-            if (u == null) {
-                this.alert.warning('未找到用户:'+name);
-            } else {
-                this.svc.addMember(u).subscribe(succeed => {
-                    if (succeed)this.alert.info('添加成员成功');
-                })
+        this.model = ''
+        this.svc.getUserByName(name).subscribe(ret => {
+            if (ret.code == 0) {
+                if (ret.result == null) {
+                    this.alert.warning('未找到用户:'+name)
+                } else {
+                    let u: User = ret.result
+                    this.svc.addMember(u).subscribe(ret => {
+                        if (ret.code == 0) {
+                            this.group.users.push(u)
+                            this.alert.success('添加成员成功')
+                        }
+                    })                    
+                }
             }
         })
     }
 
     removeMember(user: User) {
-        return this.svc.removeMember(user).subscribe(succeed => {
-            if (succeed) {
-                this.alert.info('移除主机成功');
+        return this.svc.removeMember(user).subscribe(ret => {
+            if (ret.code == 0) {
+                this.group.users = this.group.users.filter(it => it.id != user.id)
+                this.alert.success('移除成员成功')
             }
-        });
+        })
     }
 
     public perm(name: string): Observable<boolean> {
-        return this.account.perm(name);
+        return this.account.perm(name)
     }
 }

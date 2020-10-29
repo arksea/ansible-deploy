@@ -2,8 +2,26 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+function getApiAddr(): string {
+    let uri = document.documentURI;
+    let n = uri.indexOf('//');
+    let localAddr = 'http://localhost:8080';
+    let addr = localAddr;
+    if (n > 0) {
+      n = uri.indexOf('/', n+2);
+    } else {
+      n = uri.indexOf('/');
+    }
+    if (n > 0) {
+      addr = uri.substring(0, n);
+    }
+    return addr.endsWith(':4200') ? localAddr : addr;
+}
+
 export const environment = {
-  production: false
+  production: false,
+  accountApiUrl: getApiAddr(),
+  apiUrl: getApiAddr()
 };
 
 /*

@@ -1,0 +1,24 @@
+.btn-top {
+  margin: 2rem 0 0 0;
+  max-width: none;
+}
+
+.card {
+  margin-top: 1rem;
+}
+
+.link {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.ng-valid:not(form) {
+  border-left: 0.3rem solid #42A948;
+  /* green */
+}
+
+.ng-invalid:not(form) {
+  border-left: 0.3rem solid #a94442;
+  /* red */
+}

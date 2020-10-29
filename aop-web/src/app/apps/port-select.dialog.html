@@ -1,0 +1,21 @@
+<form (submit)="submit($event)"  [formGroup]="form">
+    <div class="modal-header">
+        <h3 class="modal-title">手工指定端口</h3>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="port">
+                请输入
+                <span class="text-danger" *ngIf="port.errors?.portNotManaged">(不能使用，请先在端口管理中将其纳入本系统管理范围)</span>
+                <span class="text-danger" *ngIf="port.errors?.portUnabled">(端口已禁用)</span>
+                <span class="text-danger" *ngIf="port.errors?.portUsed">(端口已被使用)</span>
+            </label>
+        <input type="text" id="port" class="form-control" formControlName="port"/>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary m-2" (click)="modal.dismiss('cancel')">取消</button>
+        <button type="submit" class="btn btn-danger m-2"
+         [disabled] = "!form.valid || port.errors">确定</button>
+    </div>
+</form>

@@ -1,0 +1,23 @@
+<div class="row">
+  <div class="col-lg-4 col-md-2"></div>
+  <div class="col-lg-4 col-md-8">
+    <div class="card">
+      <div class="card-header">欢迎使用 AnsibleDeploy，请先登录</div>
+      <div class="card-body">
+        <form (submit)="login($event)" [formGroup]="loginForm">
+          <div class="form-group">
+            <label for="name">用户名</label>
+            <input type="text" class="form-control" id="name" formControlName="username">
+          </div>
+          <div class="form-group">
+            <label for="password">密码</label>
+            <input type="password" class="form-control" id="password" formControlName="password">
+          </div>
+          <button type="submit" class="btn btn-primary form-control btn-top" [disabled]="!loginForm.valid">登录</button>
+          <a class="link form-control" [routerLink]="['/signup']">注册新用户</a>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4 col-md-2"></div>
+</div>

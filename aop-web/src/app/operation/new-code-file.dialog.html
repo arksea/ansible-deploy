@@ -1,0 +1,19 @@
+<form (submit)="create($event)" [formGroup]="createForm">
+    <div class="modal-header">
+        <h3 class="modal-title" id="modal-title"><strong>新增脚本文件</strong></h3>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="name">文件名
+                <span class="text-danger" *ngIf="name.errors?.required">*</span>
+                <span class="text-danger" *ngIf="name.errors?.minlength || name.errors?.maxlength">(长度1至32)</span>
+                <span class="text-danger" *ngIf="name.errors?.duplicateName">(重名)</span>
+            </label>
+            <input type="text" class="form-control" id="name" formControlName="name">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')">取消</button>
+        <button type="submit" class="btn btn-danger" [disabled]="!createForm.valid">确认</button>
+    </div>
+</form>

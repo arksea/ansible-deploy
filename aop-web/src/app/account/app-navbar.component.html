@@ -1,0 +1,47 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">
+        <!-- <img src="/docs/4.5/assets/brand/bootstrap-solid.svg" width="30" height="30" alt="" loading="lazy"> -->
+        AnsibleDeploy
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item" routerLinkActive="active" [hidden]="perm('组管理:查询') | async">
+                <a class="nav-link" [routerLink]="['/groups']">分组管理</a>
+            </li>
+            <li class="nav-item" routerLinkActive="active" [hidden]="perm('用户管理:查询') | async">
+                <a class="nav-link" [routerLink]="['/users']">用户管理</a>
+            </li>
+            <li class="nav-item" routerLinkActive="active" [hidden]="perm('组管理:查询') | async">
+                <a class="nav-link" [routerLink]="['/hosts']">主机管理</a>
+            </li>
+            <li class="nav-item" routerLinkActive="active" [hidden]="perm('端口管理:查询') | async">
+                <a class="nav-link" [routerLink]="['/ports']">端口管理</a>
+            </li>
+            <!-- <li class="nav-item" routerLinkActive="active" [hidden]="perm('操作管理:查询') | async">
+                <a class="nav-link" [routerLink]="['/operations']">操作管理</a>
+            </li> -->
+            <li class="nav-item" routerLinkActive="active" [hidden]="perm('操作管理:查询') | async">
+                <a class="nav-link" [routerLink]="['/app-types']">应用类型</a>
+            </li>
+            <li class="nav-item" routerLinkActive="active" [hidden]="perm('应用:查询') | async">
+                <a class="nav-link" [routerLink]="['/apps']">我的应用</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav" [hidden]="hiddenLogoutMenu() | async">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{loginUser | async}}
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <a class="dropdown-item" [routerLink]="['/login']" (click)="logout()">退出登录</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>

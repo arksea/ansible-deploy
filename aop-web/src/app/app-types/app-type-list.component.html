@@ -1,0 +1,51 @@
+<div class="container-xl mt-3">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active">应用类型</li>
+        </ol>
+    </nav>
+    <div id="group-list">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <div class="d-flex">
+                    <div class="mr-auto"></div>
+                    <button type="button" class="btn btn-success"
+                        [disabled]="account.perm('操作管理:修改') | async"
+                        [routerLink]="['/app-types/new']">新类型
+                    </button>
+                </div>
+            </li>
+            <li class="list-group-item" *ngFor="let t of appTypes">
+                <div class="d-flex mt-2">
+                    <div class="mr-auto">
+                        <strong>{{t.name}}</strong>
+                        <p>{{t.description}}</p>
+                    </div>
+                    <div class="p-1 mt-1">
+                        <button type="button" class="btn btn-sm btn-outline-danger"
+                            [disabled]="account.perm('操作管理:修改') | async"
+                            (click)="onDelBtnClick(t)">删除
+                        </button>
+                    </div>
+                    <div class="p-1 mt-1">
+                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                            [disabled]="account.perm('操作管理:修改') | async"
+                            [routerLink]="['/app-types/',t.id]">编辑
+                        </button>
+                    </div>
+                    <!-- <div class="p-1 mt-1">
+                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                            [disabled]="account.perm('系统:查询') | async">应用
+                        </button>
+                    </div> -->
+                    <div class="p-1 mt-1">
+                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                            [disabled]="account.perm('操作管理:查询') | async"
+                            [routerLink]="['/app-types/',t.id,'operations']">操作
+                        </button>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

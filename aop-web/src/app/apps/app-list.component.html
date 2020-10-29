@@ -1,0 +1,54 @@
+<div class="container-xl mt-3">
+    <div class="mb-5 ml-3">
+        <h2>我的应用</h2>
+    </div>
+    <div id="group-list">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <div class="d-flex">
+                    <div class="mr-auto">
+                        <form (submit)="search($event)" [formGroup]="searchForm">
+                            <div class="d-flex">
+                                <div><input type="text" class="form-control" id="searchPrefix"
+                                        formControlName="searchPrefix"></div>
+                                <div><button type="submit" class="btn btn-info form-control ml-2">搜索</button></div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <button id="btnGroupDropNewApp" type="button" class="btn btn-success dropdown-toggle"
+                            [disabled]="account.perm('应用:修改') | async"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            新建应用
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="btnGroupDropNewApp">
+                            <a class="dropdown-item" (click)="onNewBtnClick('Tomcat')">Tomcat</a>
+                            <a class="dropdown-item" (click)="onNewBtnClick('JavaServer')">JavaServer</a>
+                            <a class="dropdown-item" (click)="onNewBtnClick('Command')">Command</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li *ngFor="let a of appList;index as i;" class="list-group-item">
+                <div class="d-flex mt-2">
+                    <div class="mr-auto">
+                        <a (click)="onViewBtnClick(a)" class="btn btn-link p-0 m-0">
+                            <strong>{{a.apptag}}</strong>
+                        </a>
+                        <p>{{a.appType.name}} : {{a.description}}</p>
+                    </div>
+                    <div class="p-1 mt-1" [title] = "appHasTargetHosts(a) ? '请先删除此应用的所有目标主机' : ''">
+                        <button type="button" class="btn btn-sm"
+                            [class]="a.deleted?'btn-outline-success':'btn-outline-danger'"
+                            [disabled]="(account.perm('应用:修改') | async) || appHasTargetHosts(a)"
+                            (click)="onDelBtnClick(a)">删除</button>
+                    </div>
+                    <div class="p-1 mt-1">
+                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                            [disabled]="account.perm('应用:修改') | async" (click)="onEditBtnClick(a)">编辑</button>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

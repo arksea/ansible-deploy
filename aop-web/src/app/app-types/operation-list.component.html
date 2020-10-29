@@ -1,0 +1,51 @@
+<div class="container-xl mt-3">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a [routerLink]="['/app-types']">应用类型</a></li>
+            <li class="breadcrumb-item"><a [routerLink]="['/app-types',appType.id]">{{appType.name}}</a></li>
+            <li class="breadcrumb-item active">操作</li>
+        </ol>
+    </nav>
+    <div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <div class="d-flex">
+                    <div class="mr-auto">
+                    </div>
+                    <button type="button" class="btn btn-success"
+                        [disabled]="account.perm('操作管理:修改') | async"
+                        [routerLink]="['/operations/new/app-type', appType.id]">新操作
+                    </button>
+                </div>
+            </li>
+            <li *ngFor="let o of operationList;index as i;" class="list-group-item">
+                <div class="d-flex mt-2">
+                    <div class="mr-auto">
+                        <strong>{{o.name}}</strong><span [hidden]="!o.released" class="text-danger"> (测试中)</span>
+                        <p>{{o.description}}</p>
+                    </div>
+                    <div class="p-1 mt-1">
+                        <button type="button" class="btn btn-outline-danger btn-sm"
+                            [disabled]="account.perm('操作管理:修改') | async"
+                            (click)="onDeleteOperationBtnClick(o)">删除
+                        </button>
+                    </div>
+                    <!-- <div class="p-1 mt-1">
+                        <button type="button" class="btn btn-sm"
+                            [class.btn-outline-danger]="o.released"
+                            [class.btn-outline-info]="!o.released"
+                            [disabled]="account.perm('操作管理:修改') | async"
+                            >{{o.released?'禁用':'发布'}}
+                        </button>
+                    </div> -->
+                    <div class="p-1 mt-1">
+                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                            [disabled]="account.perm('操作管理:修改') | async"
+                            [routerLink]="['/operations', o.id]">编辑
+                        </button>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

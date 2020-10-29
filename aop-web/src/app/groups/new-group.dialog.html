@@ -1,0 +1,19 @@
+<form (submit)="create($event)" [formGroup]="createForm">
+    <div class="modal-header">
+        <h3 class="modal-title" id="modal-title"><strong>新建组</strong></h3>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="name">组名</label>
+            <input type="text" class="form-control" id="name" formControlName="name">
+        </div>
+        <div class="form-group">
+            <label for="desc">描述</label>
+            <textarea id="description" class="form-control" rows="3" formControlName="description"></textarea>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')">取消</button>
+        <button type="submit" class="btn btn-danger" [disabled]="!createForm.valid">确认</button>
+    </div>
+</form>

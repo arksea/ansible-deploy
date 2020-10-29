@@ -2,3 +2,10 @@
 /aop-web-server/build
 /aop-web-server/.gradle
 /aop-web/node_modules
+/aop-web/dist-dev
+/aop-web-server/tomcat/webapps
+/aop-web-server/tomcat/logs/*.log
+/aop-web-server/tomcat/work
+/aop-web-server/out
+/aop-web/dist
+/aop-web-server/publish

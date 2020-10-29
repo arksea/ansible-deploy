@@ -1,0 +1,71 @@
+<div class="container-xl mt-3">
+    <div class="mb-5 ml-3">
+        <h2>我的应用 / {{app?.apptag}} - {{app?.description}}</h2>
+    </div>
+    <div id="group-list" [formGroup]="hostChecked">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <div class="d-flex">
+                    <div class="mr-auto">
+                    </div>
+                </div>
+            </li>
+            <li *ngFor="let v of app?.versions" class="list-group-item py-4">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                            <div class="pt-2">
+                                <strong>版本: {{v.name}}</strong>
+                            </div>
+                            <div class="btn-group btn-group-sm" role="group" [title] = "hasHostChecked(v)?'':'请选择要操作的目标主机'">
+                                <button type="button" class="btn btn-outline-dark"
+                                    *ngFor="let op of operations"
+                                    [hidden]="op.type != 'COMMON'"
+                                    [disabled]="(account.perm('应用:操作') | async) || !hasHostChecked(v)"
+                                    (click)="onOperationClick(v, op)">
+                                    {{op.name}}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item mr-2">
+                            <div class="row">
+                                    <div class="col-sm-2">内网IP</div>
+                                    <div class="col">描述</div>
+                                    <div class="col-sm-2 text-center">
+                                        <div class="btn-group btn-group-xs" role="group" *ngFor="let op of operations" [hidden]="op.type!='STATUS'">
+                                            <button type="button" class="btn btn-outline-dark" 
+                                                    [disabled]="(account.perm('应用:操作') | async)"
+                                                    (click)="onStatusOperationClick(v, op)">
+                                                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-clockwise" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                                                    <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                                                </svg>
+                                                {{op.name}}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2 text-right">
+                                        <input type="checkbox" formControlName="{{selectAllName(v)}}" title="全选">
+                                    </div>
+                            </div>
+                        </li>
+                        <li *ngFor="let h of v.targetHosts" class="list-group-item mr-2">
+                            <div class="row">
+                                <div class="col-sm-2">{{h.privateIp}}</div>
+                                <div class="col">{{h.description}}</div>
+                                <div class="col-sm-2 text-center">
+                                    <div *ngFor="let op of operations" [hidden]="op.type!='STATUS'">
+                                        <span class="badge" [class]="getHostStatusStyle(h.status[op.name])">{{getHostStatusValue(h.status[op.name])}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2 text-right"><input type="checkbox" formControlName="{{checkName(v,h)}}"></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

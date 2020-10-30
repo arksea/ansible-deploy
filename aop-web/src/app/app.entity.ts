@@ -7,10 +7,10 @@ export class PortsStat {
 }
 
 export class PortType {
-    id: number
-    name: string
+    id: number = undefined
+    name: string = ''
     description: string = ''
-    stat: PortsStat
+    stat: PortsStat = new PortsStat()
 }
 
 export class AppVarDefine {

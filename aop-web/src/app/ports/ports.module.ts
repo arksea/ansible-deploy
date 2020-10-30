@@ -11,6 +11,7 @@ import { PortsRoutingModule } from './ports-routing.module'
 import { PortsComponent } from './ports.component'
 import { PortsService } from './ports.service'
 import { EditSectionDialog } from './edit-section.dialog'
+import { EditPortTypeDialog } from './edit-port-type.dialog'
 
 @NgModule({
   imports: [
@@ -20,10 +21,10 @@ import { EditSectionDialog } from './edit-section.dialog'
     VenderModule, NgbPaginationModule, NgbAlertModule, NgbModule,
     AccountModule,PortsRoutingModule],
   declarations: [
-    PortsComponent, EditSectionDialog
+    PortsComponent, EditSectionDialog, EditPortTypeDialog
   ],
   entryComponents: [
-    EditSectionDialog
+    EditSectionDialog, EditPortTypeDialog
   ],
   providers: [PortsService],
   exports: []

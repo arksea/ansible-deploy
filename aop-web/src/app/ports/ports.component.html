@@ -15,7 +15,10 @@
                             {{t.name}} {{t.stat?t.stat.restCount:0}}
                         </span>
                     </div>
-                    <button type="button" class="btn btn-success" (click)="newSection()"
+                    <button type="button" class="btn btn-success" (click)="editPortType()"
+                        [disabled]="account.perm('端口管理:修改')">配置类型
+                    </button>
+                    <button type="button" class="btn btn-success ml-2" (click)="newSection()"
                         [disabled]="account.perm('端口管理:修改')">分配区间
                     </button>
                 </div>

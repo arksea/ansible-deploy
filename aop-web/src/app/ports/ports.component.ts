@@ -8,6 +8,7 @@ import { PortsService } from './ports.service'
 import { PortSection } from '../app.entity'
 import { EditSectionDialog } from './edit-section.dialog'
 import { ConfirmDialog } from '../utils/confirm.dialog'
+import { EditPortTypeDialog } from './edit-port-type.dialog'
 @Component({
     selector: 'ports',
     templateUrl: './ports.component.html'
@@ -52,7 +53,11 @@ export class PortsComponent implements OnInit {
             if (result == 'ok') {
                 this.queryList()
             }
-        })
+        }, reason => {})
+    }
+
+    editPortType() {
+        let ref = this.modal.open(EditPortTypeDialog, {size: 'lg'})
     }
 
     editSection(section: PortSection) {

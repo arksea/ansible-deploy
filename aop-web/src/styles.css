@@ -3,6 +3,7 @@
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
+/* 来自Bootstrap3的超小按钮样式，用于表格或列表内空间有限的地方 */
 .btn-xs, .btn-group-xs > .btn {
     padding      : 1px 5px;
     font-size    : 12px;
@@ -10,9 +11,16 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     border-radius: 3px;
 }
 
+/* 修改默认的面包屑导航的字体与排版 */
 .breadcrumb {
     padding: 0.75rem 1rem 0.75rem 0rem;
     margin-bottom: 1rem;
     background-color: #ffffff;
     font-size: 1.25rem;
+}
+
+/* 让utils/messag-notify.ts打开的MatSnackBar处在其他业务对话框的前面 */
+.cdk-overlay-container {
+    position: fixed;
+    z-index: 10000;
 }

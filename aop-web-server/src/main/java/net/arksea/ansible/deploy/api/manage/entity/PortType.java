@@ -23,7 +23,7 @@ public class PortType {
         this.id = id;
     }
 
-    @Column(length = 32, nullable = false)
+    @Column(length = 32, nullable = false, unique = true)
     public String getName() {
         return name;
     }

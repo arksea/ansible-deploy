@@ -61,7 +61,7 @@ export class GroupMembersComponent implements OnInit {
         })
     }
 
-    public perm(name: string): Observable<boolean> {
+    public perm(name: string): boolean {
         return this.account.perm(name)
     }
 }

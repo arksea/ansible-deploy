@@ -18,7 +18,7 @@
                         </form>
                     </div>
                     <button type="button" class="btn btn-success" (click)="newHost()"
-                        [disabled]="account.perm('组管理:修改') | async">新增主机
+                        [disabled]="account.perm('组管理:修改')">新增主机
                     </button>
                 </div>
             </li>
@@ -32,13 +32,13 @@
                             <button type="button" class="btn btn-sm"
                                 [class.btn-outline-danger]="h.enabled"
                                 [class.btn-outline-info]="!h.enabled"
-                                [disabled]="account.perm('组管理:修改') | async"
+                                [disabled]="account.perm('组管理:修改')"
                                 (click)="switchStatus(h)">{{h.enabled?'禁用':'启用'}}
                             </button>
                         </div>
                     <div class="p-1 mt-1">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
-                            [disabled]="account.perm('组管理:修改') | async"
+                            [disabled]="account.perm('组管理:修改')"
                             (click)="editHost(h)">编辑
                         </button>
                     </div>

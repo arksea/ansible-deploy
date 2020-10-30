@@ -13,7 +13,7 @@
                     <div class="mr-auto">
                     </div>
                     <button type="button" class="btn btn-success"
-                        [disabled]="account.perm('操作管理:修改') | async"
+                        [disabled]="account.perm('操作管理:修改')"
                         [routerLink]="['/operations/new/app-type', appType.id]">新操作
                     </button>
                 </div>
@@ -26,7 +26,7 @@
                     </div>
                     <div class="p-1 mt-1">
                         <button type="button" class="btn btn-outline-danger btn-sm"
-                            [disabled]="account.perm('操作管理:修改') | async"
+                            [disabled]="account.perm('操作管理:修改')"
                             (click)="onDeleteOperationBtnClick(o)">删除
                         </button>
                     </div>
@@ -40,7 +40,7 @@
                     </div> -->
                     <div class="p-1 mt-1">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
-                            [disabled]="account.perm('操作管理:修改') | async"
+                            [disabled]="account.perm('操作管理:修改')"
                             [routerLink]="['/operations', o.id]">编辑
                         </button>
                     </div>

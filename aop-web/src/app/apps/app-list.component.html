@@ -17,7 +17,7 @@
                     </div>
                     <div class="btn-group" role="group">
                         <button id="btnGroupDropNewApp" type="button" class="btn btn-success dropdown-toggle"
-                            [disabled]="account.perm('应用:修改') | async"
+                            [disabled]="account.perm('应用:修改')"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             新建应用
                         </button>
@@ -40,12 +40,12 @@
                     <div class="p-1 mt-1" [title] = "appHasTargetHosts(a) ? '请先删除此应用的所有目标主机' : ''">
                         <button type="button" class="btn btn-sm"
                             [class]="a.deleted?'btn-outline-success':'btn-outline-danger'"
-                            [disabled]="(account.perm('应用:修改') | async) || appHasTargetHosts(a)"
+                            [disabled]="account.perm('应用:修改') || appHasTargetHosts(a)"
                             (click)="onDelBtnClick(a)">删除</button>
                     </div>
                     <div class="p-1 mt-1">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
-                            [disabled]="account.perm('应用:修改') | async" (click)="onEditBtnClick(a)">编辑</button>
+                            [disabled]="account.perm('应用:修改')" (click)="onEditBtnClick(a)">编辑</button>
                     </div>
                 </div>
             </li>

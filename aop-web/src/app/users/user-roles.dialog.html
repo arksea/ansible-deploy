@@ -27,6 +27,6 @@
         <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')">取消</button>
         <button type="submit" class="btn btn-danger" 
             (click)="save()"
-            [disabled]="form.invalid || form.pristine || (account.perm('用户管理:修改') | async)">保存</button>
+            [disabled]="form.invalid || form.pristine || account.perm('用户管理:修改')">保存</button>
     </div>
 </div>

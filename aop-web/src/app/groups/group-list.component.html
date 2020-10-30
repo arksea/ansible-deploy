@@ -17,7 +17,7 @@
                         </form>
                     </div>
                     <button type="button" class="btn btn-success" (click)="newGroup()"
-                        [disabled]="account.perm('组管理:修改') | async">新建分组
+                        [disabled]="account.perm('组管理:修改')">新建分组
                     </button>
                 </div>
             </li>
@@ -52,13 +52,13 @@
                     </div>
                     <div class="p-2">
                         <button type="button" class="btn btn-outline-danger btn-sm"
-                            [disabled]="account.perm('组管理:修改') | async"
+                            [disabled]="account.perm('组管理:修改')"
                             (click)="deleteGroup(g)">删除
                         </button>
                     </div>
                     <div class="p-2">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
-                            [disabled]="account.perm('组管理:修改') | async">编辑
+                            [disabled]="account.perm('组管理:修改')">编辑
                         </button>
                     </div>
                 </div>

@@ -8,7 +8,7 @@
                 [ngbTypeahead]="searchHost" />
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary" type="button"
-                    [disabled]="(account.perm('组管理:修改') | async)  || host.value == ''"
+                    [disabled]="account.perm('组管理:修改')  || host.value == ''"
                     (click)="addHost(host.value)">添加</button>
             </div>
         </div>
@@ -24,7 +24,7 @@
                 </div>
                 <div class="p-1">
                     <button type="button" class="btn btn-outline-secondary btn-sm"
-                        [disabled]="account.perm('组管理:修改') | async"
+                        [disabled]="account.perm('组管理:修改')"
                         (click)="removeHost(h)">移除
                     </button>
                 </div>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup,FormControl,Validators } from '@angular/forms';
+import { FormGroup,FormControl } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { UsersService } from './users.service';
 import { AccountService } from '../account/account.service';
@@ -15,13 +15,10 @@ export class UserRolesDialog implements OnInit {
     public form: FormGroup = new FormGroup({})
 
     constructor(public modal: NgbActiveModal, public svc: UsersService, public account: AccountService) {
-        this.account.perm('用户管理:修改').subscribe(
-            s => {
-                for (let r of this.svc.roles) {
-                    this.form.addControl('role-'+r.id,new FormControl({value:false, disabled: s}))
-                }
-            }
-        )
+        let p = this.account.perm('用户管理:修改')
+        for (let r of this.svc.roles) {
+            this.form.addControl('role-'+r.id,new FormControl({value:false, disabled: p}))
+        }
     }
 
     ngOnInit(): void {

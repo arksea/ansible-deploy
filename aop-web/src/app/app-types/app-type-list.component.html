@@ -10,7 +10,7 @@
                 <div class="d-flex">
                     <div class="mr-auto"></div>
                     <button type="button" class="btn btn-success"
-                        [disabled]="account.perm('操作管理:修改') | async"
+                        [disabled]="account.perm('操作管理:修改')"
                         [routerLink]="['/app-types/new']">新类型
                     </button>
                 </div>
@@ -23,13 +23,13 @@
                     </div>
                     <div class="p-1 mt-1">
                         <button type="button" class="btn btn-sm btn-outline-danger"
-                            [disabled]="account.perm('操作管理:修改') | async"
+                            [disabled]="account.perm('操作管理:修改')"
                             (click)="onDelBtnClick(t)">删除
                         </button>
                     </div>
                     <div class="p-1 mt-1">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
-                            [disabled]="account.perm('操作管理:修改') | async"
+                            [disabled]="account.perm('操作管理:修改')"
                             [routerLink]="['/app-types/',t.id]">编辑
                         </button>
                     </div>
@@ -40,7 +40,7 @@
                     </div> -->
                     <div class="p-1 mt-1">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
-                            [disabled]="account.perm('操作管理:查询') | async"
+                            [disabled]="account.perm('操作管理:查询')"
                             [routerLink]="['/app-types/',t.id,'operations']">操作
                         </button>
                     </div>

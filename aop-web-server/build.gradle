@@ -112,6 +112,10 @@ task publishQA {
             from 'build/resources/test/'
             into 'publish/qa/WEB-INF/classes'
         }
+        copy { //拷贝自定义测试环境配置文件
+            from 'publish/config'
+            into 'publish/qa/WEB-INF/classes'
+        }
         copy { //拷贝META-INF
             from 'build/tmp/war/'
             into 'publish/qa/META-INF/'
@@ -162,6 +166,10 @@ task publishDev {
         }
         copy { //拷贝资源
             from 'build/resources/test/'
+            into 'tomcat/webapps/aop-web-server/WEB-INF/classes'
+        }
+        copy { //拷贝自定义开发环境配置文件
+            from 'publish/config'
             into 'tomcat/webapps/aop-web-server/WEB-INF/classes'
         }
         copy { //拷贝META-INF

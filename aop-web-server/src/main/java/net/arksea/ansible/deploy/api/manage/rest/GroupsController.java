@@ -37,6 +37,17 @@ public class GroupsController {
         return RestUtils.createResult(SUCCEED, group.getId(), reqid);
     }
 
+    @RequiresPermissions("组管理:修改")
+    @RequestMapping(path="groups/{groupId}", method = RequestMethod.PUT, produces = MEDIA_TYPE)
+    public String createGroup(@PathVariable("groupId") final Long groupId,
+                              @RequestParam final String name,
+                              @RequestParam final String desc,
+                              final HttpServletRequest httpRequest) {
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        int count = groupsService.modifyGroup(groupId, name, desc);
+        return RestUtils.createResult(SUCCEED, count, reqid);
+    }
+
     @RequiresPermissions("组管理:查询")
     @RequestMapping(path="groups", method = RequestMethod.GET, produces = MEDIA_TYPE)
     public RestResult<Iterable<AppGroup>> getAppGroups(final HttpServletRequest httpRequest) {

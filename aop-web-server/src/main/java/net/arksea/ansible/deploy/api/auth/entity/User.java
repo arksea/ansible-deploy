@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "sys_users", indexes = {@Index(columnList = "lastLogin")})
-public class User extends IdEntity {
+public class User extends IdEntity implements Comparable<User> {
     private final static ObjectMapper objectMapper = new ObjectMapper();
 
     private String name;
@@ -130,5 +130,10 @@ public class User extends IdEntity {
     @Override
     public String toString() {
         return "name=" + name + ",email=" + email + ",locked=" + locked;
+    }
+
+    @Override
+    public int compareTo(User o) {
+        return this.name.compareTo(o.name);
     }
 }

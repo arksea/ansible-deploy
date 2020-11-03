@@ -11,7 +11,7 @@ import java.util.Map;
  */
 @Entity
 @Table(name="dp2_hosts")
-public class Host extends IdEntity {
+public class Host extends IdEntity implements Comparable<Host> {
 
     private String publicIp;//公网IP
     private String privateIp;//内网IP
@@ -87,5 +87,10 @@ public class Host extends IdEntity {
     @Override
     public String toString() {
         return privateIp;
+    }
+
+    @Override
+    public int compareTo(Host o) {
+        return this.getPrivateIp().compareTo(o.getPrivateIp());
     }
 }

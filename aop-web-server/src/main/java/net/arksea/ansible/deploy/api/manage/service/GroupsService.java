@@ -4,7 +4,6 @@ import net.arksea.ansible.deploy.api.ServiceException;
 import net.arksea.ansible.deploy.api.auth.dao.UserDao;
 import net.arksea.ansible.deploy.api.manage.dao.AppDao;
 import net.arksea.ansible.deploy.api.manage.dao.AppGroupDao;
-import net.arksea.ansible.deploy.api.manage.dao.HostDao;
 import net.arksea.ansible.deploy.api.manage.entity.App;
 import net.arksea.ansible.deploy.api.manage.entity.AppGroup;
 import net.arksea.ansible.deploy.api.manage.entity.Host;
@@ -39,12 +38,26 @@ public class GroupsService {
             AppGroup group = new AppGroup();
             group.setName(name);
             group.setDescription(description);
-            group.setEnabled(true);
             return appGroupDao.save(group);
         } catch (DataIntegrityViolationException ex) {
             throw new RestException("新建组失败, 可能组名重复或过长", ex);
         } catch (Exception ex) {
             throw new RestException("新建组失败", ex);
+        }
+    }
+
+    @Transactional
+    public int modifyGroup(Long groupId, String name, String description) {
+        try {
+            AppGroup group = new AppGroup();
+            group.setId(groupId);
+            group.setName(name);
+            group.setDescription(description);
+            return appGroupDao.updateInfo (groupId, name, description);
+        } catch (DataIntegrityViolationException ex) {
+            throw new RestException("修改组信息失败, 可能组名重复或过长", ex);
+        } catch (Exception ex) {
+            throw new RestException("修改组信息失败", ex);
         }
     }
 
@@ -75,7 +88,7 @@ public class GroupsService {
     @Transactional
     public void deleteAppGroup(long id) {
         try {
-            appGroupDao.deleteById(id);
+            appGroupDao.delete(id);
         } catch (Exception ex) {
             throw new RestException("删除组失败", ex);
         }

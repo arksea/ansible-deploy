@@ -17,7 +17,7 @@
                         </form>
                     </div>
                     <button type="button" class="btn btn-success" (click)="newGroup()"
-                        [disabled]="account.perm('组管理:修改')">新建分组
+                        [disabled]="perm()">新建分组
                     </button>
                 </div>
             </li>
@@ -52,13 +52,16 @@
                     </div>
                     <div class="p-2">
                         <button type="button" class="btn btn-outline-danger btn-sm"
-                            [disabled]="account.perm('组管理:修改')"
+                            [title]="perm()?'没有权限':(canDel(g)?'':'请先从组中移除所有成员、主机与应用')"
+                            [disabled]="perm() || !canDel(g)"
                             (click)="deleteGroup(g)">删除
                         </button>
                     </div>
                     <div class="p-2">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
-                            [disabled]="account.perm('组管理:修改')">编辑
+                            [title]="perm()?'没有权限':''"
+                            [disabled]="perm()"
+                            (click)="editGroup(g)">编辑
                         </button>
                     </div>
                 </div>

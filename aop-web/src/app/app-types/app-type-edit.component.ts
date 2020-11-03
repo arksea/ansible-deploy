@@ -1,13 +1,11 @@
 import { Component, OnInit } from '@angular/core'
-import { FormGroup, FormControl, AbstractControl, Validators } from '@angular/forms'
+import { FormGroup, FormControl, Validators } from '@angular/forms'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { Observable } from 'rxjs'
 import { AppTypesService } from './app-types.service'
 import { MessageNotify } from '../utils/message-notify'
 import { AppType, AppVarDefine } from '../app.entity'
 import { AccountService } from '../account/account.service'
 import { Router, ActivatedRoute, ParamMap } from '@angular/router'
-import { ConfirmDialog } from '../utils/confirm.dialog'
 import { NewAppVarDefineDialog } from './new-var-define.dialog'
 
 

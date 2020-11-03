@@ -99,7 +99,7 @@ export class App {
 }
 
 export class AppGroup {
-    id: number
+    id: number = undefined
     name: string         // 分组名称
     description: string  // 分组描述
     avatar: string       // 分组头像

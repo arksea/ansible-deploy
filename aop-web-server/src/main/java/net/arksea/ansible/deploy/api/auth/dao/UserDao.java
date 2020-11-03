@@ -14,6 +14,8 @@ public interface UserDao extends CrudRepository<User, Long>, JpaSpecificationExe
     User findOneByName(String name);
 
     boolean existsByName(String name);
+
+    @Query("select u from User u where u.locked=?1 order by u.name")
     Iterable<User> findAllByLocked(boolean locked);
 
     @Query(nativeQuery = true,

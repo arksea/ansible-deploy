@@ -1,7 +1,5 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
-import net.arksea.ansible.deploy.api.manage.dao.HostDao;
-import net.arksea.ansible.deploy.api.manage.entity.App;
 import net.arksea.ansible.deploy.api.manage.entity.Host;
 import net.arksea.restapi.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +7,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
-import java.util.List;
 
 /**
  * Create by xiaohaixing on 2020/8/21
@@ -34,7 +31,7 @@ public class HostsService {
 
     public Iterable<Host> getHosts() {
         try {
-            return hostDao.findAll();
+            return hostDao.findAllOrderByPrivateIp();
         } catch (Exception ex) {
             throw new RestException("查询主机列表失败", ex);
         }
@@ -55,5 +52,9 @@ public class HostsService {
 
     public Iterable<Host> getInGroup(Long groupId) {
         return hostDao.findByAppGroupId(groupId);
+    }
+
+    public Host findOne(long id) {
+        return hostDao.findOne(id);
     }
 }

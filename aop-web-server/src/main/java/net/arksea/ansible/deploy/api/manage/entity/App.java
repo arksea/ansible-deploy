@@ -15,7 +15,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "dp2_app")
-public class App extends IdEntity {
+public class App extends IdEntity implements Comparable<App> {
     private String apptag = "";     //应用标签，通常用来部署时建立应用目录名
     private AppType appType;
     private String deployPath = ""; //应用部署目标路径
@@ -127,5 +127,10 @@ public class App extends IdEntity {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    @Override
+    public int compareTo(App o) {
+        return this.apptag.compareTo(o.apptag);
     }
 }

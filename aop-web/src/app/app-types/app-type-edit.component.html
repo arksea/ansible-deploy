@@ -10,19 +10,19 @@
     <form (ngSubmit)="save()" [formGroup]="typeForm">
         <div class="row mb-4">
             <div class="col-lg-4 form-group mb-4">
-                <label for="name">类型名称
+                <label for="app-type-name">类型名称
                     <span class="text-danger" *ngIf="name.errors?.required">*</span>
                     <span class="text-danger"
                         *ngIf="name.errors?.maxlength">(长度小于32)</span>
                 </label>
-                <input type="text" id="name" formControlName="name" class="form-control">
+                <input type="text" id="app-type-name" formControlName="name" class="form-control">
             </div>
             <div class="col-lg-8 form-group mb-4">
-                <label for="description">类型描述
+                <label for="app-type-description">类型描述
                     <span class="text-danger" *ngIf="description.errors?.required">*</span>
                     <span class="text-danger" *ngIf="description.errors?.maxlength">(长度小于128)</span>
                 </label>
-                <input type="text" id="description" formControlName="description" class="form-control">
+                <input type="text" id="app-type-description" formControlName="description" class="form-control">
             </div>
         </div>
 

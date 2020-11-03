@@ -4,12 +4,12 @@
     </div>
     <div class="modal-body">
         <div class="form-group">
-            <label for="name">文件名
+            <label for="script-file-name">文件名
                 <span class="text-danger" *ngIf="name.errors?.required">*</span>
                 <span class="text-danger" *ngIf="name.errors?.minlength || name.errors?.maxlength">(长度1至32)</span>
                 <span class="text-danger" *ngIf="name.errors?.duplicateName">(重名)</span>
             </label>
-            <input type="text" class="form-control" id="name" formControlName="name">
+            <input type="text" class="form-control" id="script-file-name" formControlName="name">
         </div>
     </div>
     <div class="modal-footer">

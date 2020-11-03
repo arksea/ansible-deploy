@@ -67,11 +67,11 @@
 
             <div class="mb-5">
                 <div class="form-group">
-                    <label for="description">应用描述
+                    <label for="app-description">应用描述
                         <span class="text-danger" *ngIf="desc.errors?.required">*</span>
                         <span class="text-danger" *ngIf="desc.errors?.minlength || desc?.errors?.maxlength">(长度5至256)</span>
                     </label>
-                    <textarea id="description" class="form-control" rows="3" formControlName="description"></textarea>
+                    <textarea id="app-description" class="form-control" rows="3" formControlName="description"></textarea>
                 </div>
             </div>
 

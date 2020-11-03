@@ -10,15 +10,15 @@
             </select>
         </div>
         <div class="form-group">
-            <label for="min">最小端口号(包含)
+            <label for="port-min">最小端口号(包含)
                 <span class="text-danger" *ngIf="min.errors?.min || min.errors?.max">1000~65535</span></label>
-            <input id="min" class="form-control" formControlName="min"/>
+            <input id="port-min" class="form-control" formControlName="min"/>
         </div>
         <div class="form-group">
-            <label for="max">最大端口号(包含)
+            <label for="port-max">最大端口号(包含)
                 <span class="text-danger" *ngIf="form.errors?.portRange">不小于最小值</span>
                 <span class="text-danger" *ngIf="!form.errors?.portRange && (max.errors?.min || max.errors?.max)">1000~65535</span> </label>
-            <input id="max" class="form-control" formControlName="max"/>
+            <input id="port-max" class="form-control" formControlName="max"/>
         </div>
     </div>
     <div class="modal-footer">

@@ -6,7 +6,7 @@ export class MessageNotify {
     }
 
     actionButtonLabel: string = '关闭';
-    autoHide: number = 105000;
+    autoHide: number = 5000;
 
     public notify(msg: string) {
         let config = new MatSnackBarConfig();

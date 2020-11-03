@@ -1,16 +1,11 @@
 import { User } from "./users/users.entity"
 
-export class PortsStat {
-    typeId: number
-    allCount: number
-    restCount: number
-}
-
 export class PortType {
     id: number = undefined
     name: string = ''
     description: string = ''
-    stat: PortsStat = new PortsStat()
+    allCount: number
+    restCount: number
 }
 
 export class AppVarDefine {

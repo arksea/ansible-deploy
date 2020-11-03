@@ -11,8 +11,8 @@
                 <div class="d-flex">
                     <div class="mr-auto mt-2">
                         <span *ngFor="let t of svc.portTypes" class="badge badge-secondary mr-2 p-2"
-                              title="总数：{{t.stat?t.stat.allCount:0}} 个，剩余：{{t.stat?t.stat.restCount:0}} 个">
-                            {{t.name}} {{t.stat?t.stat.restCount:0}}
+                              title="总数：{{t.allCount}} 个，剩余：{{t.restCount}} 个">
+                            {{t.name}} {{t.restCount}}
                         </span>
                     </div>
                     <button type="button" class="btn btn-success" (click)="editPortType()"

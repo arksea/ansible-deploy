@@ -14,7 +14,8 @@ public class PortType extends IdEntity{
     private String name;
     private String description;
     private Set<Port> ports;
-    private PortsStat stat;
+    private int allCount;
+    private int restCount;
 
     @Column(length = 32, nullable = false, unique = true)
     public String getName() {
@@ -44,12 +45,21 @@ public class PortType extends IdEntity{
         this.ports = ports;
     }
 
-    @OneToOne(mappedBy="portType", cascade = {CascadeType.REMOVE})
-    public PortsStat getStat() {
-        return stat;
+    @Column(nullable = false, columnDefinition = "INT UNSIGNED")
+    public int getAllCount() {
+        return allCount;
     }
 
-    public void setStat(PortsStat stat) {
-        this.stat = stat;
+    public void setAllCount(int allCount) {
+        this.allCount = allCount;
+    }
+
+    @Column(nullable = false, columnDefinition = "INT UNSIGNED")
+    public int getRestCount() {
+        return restCount;
+    }
+
+    public void setRestCount(int restCount) {
+        this.restCount = restCount;
     }
 }

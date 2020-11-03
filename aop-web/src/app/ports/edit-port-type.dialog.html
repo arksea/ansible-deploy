@@ -30,10 +30,10 @@
                         {{t.description}}
                     </div>
                     <div class="col-sm-2 text-center"
-                        [title]="t.stat.allCount == t.stat.restCount?'删除':'不能删除，因为有端口在使用中'">
+                        [title]="t.allCount == t.restCount?'删除':'不能删除，因为有端口在使用中'">
                         <button class="btn btn-sm text-danger"
-                                [class]="t.stat.allCount == t.stat.restCount?'text-danger':'text-dark'"
-                                [disabled]="t.stat.allCount != t.stat.restCount"
+                                [class]="t.allCount == t.restCount?'text-danger':'text-dark'"
+                                [disabled]="t.allCount != t.restCount"
                                 (click)="onDeleteBtnClick(t)">
                             <svg width="1.2em" height="1.2em" viewBox="0 0 16 16" class="bi bi-trash"
                                 fill="currentColor" xmlns="http://www.w3.org/2000/svg">

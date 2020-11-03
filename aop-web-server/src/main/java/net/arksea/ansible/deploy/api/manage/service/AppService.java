@@ -31,11 +31,11 @@ public class AppService {
     @Autowired
     PortDao portDao;
     @Autowired
-    PortsStatDao portStatDao;
-    @Autowired
     AppTypeDao appTypeDao;
     @Autowired
     OperationTokenDao operationTokenDao;
+    @Autowired
+    PortTypeDao portTypeDao;
 
     @Transactional
     public boolean deleteApp(long appId) {
@@ -53,7 +53,7 @@ public class AppService {
         app.getVersions().clear();
         List<Port> ports = portDao.findByAppId(app.getId());
         for (Port p: ports) {
-            portStatDao.incRestCount(1, p.getTypeId());
+            portTypeDao.incRestCount(1, p.getTypeId());
         }
         portDao.releaseByAppId(appId);
         appDao.delete(appId);
@@ -164,7 +164,7 @@ public class AppService {
                 if (n == 0) {
                     throw new ServiceException("'"+portType.getName()+"'端口可用数不够，请联系管理员");
                 }
-                portStatDao.incRestCount(-1, portType.getId());
+                portTypeDao.incRestCount(-1, portType.getId());
             }
         }
         List<Port> ports = portDao.findByAppId(app.getId());

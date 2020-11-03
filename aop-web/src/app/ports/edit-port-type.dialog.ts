@@ -55,6 +55,11 @@ export class EditPortTypeDialog {
     }
 
     save() {
+        this.svc.savePortTypes(this.portTypes).subscribe(ret => {
+            if (ret.code == 0) {
+                this.svc.portTypes = ret.result
+            }
+        })
     }
 
     onDeleteBtnClick(t) {

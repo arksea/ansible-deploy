@@ -1,4 +1,4 @@
-package net.arksea.ansible.deploy.api.manage.dao;
+package net.arksea.ansible.deploy.api.manage.service;
 
 import net.arksea.ansible.deploy.api.manage.entity.PortType;
 import org.springframework.data.repository.CrudRepository;
@@ -6,5 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * Create by xiaohaixing on 2020/9/17
  */
-public interface PortTypeDao extends CrudRepository<PortType, Integer> {
+interface PortTypeDao extends CrudRepository<PortType, Long> {
 }

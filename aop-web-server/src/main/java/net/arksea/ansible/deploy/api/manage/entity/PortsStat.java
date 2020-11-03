@@ -1,5 +1,5 @@
 package net.arksea.ansible.deploy.api.manage.entity;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 
 /**
@@ -8,18 +8,29 @@ import javax.persistence.*;
 @Entity
 @Table(name = "dp2_ports_stat")
 public class PortsStat {
-    private int typeId;
+    private Long typeId;
+    private PortType portType;
     private int allCount;
     private int restCount;
 
     @Id
-    @Column(nullable = false, columnDefinition = "TINYINT UNSIGNED")
-    public int getTypeId() {
+    public Long getTypeId() {
         return typeId;
     }
 
-    public void setTypeId(int typeId) {
+    public void setTypeId(Long typeId) {
         this.typeId = typeId;
+    }
+
+    @JsonIgnore
+    @OneToOne
+    @MapsId
+    public PortType getPortType() {
+        return portType;
+    }
+
+    public void setPortType(PortType portType) {
+        this.portType = portType;
     }
 
     @Column(nullable = false, columnDefinition = "INT UNSIGNED")

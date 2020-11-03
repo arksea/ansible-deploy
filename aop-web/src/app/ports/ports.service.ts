@@ -52,4 +52,9 @@ export class PortsService {
         const url = environment.apiUrl + '/api/ports/types'
         return this.httpUtils.httpGet('查询端口类型', url)
     }
+
+    public savePortTypes(types: Array<PortType>): Observable<ServiceResponse<Array<PortType>>> {
+        const url = environment.apiUrl + '/api/ports/types'
+        return this.httpUtils.httpPost('查询端口类型', url, types)
+    }
 }

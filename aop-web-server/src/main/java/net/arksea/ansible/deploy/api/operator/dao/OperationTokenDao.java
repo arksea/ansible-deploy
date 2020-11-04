@@ -16,4 +16,6 @@ public interface OperationTokenDao extends CrudRepository<OperationToken, Long> 
     int hold(long appId, long userId, long jobId, long timeoutSeconds);
 
     OperationToken findByAppId(long appId);
+
+    void deleteByAppId(long appId);
 }

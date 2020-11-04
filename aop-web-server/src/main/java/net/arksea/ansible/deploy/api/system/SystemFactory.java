@@ -3,7 +3,7 @@ package net.arksea.ansible.deploy.api.system;
 import akka.actor.ActorSystem;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import net.arksea.ansible.deploy.api.manage.service.ConfigDataInitializer;
+import net.arksea.ansible.deploy.api.auth.service.ConfigDataInitializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

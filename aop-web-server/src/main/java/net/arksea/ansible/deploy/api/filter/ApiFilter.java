@@ -29,9 +29,7 @@ public class ApiFilter implements Filter {
         response.setHeader("Access-Control-Allow-Headers","Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
         response.setHeader("Access-Control-Allow-Credentials","true");
         String profile = env.getProperty("spring.profiles.active");
-        if ("product".equals(profile)) {
-            response.setHeader("Access-Control-Allow-Methods","GET, PUT");
-        } else  { //测试状态下允许所有方法跨域访问，方便用ng server测试
+        if (!"product".equals(profile)) { //测试状态下允许所有方法跨域访问，方便用ng server测试
             response.setHeader("Access-Control-Allow-Origin","http://localhost:4200");
             response.setHeader("Access-Control-Allow-Methods","GET, HEAD, POST, PUT, DELETE, PATCH");
         }

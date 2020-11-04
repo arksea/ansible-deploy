@@ -181,24 +181,30 @@ export class AppEditComponent implements OnInit {
         this.svc.getOperationsByAppTypeId(this.app.appType.id).subscribe(ret => {
             if (ret.code == 0) {
                 let operations = ret.result
+                let hasDelScript = false
                 for (let op of operations) {
                     if (op.type == 'DELETE') {
+                        hasDelScript = true
                         let ref = this.modal.open(JobPlayDialog, {size: 'lg', scrollable: true})
                         ref.componentInstance.operation = op
                         ref.componentInstance.app = this.app
                         ref.componentInstance.hosts = [host]
                         ref.result.then(result => {
-                            if (result == "ok") {
-                                this.doDeleteHostFromVersion(host, ver)
-                            }
-                        }, reason => {
-                            if (reason == 'cancel') {
-                                this.alert.warning("已取消")
-                            } else {
-                                this.alert.error("删除失败: " + reason)
-                            }
-                        })
+                                if (result == "ok") {
+                                    this.doDeleteHostFromVersion(host, ver)
+                                }
+                            }, reason => {
+                                if (reason == 'cancel') {
+                                    this.alert.warning("已取消")
+                                } else {
+                                    this.alert.error("删除失败: " + reason)
+                                }
+                            })
+                        break
                     }
+                }
+                if (!hasDelScript)  {
+                    this.doDeleteHostFromVersion(host, ver)
                 }
             }
         })

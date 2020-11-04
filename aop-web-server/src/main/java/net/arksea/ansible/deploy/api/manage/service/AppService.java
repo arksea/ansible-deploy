@@ -56,6 +56,7 @@ public class AppService {
             portTypeDao.incRestCount(1, p.getTypeId());
         }
         portDao.releaseByAppId(appId);
+        operationTokenDao.deleteByAppId(appId);
         appDao.delete(appId);
         return true;
     }
@@ -114,8 +115,8 @@ public class AppService {
                     v.setAppId(id);
                     versionDao.save(v);
                 }
+                createOperationToken(saved.getId());
             }
-            createOperationToken(saved.getId());
             return saved;
         } catch (ServiceException ex) {
             throw ex;

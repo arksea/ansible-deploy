@@ -19,7 +19,7 @@ export class NewAppVarDefineDialog {
         this.svc.getPortTypes().subscribe(ret => {
             if (ret.code == 0) {
                 this.portTypes = ret.result
-                this.portTypes.forEach(t => this.portTypesMap.set(t.id, t))
+                this.portTypes.forEach(t => this.portTypesMap[t.id]=t)
             }
         })
         this.form = new FormGroup({

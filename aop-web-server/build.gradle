@@ -68,6 +68,8 @@ task ngBuild(type: Exec) {
     commandLine 'cmd', '/c', 'ng build --prod'
 }
 
+//------------------------------------------------------------------------
+// QA
 task publishQaDel {
     doLast {
         //拷贝前先删除部署目录下所有文件
@@ -84,9 +86,6 @@ task publishQaDel {
 task publishQA {
     dependsOn(publishQaDel,build,ngBuild)
     doLast {
-        //拷贝前先删除部署目录
-        delete('publish/qa/WEB-INF')
-        delete('publish/qa/META-INF')
         copy { //拷贝本项目WEB相关文件
             from 'src/main/webapp/'
             into 'publish/qa'
@@ -95,7 +94,6 @@ task publishQA {
             from '../aop-web/dist/aop-web'
             into 'publish/qa'
         }
-        delete('tomcat/webapps/aop-web-server/WEB-INF/lib/xml-apis-1.0.b2.jar')
         copy { //拷贝依赖库
             from configurations.runtime
             into 'publish/qa/WEB-INF/lib'
@@ -113,8 +111,8 @@ task publishQA {
             into 'publish/qa/WEB-INF/classes'
         }
         copy { //拷贝自定义测试环境配置文件
-            from 'publish/config'
-            into 'publish/qa/WEB-INF/classes'
+            from 'publish/config/application.functional.properties'
+            into 'publish/qa/WEB-INF/classes/'
         }
         copy { //拷贝META-INF
             from 'build/tmp/war/'
@@ -127,6 +125,62 @@ task publishQA {
 task publishToSvnQA(type: Exec) {
     dependsOn publishQA
     commandLine 'cmd', '/c', 'TortoiseProc.exe /command:commit /path:"./publish/qa"'
+}
+
+
+//------------------------------------------------------------------------
+//Online
+task publishOnlineDel {
+    doLast {
+        //拷贝前先删除部署目录下所有文件
+        File dir = file('publish/online/')
+        dir.listFiles().each {File file ->
+            if(file.name!='.svn'){
+                println 'delete ' + file.name
+                delete file
+            }
+        }
+    }
+}
+
+task publishOnline {
+    dependsOn(publishOnlineDel,build,ngBuild)
+    doLast {
+        copy { //拷贝本项目WEB相关文件
+            from 'src/main/webapp/'
+            into 'publish/online'
+        }
+        copy { //拷贝本项目WEB相关文件
+            from '../aop-web/dist/aop-web'
+            into 'publish/online'
+        }
+        copy { //拷贝依赖库
+            from configurations.runtime
+            into 'publish/online/WEB-INF/lib'
+        }
+        copy { //拷贝类
+            from 'build/classes/java/main/'
+            into 'publish/online/WEB-INF/classes'
+        }
+        copy { //拷贝资源
+            from 'build/resources/main/'
+            into 'publish/online/WEB-INF/classes'
+        }
+        copy { //拷贝自定义环境配置文件
+            from 'publish/config/application.properties'
+            into 'publish/online/WEB-INF/classes/'
+        }
+        copy { //拷贝META-INF
+            from 'build/tmp/war/'
+            into 'publish/online/META-INF/'
+        }
+    }
+}
+
+//发布部署文件，并提交到部署SVN
+task publishToSvnOnline(type: Exec) {
+    dependsOn publishOnline
+    commandLine 'cmd', '/c', 'TortoiseProc.exe /command:commit /path:"./publish/online"'
 }
 
 
@@ -169,7 +223,7 @@ task publishDev {
             into 'tomcat/webapps/aop-web-server/WEB-INF/classes'
         }
         copy { //拷贝自定义开发环境配置文件
-            from 'publish/config'
+            from 'publish/config/application.development.properties'
             into 'tomcat/webapps/aop-web-server/WEB-INF/classes'
         }
         copy { //拷贝META-INF

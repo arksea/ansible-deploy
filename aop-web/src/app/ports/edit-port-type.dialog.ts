@@ -58,6 +58,7 @@ export class EditPortTypeDialog {
         this.svc.savePortTypes(this.portTypes).subscribe(ret => {
             if (ret.code == 0) {
                 this.svc.portTypes = ret.result
+                this.svc.portTypes.forEach(t => this.svc.portTypesMap[t.id]=t)
                 this.modal.close('ok')
                 this.alert.success('保存成功')
             }

@@ -4,8 +4,8 @@ export class PortType {
     id: number = undefined
     name: string = ''
     description: string = ''
-    allCount: number
-    restCount: number
+    allCount: number = 0
+    restCount: number = 0
 }
 
 export class AppVarDefine {

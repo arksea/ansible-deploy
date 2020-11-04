@@ -17,7 +17,8 @@ import { AccountService } from '../account/account.service'
 export class GroupListComponent implements OnInit {
 
     groupList: Array<AppGroup> = new Array()
-    constructor(private modal: NgbModal, private svc: GroupsService,
+    constructor(private modal: NgbModal, 
+            private svc: GroupsService,
             private account: AccountService,
             private alert: MessageNotify,
             private router: Router) {

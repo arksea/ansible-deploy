@@ -61,13 +61,16 @@ export class HttpUtils {
         console.info(respond);
         if (respond.status === 401) {
             this.router.navigate(['/login']);
-        } else if (respond.error.error) {
-            this.alert.error(respond.error.error);
-        } else if (respond.error) {
-            this.alert.error(respond.error);
-        } else if (respond.message) {
-            this.alert.error(respond.message);
         } else {
+            if (respond.error.error) {
+                console.error(respond.error.error);
+            } else if (respond.error) {
+                console.error(respond.error);
+            } else if (respond.message) {
+                console.error(respond.message);
+            } else {
+                console.error(request + '发生异常');
+            }
             this.alert.error(request + '发生异常');
         }
         return new BehaviorSubject(respond.error);
@@ -80,9 +83,12 @@ export class HttpUtils {
             console.info(result);
             if (result.code === 401 || result.status === 401) {
                 this.router.navigate(['/login']);
-            } else if (result.error) {
-                this.alert.error(result.error);
             } else {
+                if (result.error) {
+                    console.error(result.error);
+                } else {
+                    console.error(request + '失败');
+                }
                 this.alert.error(request + '失败');
             }
         }

@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 @Table(name = "dp2_operation_job")
 public class OperationJob extends IdEntity {
     private Long appId;
+    private Long versionId;
     private Long operatorId;
     private Long operationId;
     private String execHost;
@@ -26,6 +27,15 @@ public class OperationJob extends IdEntity {
 
     public void setAppId(Long appId) {
         this.appId = appId;
+    }
+
+    @Column(nullable = false)
+    public Long getVersionId() {
+        return versionId;
+    }
+
+    public void setVersionId(Long versionId) {
+        this.versionId = versionId;
     }
 
     @Column(nullable = false)

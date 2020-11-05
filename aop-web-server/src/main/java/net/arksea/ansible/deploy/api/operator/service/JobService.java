@@ -44,7 +44,7 @@ public class JobService {
     JobResources jobResources;
 
     @Transactional
-    public OperationJob create(long userId, long appId, long operationId) {
+    public OperationJob create(long userId, long appId, long versionId, long operationId) {
         OperationToken t = operationTokenDao.findByAppId(appId);
         if (t == null) {
             t = new OperationToken();
@@ -54,6 +54,7 @@ public class JobService {
         }
         OperationJob job = new OperationJob();
         job.setAppId(appId);
+        job.setVersionId(versionId);
         job.setOperatorId(userId);
         job.setOperationId(operationId);
         job.setExecHost(getLocalHost());
@@ -101,16 +102,5 @@ public class JobService {
             logger.warn("获取主机地址失败", ex);
             return "localhost";
         }
-    }
-
-    public static void main(String[] args) {
-        System.out.println(System.currentTimeMillis()/1000);
-        OperationJob job = new OperationJob();
-        job.setId(12345L);
-        job.setStartTime(new Timestamp(System.currentTimeMillis()));
-        job.setExecHost("127.0.0.1");
-        job.setAppId(111L);
-        job.setOperatorId(222L);
-        job.setOperationId(333L);
     }
 }

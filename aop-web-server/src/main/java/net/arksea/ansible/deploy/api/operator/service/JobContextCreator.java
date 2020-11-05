@@ -6,7 +6,6 @@ import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import java.io.*;
 import java.util.Set;
 
-
 /**
  *
  * @author xiaohaixing
@@ -40,13 +39,14 @@ public class JobContextCreator {
     }
 
     private void generateCodeFiles() throws IOException {
+        log("生成脚本文件...");
         AppOperation op = resources.appOperationDao.findOne(job.getOperationId());
         for (AppOperationCode c : op.getCodes()) {
             generateCodeFile(c);
         }
+        log("成功\n");
     }
     private void generateCodeFile(AppOperationCode code) throws IOException {
-        log("生成脚本文件'"+code.getFileName()+"'...");
         String path = getJobPath() + code.getFileName();
         final File file = new File(path);
         final File parentFile = file.getParentFile();
@@ -57,7 +57,6 @@ public class JobContextCreator {
             writer.append(code.getCode());
             writer.flush();
         }
-        log("成功\n");
         chmod(code.getFileName());
     }
 
@@ -66,7 +65,6 @@ public class JobContextCreator {
         final Process process = Runtime.getRuntime().exec(cmd);
         try (BufferedReader inReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
              BufferedReader errReader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
-            log("修改文件权限'"+fileName+"'...");
             String line = inReader.readLine();
             while (line != null) {
                 log(line);
@@ -77,7 +75,6 @@ public class JobContextCreator {
                 log(line);
                 line = errReader.readLine();
             }
-            log("成功\n");
         } finally {
             process.destroy();
         }
@@ -93,8 +90,8 @@ public class JobContextCreator {
         if (!parentFile.exists()) {
             parentFile.mkdirs();
         }
-        try (final FileWriter writer = new FileWriter(file)) {
-            writer.append("[deploy_target]\n");
+        try (final FileWriter writer = new FileWriter(file, true)) {
+            writer.append("\n[deploy_target]\n");
             for (final Long hid : hosts) {
                 Host h = resources.hostService.findOne(hid);
                 if (h == null) {
@@ -131,6 +128,13 @@ public class JobContextCreator {
                 writer.append("\n");
             }
             writer.flush();
+            final Version ver = resources.versionDao.findOne(job.getVersionId());
+            writer.append("exec_opt: ");
+            writer.append(ver.getExecOpt());
+            writer.append("\n");
+            writer.append("repository: ");
+            writer.append(ver.getRepository());
+            writer.append("\n");
         }
         log("成功\n");
     }

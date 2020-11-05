@@ -35,6 +35,7 @@ public class JobController {
 
     public static class StartOpeartionJob {
         public Long appId;
+        public Long versionId;
         public Long operationId;
         public Set<Long> hosts;
     }
@@ -44,7 +45,7 @@ public class JobController {
     public RestResult<OperationJob> startJob(@RequestBody final StartOpeartionJob body,
                                               final HttpServletRequest httpRequest) {
         ClientInfo info = userService.getClientInfo(httpRequest);
-        OperationJob job = jobService.create(info.userId, body.appId, body.operationId);
+        OperationJob job = jobService.create(info.userId, body.appId, body.versionId, body.operationId);
         jobService.startJob(job, body.hosts);
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         return new RestResult<>(0, job, reqid);

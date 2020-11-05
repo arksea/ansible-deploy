@@ -111,6 +111,10 @@ task publishQA {
             into 'publish/qa/WEB-INF/classes'
         }
         copy { //拷贝自定义测试环境配置文件
+            from 'publish/config/application.properties'
+            into 'publish/qa/WEB-INF/classes/'
+        }
+        copy { //拷贝自定义测试环境配置文件
             from 'publish/config/application.functional.properties'
             into 'publish/qa/WEB-INF/classes/'
         }
@@ -220,6 +224,10 @@ task publishDev {
         }
         copy { //拷贝资源
             from 'build/resources/test/'
+            into 'tomcat/webapps/aop-web-server/WEB-INF/classes'
+        }
+        copy { //拷贝自定义开发环境配置文件
+            from 'publish/config/application.properties'
             into 'tomcat/webapps/aop-web-server/WEB-INF/classes'
         }
         copy { //拷贝自定义开发环境配置文件

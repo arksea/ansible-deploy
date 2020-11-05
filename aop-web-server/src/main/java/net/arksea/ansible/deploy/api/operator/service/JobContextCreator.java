@@ -127,7 +127,7 @@ public class JobContextCreator {
                 writer.append(var.getValue());
                 writer.append("\n");
             }
-            writer.flush();
+
             final Version ver = resources.versionDao.findOne(job.getVersionId());
             writer.append("exec_opt: ");
             writer.append(ver.getExecOpt());
@@ -135,6 +135,11 @@ public class JobContextCreator {
             writer.append("repository: ");
             writer.append(ver.getRepository());
             writer.append("\n");
+            writer.append("revision: ");
+            writer.append(ver.getRevision());
+            writer.append("\n");
+
+            writer.flush();
         }
         log("成功\n");
     }

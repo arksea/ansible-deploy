@@ -99,6 +99,7 @@ export class AppComponent implements OnInit {
         let ref = this.modal.open(StatusJobPlayDialog, {size: 'lg', scrollable: true})
         ref.componentInstance.operation = op
         ref.componentInstance.app = this.app
+        ref.componentInstance.ver = ver
         ref.componentInstance.hosts = ver.targetHosts
         ref.componentInstance.isStatusTestJob = true
     }

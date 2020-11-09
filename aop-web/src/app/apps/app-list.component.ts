@@ -58,7 +58,7 @@ export class AppListComponent implements OnInit {
             if (result == "ok") {
                 this.svc.deleteApp(app.id).subscribe(succeed => {
                     if (succeed) {
-                        app.deleted = true
+                        this.appList = this.appList.filter(it => it.id != app.id)
                         this.alert.success('已删除')
                     }
                 })

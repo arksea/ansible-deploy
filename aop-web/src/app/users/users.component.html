@@ -25,10 +25,10 @@
                         <button type="button" class="btn btn-light" routerLinkActive="active" [routerLink]="['/users/blocked']">禁用的账号</button>
                     </div>
         
-                    <button type="button" class="btn btn-success" 
+                    <!-- <button type="button" class="btn btn-success" 
                         [disabled]="account.perm('用户管理:修改')"
                         (click)="newUser()">新建用户
-                    </button>
+                    </button> -->
                 </div>
             </li>
             <li *ngFor="let u of userList;index as i;" class="list-group-item">

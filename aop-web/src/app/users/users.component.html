@@ -50,7 +50,9 @@
                     </div>
                     <div class="p-1">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
-                            [disabled]="account.perm('用户管理:查询')">编辑
+                            title="重置密码"
+                            [disabled]="account.perm('用户管理:修改')"
+                            (click)="onResetBtnClick(u)">重置
                         </button>
                     </div>
                     <div class="p-1">

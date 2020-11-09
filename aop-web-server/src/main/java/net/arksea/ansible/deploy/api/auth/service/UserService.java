@@ -1,9 +1,9 @@
 package net.arksea.ansible.deploy.api.auth.service;
 
 import net.arksea.ansible.deploy.api.ServiceException;
+import net.arksea.ansible.deploy.api.auth.dao.UserDao;
 import net.arksea.ansible.deploy.api.auth.entity.User;
 import net.arksea.ansible.deploy.api.auth.info.ClientInfo;
-import net.arksea.ansible.deploy.api.auth.dao.UserDao;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.shiro.SecurityUtils;

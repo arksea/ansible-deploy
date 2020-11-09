@@ -48,4 +48,10 @@ export class UsersService {
         const url = environment.apiUrl + '/api/roles/user/' + userId
         return this.httpUtils.httpPut('更新用户角色列表', url, ids)
     }
+
+    public resetUserPassword(userId: number): Observable<ServiceResponse<string>> {
+        const url = environment.apiUrl + '/api/users/' + userId + '/password?action=reset'
+        return this.httpUtils.httpPut('更新用户角色列表', url, '')
+    }
+    
 }

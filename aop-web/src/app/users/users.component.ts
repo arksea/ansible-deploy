@@ -49,6 +49,25 @@ export class UsersComponent {
             }
         })
     }
+
+    onResetBtnClick(user: User) {
+        let ref = this.modal.open(ConfirmDialog)
+        ref.componentInstance.title = "确认要重置吗?"
+        ref.componentInstance.message = "重置账号: " + user.name + " 的密码"
+        ref.result.then(result => {
+            if (result == "ok") {
+                this.svc.resetUserPassword(user.id).subscribe(ret => {
+                    if (ret.code == 0) {
+                        let ref = this.modal.open(ConfirmDialog)
+                        ref.componentInstance.title = "重置密码成功!"
+                        ref.componentInstance.message = "临时密码为: " + ret.result
+                        ref.componentInstance.cancel = ''
+                    }
+                })
+            }
+        }, resaon => {})
+    }
+
 }
 
 @Component({
@@ -71,9 +90,9 @@ export class ActiveUsersComponent extends UsersComponent implements OnInit {
 
     onDelBtnClick(user: User) {
         let ref = this.modal.open(ConfirmDialog)
-        ref.componentInstance.title = "禁用账号: " + user.name
-        ref.componentInstance.message = "确认要禁用吗?"
-        ref.componentInstance.detail = "此操作将把账号'" + user.name + "'标记为禁用状态，不会直接删除用户及其相关资源数据"
+        ref.componentInstance.title = "确认要禁用吗?"
+        ref.componentInstance.message = "禁用账号: " + user.name
+        ref.componentInstance.detail = "此操作将把账号'" + user.name + "'标记为禁用状态，不会直接删除用户及其相关数据"
         ref.result.then(result => {
             if (result == "ok") {
                 this.svc.blockUser(user).subscribe(ret => {
@@ -119,8 +138,8 @@ export class BlockedUsersComponent extends UsersComponent implements OnInit {
 
     onDelBtnClick(user: User) {
         let ref = this.modal.open(ConfirmDialog)
-        ref.componentInstance.title = "删除账号: " + user.name
-        ref.componentInstance.message = "确认要删除吗?"
+        ref.componentInstance.title = "确认要删除吗?"
+        ref.componentInstance.message = "删除账号: " + user.name
         ref.componentInstance.detail = "此操作将删除账号'" + user.name + "',此操作不可恢复请谨慎操作！"
         ref.result.then(result => {
             if (result == "ok") {

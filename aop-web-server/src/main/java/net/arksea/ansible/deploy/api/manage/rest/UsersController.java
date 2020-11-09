@@ -95,4 +95,13 @@ public class UsersController {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         return new RestResult<>(SUCCEED, true, reqid);
     }
+    //-------------------------------------------------------------------------
+    @RequiresPermissions("用户管理:修改")
+    @RequestMapping(path="users/{userId}/password", params = {"action=reset"},method = RequestMethod.PUT, produces = MEDIA_TYPE)
+    public String resetUserPassword(@PathVariable(name="userId") long userId,
+                              final HttpServletRequest httpRequest) {
+        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
+        String pwd = usersService.resetUserPassword(userId);
+        return RestUtils.createResult(SUCCEED, pwd, reqid);
+    }
 }

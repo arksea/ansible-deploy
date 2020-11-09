@@ -1,11 +1,12 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
+import net.arksea.ansible.deploy.api.ServiceException;
 import net.arksea.ansible.deploy.api.auth.dao.RoleDao;
 import net.arksea.ansible.deploy.api.auth.dao.UserDao;
 import net.arksea.ansible.deploy.api.auth.entity.Role;
 import net.arksea.ansible.deploy.api.auth.entity.User;
+import net.arksea.ansible.deploy.api.auth.service.CredentialsMatcherImpl;
 import net.arksea.restapi.RestException;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -88,6 +89,25 @@ public class UsersService {
             throw ex;
         } catch (Exception ex) {
             throw new RestException("更新用户角色失败", ex);
+        }
+    }
+
+    @Transactional
+    public String resetUserPassword(Long userId) {
+        try {
+            User user = userDao.findOne(userId);
+            if (user == null) {
+                throw new ServiceException("用户不存在: "+userId);
+            }
+            String pwd =  CredentialsMatcherImpl.createRandom(2);
+            String pwdHash = CredentialsMatcherImpl.hashPassword(pwd.toCharArray(), user.getSalt());
+            user.setPassword(pwdHash);
+            userDao.save(user);
+            return pwd;
+        } catch (ServiceException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new ServiceException("重置用户密码失败: "+userId, ex);
         }
     }
 }

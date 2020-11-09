@@ -3,26 +3,26 @@
 // The list of file replacements can be found in `angular.json`.
 
 function getApiAddr(): string {
-    let uri = document.documentURI;
-    let n = uri.indexOf('//');
-    let localAddr = 'http://localhost:8080';
-    let addr = localAddr;
+    let uri = document.documentURI
+    let n = uri.indexOf('//')
+    let localAddr = 'http://localhost:8080'
+    let addr = localAddr
     if (n > 0) {
-      n = uri.indexOf('/', n+2);
+      n = uri.indexOf('/', n+2)
     } else {
-      n = uri.indexOf('/');
+      n = uri.indexOf('/')
     }
     if (n > 0) {
-      addr = uri.substring(0, n);
+      addr = uri.substring(0, n)
     }
-    return addr.endsWith(':4200') ? localAddr : addr;
+    return addr.endsWith(':4200') ? localAddr : addr
 }
 
 export const environment = {
   production: false,
   accountApiUrl: getApiAddr(),
   apiUrl: getApiAddr()
-};
+}
 
 /*
  * For easier debugging in development mode, you can import the following file

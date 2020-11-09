@@ -20,8 +20,4 @@ public interface AppDao extends CrudRepository<App, Long> {
 
    @Query("select a from App a where a.appGroupId is null")
    List<App> findAllGroupIsNull();
-
-   @Modifying
-   @Query("update App a set a.deleted=?2 where a.id =?1")
-   void updateDeletedById(long id, boolean deleted);
 }

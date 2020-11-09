@@ -18,14 +18,12 @@ import java.util.Set;
 public class App extends IdEntity implements Comparable<App> {
     private String apptag = "";     //应用标签，通常用来部署时建立应用目录名
     private AppType appType;
-    private String deployPath = ""; //应用部署目标路径
     private String description = "";  //应用描述
     private Long appGroupId;
     private Set<AppVariable> vars;// 变量
     private Set<Port> ports;
     private Set<Version> versions;
     private Timestamp createTime; //创建时间
-    private boolean deleted; //是否标记为删除状态，系统将定时删除标记为删除状态的记录
 
     @NotBlank
     @Column(length = 20, nullable = false, unique = true)
@@ -45,15 +43,6 @@ public class App extends IdEntity implements Comparable<App> {
 
     public void setAppType(AppType appType) {
         this.appType = appType;
-    }
-
-    @Column(nullable = false, length = 128)
-    public String getDeployPath() {
-        return deployPath;
-    }
-
-    public void setDeployPath(final String deployPath) {
-        this.deployPath = deployPath;
     }
 
     @NotNull
@@ -118,15 +107,6 @@ public class App extends IdEntity implements Comparable<App> {
 
     public void setCreateTime(Timestamp createTime) {
         this.createTime = createTime;
-    }
-
-    @Column(nullable = false, columnDefinition = "TINYINT(1) NOT NULL DEFAULT 0")
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
     }
 
     @Override

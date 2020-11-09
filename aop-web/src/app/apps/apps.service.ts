@@ -81,7 +81,6 @@ export class AppsService {
         app.appType = new AppType()
         app.appType.id = 3
         app.appType.name = 'Command'
-        app.deployPath = ''
         app.description = ''
         app.enableJmx = true
         app.vars = []
@@ -182,5 +181,10 @@ export class AppsService {
     public getPortByValue(value: number): Observable<ServiceResponse<Array<Port>>> {
         const url = environment.apiUrl + '/api/ports/'+value
         return this.httpUtils.httpGet('查询端口', url)
+    }
+
+    public getAppTypes(): Observable<ServiceResponse<Array<AppType>>> {
+        const url = environment.apiUrl + '/api/appTypes'
+        return this.httpUtils.httpGet('查询应用类型', url)
     }
 }

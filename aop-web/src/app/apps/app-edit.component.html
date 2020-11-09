@@ -19,24 +19,6 @@
                         placeholder="以字母开头，由字母与下划线组成">
                 </div>
                 <div class="col-lg-6 col-md-6 form-group mb-4">
-                    <label for="deployPath">应用发布目标路径
-                        <ng-template #deployPathPopContent>
-                            发布时系统自动将文件更新到这个目录下，如果你到服务器上手工修改了其中的文件，请记得提交，或在发布前revert回原来的版本，SVN在检测到目标目录中有改动将会停止操作，以防止与SVN库中的版本发生意外的合并或冲突
-                        </ng-template>
-                        <span class="mx-1" [ngbPopover]="deployPathPopContent">
-                            <ng-container *ngTemplateOutlet="formInfoIcon"></ng-container>
-                        </span>
-                        <span class="text-danger" *ngIf="deployPath.invalid">(长度4至128)</span>
-                    </label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">$HOME/</span>
-                        </div>
-                        <input type="text" id="deployPath" formControlName="deployPath" class="form-control"
-                            placeholder="建议设置为应用短名">
-                    </div>
-                </div>
-                <div class="col-lg-6 col-md-6 form-group mb-4">
                     <label for="appGroup">所属分组
                         <span class="text-danger" *ngIf="appGroupId.errors?.required">*</span>
                         <span class="text-danger" *ngIf="appGroupId.errors?.minlength">(长度大于1)</span>

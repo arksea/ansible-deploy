@@ -22,9 +22,7 @@
                             新建应用
                         </button>
                         <div class="dropdown-menu" aria-labelledby="btnGroupDropNewApp">
-                            <a class="dropdown-item" (click)="onNewBtnClick('Tomcat')">Tomcat</a>
-                            <a class="dropdown-item" (click)="onNewBtnClick('JavaServer')">JavaServer</a>
-                            <a class="dropdown-item" (click)="onNewBtnClick('Command')">Command</a>
+                            <a class="dropdown-item" *ngFor="let t of appTypes" (click)="onNewBtnClick(t)">{{t.name}}</a>
                         </div>
                     </div>
                 </div>
@@ -38,8 +36,7 @@
                         <p>{{a.appType.name}} : {{a.description}}</p>
                     </div>
                     <div class="p-1 mt-1" [title] = "appHasTargetHosts(a) ? '请先删除此应用的所有目标主机' : ''">
-                        <button type="button" class="btn btn-sm"
-                            [class]="a.deleted?'btn-outline-success':'btn-outline-danger'"
+                        <button type="button" class="btn btn-sm btn-outline-danger"
                             [disabled]="account.perm('应用:修改') || appHasTargetHosts(a)"
                             (click)="onDelBtnClick(a)">删除</button>
                     </div>

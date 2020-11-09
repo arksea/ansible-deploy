@@ -5,7 +5,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { AppsService } from './apps.service'
 import { ConfirmDialog } from '../utils/confirm.dialog'
 import { MessageNotify } from '../utils/message-notify'
-import { App } from '../app.entity'
+import { App, AppType } from '../app.entity'
 import { AccountService } from '../account/account.service'
 import { Router } from '@angular/router'
 
@@ -16,6 +16,7 @@ import { Router } from '@angular/router'
 export class AppListComponent implements OnInit {
 
     appList : App[] = []
+    appTypes: AppType[] = []
 
     constructor(
         public svc: AppsService,
@@ -26,6 +27,11 @@ export class AppListComponent implements OnInit {
             this.svc.getUserApps().subscribe(ret => {
                 if (ret.code == 0) {
                     this.appList = ret.result
+                }
+            })
+            this.svc.getAppTypes().subscribe(ret => {
+                if (ret.code == 0) {
+                    this.appTypes = ret.result
                 }
             })
     }
@@ -66,8 +72,8 @@ export class AppListComponent implements OnInit {
         }, resaon => { })
     }
 
-    onNewBtnClick(appType: string) {
-        this.router.navigate(['/apps/new/edit', appType])
+    onNewBtnClick(appType: AppType) {
+        this.router.navigate(['/apps/new/edit', appType.name])
     }
 
     appHasTargetHosts(app: App): boolean {

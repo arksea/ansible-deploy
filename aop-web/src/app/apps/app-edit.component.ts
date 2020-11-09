@@ -77,13 +77,10 @@ export class AppEditComponent implements OnInit {
 
     public makeFormGroup(app: App): FormGroup {
         let tag = new FormControl({ value: app.apptag, disabled: app.id }, [Validators.required, Validators.minLength(4), Validators.maxLength(30)])
-        let deployPath = new FormControl({ value: app.deployPath, disabled: app.id }, [Validators.minLength(4), Validators.maxLength(128)])
-        tag.valueChanges.subscribe(v => deployPath.setValue(v)) //deployPath建议设置为应用短名，所以这里做了变更关联
         let appGroupId = new FormControl(app.appGroupId, [Validators.required])
         let f =  new FormGroup({
             'appGroupId': appGroupId,
             'apptag': tag,
-            'deployPath': deployPath,
             'enableJmx': new FormControl(app.enableJmx),
             'description': new FormControl(app.description, [Validators.required, Validators.minLength(5), Validators.maxLength(256)])
         })
@@ -97,7 +94,6 @@ export class AppEditComponent implements OnInit {
         let f = this.appForm
         let a = this.app
         a.apptag = this.apptag.value
-        a.deployPath = this.deployPath.value
         a.description = this.desc.value
         a.appGroupId = Number(this.appGroupId.value)
         a.enableJmx = this.enableJmx.value

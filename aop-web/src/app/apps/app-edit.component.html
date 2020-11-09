@@ -1,7 +1,10 @@
 <div class="container-xl mt-3">
-    <div class="mb-5 ml-3">
-        <h2>我的应用 / 编辑</h2>
-    </div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a [routerLink]="['/apps']">我的应用</a></li>
+            <li class="breadcrumb-item active">{{apptag.value}}</li>
+        </ol>
+    </nav>
     <div>
         <form (ngSubmit)="save()" [formGroup]="appForm">
             <div class="row">

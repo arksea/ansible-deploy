@@ -1,6 +1,5 @@
 package net.arksea.ansible.deploy.api.auth.service;
 
-import net.arksea.ansible.deploy.api.ServiceException;
 import net.arksea.ansible.deploy.api.auth.dao.UserDao;
 import net.arksea.ansible.deploy.api.auth.entity.User;
 import net.arksea.ansible.deploy.api.auth.info.ClientInfo;
@@ -15,8 +14,8 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 
 @Component
-public class UserService implements IUserService {
-    private static final Logger logger = LogManager.getLogger(UserService.class.getName());
+public class ClientInfoService implements IUserService {
+    private static final Logger logger = LogManager.getLogger(ClientInfoService.class.getName());
     @Autowired
     UserDao userDao;
 
@@ -39,13 +38,5 @@ public class UserService implements IUserService {
         }
         final String remoteIp = httpRequest.getRemoteAddr();
         return new ClientInfo(userId, userName, remoteIp);
-    }
-
-    public User getUserByName(String name) {
-        try {
-            return userDao.findOneByName(name);
-        } catch (Exception ex) {
-            throw new ServiceException("查询用户失败", ex);
-        }
     }
 }

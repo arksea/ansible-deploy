@@ -110,4 +110,29 @@ public class UsersService {
             throw new ServiceException("重置用户密码失败: "+userId, ex);
         }
     }
+
+    @Transactional
+    public void setUserPassword(Long userId, String pwd) {
+        try {
+            User user = userDao.findOne(userId);
+            if (user == null) {
+                throw new ServiceException("用户不存在: "+userId);
+            }
+            String pwdHash = CredentialsMatcherImpl.hashPassword(pwd.toCharArray(), user.getSalt());
+            user.setPassword(pwdHash);
+            userDao.save(user);
+        } catch (ServiceException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new ServiceException("设置用户密码失败: "+userId, ex);
+        }
+    }
+
+    public User getUserByName(String name) {
+        try {
+            return userDao.findOneByName(name);
+        } catch (Exception ex) {
+            throw new ServiceException("查询用户失败", ex);
+        }
+    }
 }

@@ -3,7 +3,7 @@ package net.arksea.ansible.deploy.api.operator.rest;
 import akka.actor.ActorSystem;
 import akka.dispatch.OnComplete;
 import net.arksea.ansible.deploy.api.auth.info.ClientInfo;
-import net.arksea.ansible.deploy.api.auth.service.UserService;
+import net.arksea.ansible.deploy.api.auth.service.ClientInfoService;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import net.arksea.ansible.deploy.api.operator.service.JobPlayer;
 import net.arksea.ansible.deploy.api.operator.service.JobService;
@@ -29,7 +29,7 @@ public class JobController {
     @Autowired
     JobService jobService;
     @Autowired
-    UserService userService;
+    ClientInfoService clientInfoService;
     @Autowired
     ActorSystem system;
 
@@ -44,7 +44,7 @@ public class JobController {
     @RequestMapping(method = RequestMethod.POST, produces = MEDIA_TYPE)
     public RestResult<OperationJob> startJob(@RequestBody final StartOpeartionJob body,
                                               final HttpServletRequest httpRequest) {
-        ClientInfo info = userService.getClientInfo(httpRequest);
+        ClientInfo info = clientInfoService.getClientInfo(httpRequest);
         OperationJob job = jobService.create(info.userId, body.appId, body.versionId, body.operationId);
         jobService.startJob(job, body.hosts);
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");

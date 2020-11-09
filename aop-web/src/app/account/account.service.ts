@@ -170,4 +170,9 @@ export class AccountService {
         const url = environment.accountApiUrl + '/api/user/permissions/childs'
         return this.httpUtils.httpGet('子权限查询', url)
     }
+
+    public modifyPassword(pwd: string): Observable<ServiceResponse<boolean>> {
+        const url = environment.accountApiUrl + '/api/user/password'
+        return this.httpUtils.httpPut('子权限查询', url, pwd)
+    }
 }

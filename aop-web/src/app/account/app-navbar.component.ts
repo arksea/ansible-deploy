@@ -1,5 +1,7 @@
 import { Component } from '@angular/core'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { AccountService } from './account.service'
+import { ModifyPwdDialog } from './modify-pwd.dialog'
 
 @Component({
   selector: 'app-navbar',
@@ -9,7 +11,7 @@ export class AppNavbarComponent {
 
   loginUser: string
 
-  constructor(private accountService: AccountService) {
+  constructor(private accountService: AccountService, private modal: NgbModal) {
     this.loginUser = accountService.loginUser
   }
 
@@ -27,6 +29,10 @@ export class AppNavbarComponent {
 
   perms(name: string): boolean {
     return this.accountService.perms(name)
+  }
+
+  modifyPwd() {
+    this.modal.open(ModifyPwdDialog)
   }
 
 }

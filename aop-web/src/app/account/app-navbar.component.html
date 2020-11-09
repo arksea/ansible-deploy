@@ -34,11 +34,13 @@
         </ul>
         <ul class="navbar-nav" [hidden]="hiddenLogoutMenu()">
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                <a class="nav-item nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     {{loginUser}}
                 </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                    <a class="dropdown-item" (click)="modifyPwd()">修改密码</a>
+                    <div class="dropdown-divider"></div>
                     <a class="dropdown-item" [routerLink]="['/login']" (click)="logout()">退出登录</a>
                 </div>
             </li>

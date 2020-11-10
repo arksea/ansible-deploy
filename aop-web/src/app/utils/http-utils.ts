@@ -64,14 +64,17 @@ export class HttpUtils {
         } else {
             if (respond.error.error) {
                 console.error(respond.error.error);
+                this.alert.error(request + '发生异常: '+respond.error.error);
             } else if (respond.error) {
                 console.error(respond.error);
+                this.alert.error(request + '发生异常: '+respond.error);
             } else if (respond.message) {
                 console.error(respond.message);
+                this.alert.error(request + '发生异常: '+respond.message);
             } else {
                 console.error(request + '发生异常');
+                this.alert.error(request + '发生异常');
             }
-            this.alert.error(request + '发生异常');
         }
         return new BehaviorSubject(respond.error);
     }
@@ -86,10 +89,11 @@ export class HttpUtils {
             } else {
                 if (result.error) {
                     console.error(result.error);
+                    this.alert.error(request + '失败: '+result.error);
                 } else {
                     console.error(request + '失败');
+                    this.alert.error(request + '失败');
                 }
-                this.alert.error(request + '失败');
             }
         }
         return new BehaviorSubject(result);

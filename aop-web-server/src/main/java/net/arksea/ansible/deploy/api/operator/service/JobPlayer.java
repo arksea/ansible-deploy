@@ -51,39 +51,39 @@ public class JobPlayer extends AbstractActor {
         });
     }
 
-    public static class Init {}
-    public static class PollLogs {
-        public final int index;
-        public PollLogs(int index) {
+    private static class Init {}
+    static class PollLogs {
+        final int index;
+        PollLogs(int index) {
             this.index = index;
         }
     }
     public static class PollLogsResult {
-        public String log;
-        public int index;
-        public int size;
+        String log;
+        int index;
+        int size;
         private PollLogsResult() {}
-        public PollLogsResult(String log, int index, int size) {
+        PollLogsResult(String log, int index, int size) {
             this.log = log;
             this.index = index;
             this.size = size;
         }
     }
     public static class OfferLog {
-        public final String log;
-        public OfferLog(String log) {
+        final String log;
+        OfferLog(String log) {
             this.log = log;
         }
     }
     public static class OfferLogs {
-        public final List<String> logs;
+        final List<String> logs;
         public OfferLogs(List<String> logs) {
             this.logs = logs;
         }
     }
-    public static class NoMoreLogs {}
-    public static class StopJob {}
-    public static class StartJob{}
+    private static class NoMoreLogs {}
+    private static class StopJob {}
+    private static class StartJob{}
 
     public void preStart() {
         context().system().scheduler().scheduleOnce(
@@ -96,12 +96,23 @@ public class JobPlayer extends AbstractActor {
 
     public void postStop() {
         job.setEndTime(new Timestamp(System.currentTimeMillis()));
+        StringBuilder sb = new StringBuilder();
+        logs.forEach(sb::append);
+        job.setLog(sb.toString());
         beans.operationJobDao.save(job);
         OperationToken t = beans.operationTokenDao.findByAppId(job.getAppId());
         if (t != null) {
             t.setReleased(true);
             t.setReleaseTime(new Timestamp(System.currentTimeMillis()));
             beans.operationTokenDao.save(t);
+        }
+        if (jobLogFileWriter != null) {
+            try {
+                jobLogFileWriter.flush();
+                jobLogFileWriter.close();
+            } catch (Exception ex) {
+                logger.warn("关闭操作结果日志文件失败", ex);
+            }
         }
     }
 
@@ -200,14 +211,6 @@ public class JobPlayer extends AbstractActor {
     }
 
     private void handleStopJob(StopJob msg) {
-        if (jobLogFileWriter != null) {
-            try {
-                jobLogFileWriter.flush();
-                jobLogFileWriter.close();
-            } catch (Exception ex) {
-                logger.warn("关闭操作结果日志文件失败", ex);
-            }
-        }
         context().stop(self());
     }
     private void handleOfferLog(OfferLog msg) {

@@ -116,9 +116,9 @@ public class JobContextCreator {
         if (!parentFile.exists()) {
             parentFile.mkdirs();
         }
-        try (final FileWriter writer = new FileWriter(file)) {
+        try (final FileWriter writer = new FileWriter(file, true)) {
             final App app = resources.appDao.findOne(job.getAppId());
-            writer.append("apptag: ");
+            writer.append("\napptag: ");
             writer.append(app.getApptag());
             writer.append("\n");
             for (final AppVariable var : app.getVars()) {

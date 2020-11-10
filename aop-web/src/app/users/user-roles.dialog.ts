@@ -24,6 +24,9 @@ export class UserRolesDialog implements OnInit {
     ngOnInit(): void {
     }
 
+    get user() {
+        return this._user
+    }
     set user(u: User) {
         this._user = u
         for (let r of u.roles) {

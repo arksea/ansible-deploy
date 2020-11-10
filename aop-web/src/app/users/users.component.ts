@@ -53,14 +53,14 @@ export class UsersComponent {
     onResetBtnClick(user: User) {
         let ref = this.modal.open(ConfirmDialog)
         ref.componentInstance.title = "确认要重置吗?"
-        ref.componentInstance.message = "重置账号: " + user.name + " 的密码"
+        ref.componentInstance.message = "重置 [" + user.name + "] 的密码"
         ref.result.then(result => {
             if (result == "ok") {
                 this.svc.resetUserPassword(user.id).subscribe(ret => {
                     if (ret.code == 0) {
                         let ref = this.modal.open(ConfirmDialog)
                         ref.componentInstance.title = "重置密码成功!"
-                        ref.componentInstance.message = "临时密码为: " + ret.result
+                        ref.componentInstance.message = "临时密码为 [" + ret.result + "]"
                         ref.componentInstance.cancel = ''
                     }
                 })

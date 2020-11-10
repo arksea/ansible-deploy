@@ -1,7 +1,10 @@
 <div class="container-xl mt-3">
-    <div class="mb-5 ml-3">
-        <h2>我的应用 / {{app?.apptag}} - {{app?.description}}</h2>
-    </div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a [routerLink]="['/apps']">我的应用</a></li>
+            <li class="breadcrumb-item active">{{app?.apptag}} : {{app?.description}}</li>
+        </ol>
+    </nav>
     <div id="group-list" [formGroup]="hostChecked">
         <ul class="list-group list-group-flush">
             <li class="list-group-item">

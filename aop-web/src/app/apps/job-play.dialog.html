@@ -1,11 +1,12 @@
 <div class="modal-header d-flex">
-<h3 class="modal-title m-2 mr-auto"><span class="text-danger"> [{{operation.name}}] </span>{{isStatusTestJob?'状态测试':'操作'}}</h3>
+    <h2 class="modal-title m-2 mr-auto"><span class="text-danger"> [{{operation.name}}] </span>操作</h2>
     <button type="button" class="btn btn-danger m-2" *ngIf="!(jobStarted|async)" (click)="startJob()">开始</button>
-    <button type="button" class="btn btn-outline-secondary m-2" (click)="modal.dismiss('cancel')">
+    <button type="button" class="btn btn-outline-secondary m-2" (click)="modal.close('cancel')">
         {{(jobStarted|async)?'关闭':'取消'}}
     </button>
 </div>
 <div class="modal-body" #scrollLogs>
-    <pre>{{(jobLogs | async)?.logs}}</pre>
+    <div class="mb-3 text-primary">{{operation.description}}</div>
+    <pre id="job-logs" class="p-1 border border-secondary text-light bg-dark">{{(jobLogs | async)?.logs}}</pre>
 </div>
 

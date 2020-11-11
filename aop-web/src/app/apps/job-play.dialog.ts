@@ -77,9 +77,9 @@ export class JobPlayDialog implements OnInit, OnDestroy, AfterViewChecked {
                     }
                 })
             }
-            if (data.index == -1 && this.isStatusTestJob) {
-                this.modal.close('ok')
-            }
+            // if (data.index == -1 && this.isStatusTestJob) {
+            //     this.modal.close('ok')
+            // }
         })
     }
 
@@ -108,10 +108,20 @@ export class JobPlayDialog implements OnInit, OnDestroy, AfterViewChecked {
             if (i >= 0) {
                 let kvStr = line.substring(i+method.length+1)
                 let kv = kvStr.split(',')
-                if (kv.length == 3) {
+                if (kv.length > 4) {
                     let key   = kv[0]
                     let value = kv[1]
-                    let color = Number(kv[2])
+                    let color = kv[2]
+                    let name = kv[3]
+                    for (let h of this.hosts) {
+                        if (h.privateIp == key) {
+                            h.status[name] = {value: value, color: color}
+                        }
+                    }
+                } else if (kv.length > 3) {
+                    let key   = kv[0]
+                    let value = kv[1]
+                    let color = kv[2]
                     for (let h of this.hosts) {
                         if (h.privateIp == key) {
                             h.status[this.operation.name] = {value: value, color: color}

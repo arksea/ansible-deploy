@@ -42,7 +42,7 @@ public class JobPlayer extends AbstractActor {
         this.beans = beans;
     }
 
-    public static Props props(OperationJob job, Set<Long>hosts, JobResources state) {
+    static Props props(OperationJob job, Set<Long>hosts, JobResources state) {
         return Props.create(new Creator<Actor>() {
             @Override
             public Actor create() {
@@ -59,9 +59,9 @@ public class JobPlayer extends AbstractActor {
         }
     }
     public static class PollLogsResult {
-        String log;
-        int index;
-        int size;
+        public String log;
+        public int index;
+        public int size;
         private PollLogsResult() {}
         PollLogsResult(String log, int index, int size) {
             this.log = log;
@@ -69,15 +69,15 @@ public class JobPlayer extends AbstractActor {
             this.size = size;
         }
     }
-    public static class OfferLog {
+    private static class OfferLog {
         final String log;
         OfferLog(String log) {
             this.log = log;
         }
     }
-    public static class OfferLogs {
+    private static class OfferLogs {
         final List<String> logs;
-        public OfferLogs(List<String> logs) {
+        OfferLogs(List<String> logs) {
             this.logs = logs;
         }
     }

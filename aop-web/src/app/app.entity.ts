@@ -71,7 +71,7 @@ export class Version {
 
 export class HostStatus {
     value: string
-    color: number
+    color: string
 }
 export class Host {
     id: number

@@ -24,3 +24,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     position: fixed;
     z-index: 10000;
 }
+
+#job-logs {
+    min-height: 400px;
+}

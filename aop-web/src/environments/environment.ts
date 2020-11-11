@@ -5,7 +5,8 @@
 function getApiAddr(): string {
     let uri = document.documentURI
     let n = uri.indexOf('//')
-    let localAddr = 'http://localhost:8080'
+    //let localAddr = 'http://localhost:8080'
+    let localAddr = 'http://10.79.186.29:8062'
     let addr = localAddr
     if (n > 0) {
       n = uri.indexOf('/', n+2)

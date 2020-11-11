@@ -110,19 +110,23 @@ export class AppComponent implements OnInit {
         } else {
 
             switch(s.color) {
-                case 0:
-                    return 'badge-danger'
-                case 1:
+                case '0':
+                case 'offline':
+                return 'badge-danger'
+                case '1':
+                case 'online':
                     return 'badge-success'
-                case 2:
+                case '2':
+                case 'running':
                     return 'badge-info'
-                case 3:
+                case '3':
                     return 'badge-warning'
-                case 4:
+                case '4':
+                case 'stopped':
                     return 'badge-secondary'
-                case 5:
+                case '5':
                     return 'badge-light'
-                case 6:
+                case '6':
                     return 'badge-dark'
                 default:
                     return 'badge-primary'

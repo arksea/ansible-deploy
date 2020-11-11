@@ -163,8 +163,8 @@ export class AppEditComponent implements OnInit {
             version.targetHosts = version.targetHosts.filter((h,i,a) => h.id != host.id)
         } else {
             let ref = this.modal.open(ConfirmDialog)
-            ref.componentInstance.title = "从版本中移除主机: "+host.privateIp
-            ref.componentInstance.message = "确认要移除吗?"
+            ref.componentInstance.title = "确认要移除吗?"
+            ref.componentInstance.message = "从版本中移除主机: "+host.privateIp
             ref.result.then(result => {
                 if (result == "ok") {
                     this.doDeleteOperation(host, version)
@@ -185,16 +185,13 @@ export class AppEditComponent implements OnInit {
                         ref.componentInstance.operation = op
                         ref.componentInstance.app = this.app
                         ref.componentInstance.hosts = [host]
+                        ref.componentInstance.ver = ver
                         ref.result.then(result => {
                                 if (result == "ok") {
                                     this.doDeleteHostFromVersion(host, ver)
                                 }
                             }, reason => {
-                                if (reason == 'cancel') {
-                                    this.alert.warning("已取消")
-                                } else {
-                                    this.alert.error("删除失败: " + reason)
-                                }
+                                this.alert.error("删除失败: " + reason)
                             })
                         break
                     }

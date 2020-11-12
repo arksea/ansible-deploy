@@ -29,7 +29,7 @@ public class OperationJob extends IdEntity {
         this.appId = appId;
     }
 
-    @Column(nullable = false)
+    @Column
     public Long getVersionId() {
         return versionId;
     }

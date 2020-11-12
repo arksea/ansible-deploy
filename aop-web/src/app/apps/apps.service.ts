@@ -153,7 +153,9 @@ export class AppsService {
         const url = environment.apiUrl + '/api/jobs'
         const body = new StartOpeartionJob()
         body.appId = app.id
-        body.versionId = ver.id
+        if (ver) {
+            body.versionId = ver.id
+        }
         body.operationId = operation.id
         body.hosts = []
         for (let h of hosts) {

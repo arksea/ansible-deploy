@@ -167,6 +167,7 @@ public class JobPlayer extends AbstractActor {
         runner.run().onComplete(new OnComplete<Boolean>() {
             @Override
             public void onComplete(Throwable failure, Boolean success) {
+                delayStopJob();
                 if (failure == null) {
                     offerLog("操作任务完成\n");
                 } else {

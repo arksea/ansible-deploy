@@ -8,6 +8,7 @@ import { MessageNotify } from '../utils/message-notify'
 import { App, AppType } from '../app.entity'
 import { AccountService } from '../account/account.service'
 import { Router } from '@angular/router'
+import { JobPlayDialog } from './job-play.dialog'
 
 @Component({
     selector: 'apps',
@@ -62,14 +63,47 @@ export class AppListComponent implements OnInit {
         ref.componentInstance.message = "确认要删除吗?"
         ref.result.then(result => {
             if (result == "ok") {
-                this.svc.deleteApp(app.id).subscribe(succeed => {
-                    if (succeed) {
-                        this.appList = this.appList.filter(it => it.id != app.id)
-                        this.alert.success('已删除')
-                    }
-                })
+                this.doDeleteOperation(app)
             }
         }, resaon => { })
+    }
+
+    private doDeleteOperation(app: App) {
+        this.svc.getOperationsByAppTypeId(app.appType.id).subscribe(ret => {
+            if (ret.code == 0) {
+                let operations = ret.result
+                let hasDelScript = false
+                for (let op of operations) {
+                    if (op.type == 'DELETE_APP') {
+                        hasDelScript = true
+                        let ref = this.modal.open(JobPlayDialog, {size: 'lg', scrollable: true})
+                        ref.componentInstance.operation = op
+                        ref.componentInstance.app = app
+                        ref.componentInstance.hosts = []
+                        ref.result.then(result => {
+                                if (result == "ok") {
+                                    this.doDeleteApp(app)
+                                }
+                            }, reason => {
+                                this.alert.error("删除失败: " + reason)
+                            })
+                        break
+                    }
+                }
+                if (!hasDelScript)  {
+                    this.doDeleteApp(app)
+                }
+            }
+        })
+    }
+
+    private doDeleteApp(app: App) {
+        this.svc.deleteApp(app.id).subscribe(succeed => {
+            if (succeed) {
+                this.appList = this.appList.filter(it => it.id != app.id)
+                this.alert.success('已删除')
+            }
+        })
     }
 
     onNewBtnClick(appType: AppType) {

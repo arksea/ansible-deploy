@@ -44,7 +44,7 @@ public class JobService {
     JobResources jobResources;
 
     @Transactional
-    public OperationJob create(long userId, long appId, long versionId, long operationId) {
+    public OperationJob create(long userId, long appId, Long versionId, long operationId) {
         OperationToken t = operationTokenDao.findByAppId(appId);
         if (t == null) {
             t = new OperationToken();

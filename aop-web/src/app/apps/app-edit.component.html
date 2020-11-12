@@ -19,6 +19,7 @@
                             *ngIf="apptag.errors?.minlength || apptag.errors?.maxlength">(长度4至30)</span>
                     </label>
                     <input type="text" id="apptag" formControlName="apptag" class="form-control"
+                        [readonly]="app.id"
                         placeholder="以字母开头，由字母与下划线组成">
                 </div>
                 <div class="col-lg-6 col-md-6 form-group mb-4">

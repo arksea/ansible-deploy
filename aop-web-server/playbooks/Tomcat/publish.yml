@@ -42,7 +42,7 @@
       wait_for: 'port={{http_port}} state=stopped timeout=30'
 
     - debug:
-        msg: "@@SET_HOST_STATUS {{inventory_hostname}},停止,stopped,状态,"
+        msg: "@@SET_HOST_STATUS {{inventory_hostname}},已停止,stopped,状态,"
 
     - name: 等待10秒
       wait_for: 'timeout=10'

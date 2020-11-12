@@ -35,7 +35,11 @@ export class AppEditComponent implements OnInit {
                 private router: Router,
                 private route: ActivatedRoute) {
         this.app = this.svc.createDefAppTemplate()
-        this.appForm = this.makeFormGroup(this.app)
+        this.appForm = new FormGroup({
+            'appGroupId': new FormControl(0, [Validators.required]),
+            'apptag': new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(30)]),
+            'description': new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(256)])
+        })
         this.svc.getUserGroups().subscribe(ret => {
             if (ret.code == 0) {
                 this.userGroups = ret.result
@@ -54,7 +58,7 @@ export class AppEditComponent implements OnInit {
                 ret => {
                     if (ret.code == 0) {
                         this.app = ret.result
-                        this.appForm = this.makeFormGroup(this.app)
+                        this.setFormValue(this.app)
                     }
                 }
             )
@@ -64,7 +68,7 @@ export class AppEditComponent implements OnInit {
             this.svc.getAppById(appId).subscribe(ret => {
                 if (ret.code == 0) {
                     this.app = ret.result
-                    this.appForm = this.makeFormGroup(this.app)
+                    this.setFormValue(this.app)
                 } else {
                     this.router.navigate(["/apps"])
                 }
@@ -75,19 +79,13 @@ export class AppEditComponent implements OnInit {
     ngOnInit(): void {
     }
 
-    public makeFormGroup(app: App): FormGroup {
-        let tag = new FormControl({ value: app.apptag, disabled: app.id }, [Validators.required, Validators.minLength(4), Validators.maxLength(30)])
-        let appGroupId = new FormControl(app.appGroupId, [Validators.required])
-        let f =  new FormGroup({
-            'appGroupId': appGroupId,
-            'apptag': tag,
-            'enableJmx': new FormControl(app.enableJmx),
-            'description': new FormControl(app.description, [Validators.required, Validators.minLength(5), Validators.maxLength(256)])
-        })
+    private setFormValue(app: App) {
+        this.apptag.setValue(app.apptag)
+        this.appGroupId.setValue(app.appGroupId)
+        this.desc.setValue(app.description)
         for (let v of app.vars) {
-            f.addControl('var_' + v.name, new FormControl({ value: v.value, disabled: v.isPort }, [Validators.maxLength(128)]))
+            this.appForm.addControl('var_' + v.name, new FormControl({ value: v.value, disabled: v.isPort }, [Validators.maxLength(128)]))
         }
-        return f
     }
 
     public save() {
@@ -96,7 +94,6 @@ export class AppEditComponent implements OnInit {
         a.apptag = this.apptag.value
         a.description = this.desc.value
         a.appGroupId = Number(this.appGroupId.value)
-        a.enableJmx = this.enableJmx.value
         for (let i of a.vars) {
             let c = f.get('var_' + i.name)
             i.value = c.value
@@ -259,9 +256,4 @@ export class AppEditComponent implements OnInit {
     public get appGroupId(): AbstractControl {
         return this.appForm.get('appGroupId')
     }
-
-    public get enableJmx() : AbstractControl {
-        return this.appForm.get('enableJmx')
-    }
-
 }

@@ -91,7 +91,6 @@ export class App {
     description: string = ''  //应用描述
     appGroupId: number //应用所属分组
     vars: Array<AppVariable> = []// 变量
-    enableJmx: boolean = true
     versions: Array<Version> = []
     createTime: string //创建时间
 }

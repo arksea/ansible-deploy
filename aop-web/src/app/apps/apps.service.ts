@@ -82,7 +82,6 @@ export class AppsService {
         app.appType.id = 3
         app.appType.name = 'Command'
         app.description = ''
-        app.enableJmx = true
         app.vars = []
         let ver = new Version()
         ver.name = 'Online'

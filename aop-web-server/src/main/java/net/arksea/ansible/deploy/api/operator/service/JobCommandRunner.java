@@ -52,11 +52,11 @@ public class JobCommandRunner {
                 log(line+"\n");
                 line = errReader.readLine();
             }
-            jobLogger.onFinished();
         } catch (Exception ex) {
             log("执行任务启动命令行失败\n");
             logger.warn("执行启动命令行失败", ex);
         } finally {
+            jobLogger.onFinished();
             process.destroy();
         }
     }

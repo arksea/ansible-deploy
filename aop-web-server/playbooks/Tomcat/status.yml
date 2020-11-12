@@ -1,0 +1,37 @@
+- hosts: deploy_target 
+  remote_user: op
+  vars_files:
+    - vars.yml
+  tasks:
+  - name: 获取进程PID
+    shell: ps ax | grep /home/{{apptag}}/tomcat | grep java | grep -v grep | awk '{print $1}'
+    become: yes
+    register: running
+
+  - name: 设置运行状态
+    debug:
+      msg: "@@SET_HOST_STATUS {{inventory_hostname}},运行中,running,"
+    when: running.stdout!=""
+
+  - name: 设置未运行状态
+    debug:
+      msg: "@@SET_HOST_STATUS {{inventory_hostname}},已停止,stopped,"
+    when: running.stdout==""
+
+  - name: 状态测试
+    uri: 
+        url: http://localhost:{{http_port}}/heartbeat
+        return_content: true
+    become: yes
+    register: status
+    when: running.stdout!=""
+
+  - name: 设置离线状态
+    debug:
+      msg: "@@SET_HOST_STATUS {{inventory_hostname}},离线,offline,"
+    when: running.stdout!="" and "'OFFLINE' in status.content"
+
+  - name: 设置在线状态
+    debug:
+      msg: "@@SET_HOST_STATUS {{inventory_hostname}},在线,online,"
+    when: running.stdout!="" and "'ONLINE' in status.content"

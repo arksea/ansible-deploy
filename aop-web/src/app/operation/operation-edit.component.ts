@@ -19,7 +19,7 @@ export class OperationEditComponent implements OnInit {
     public operation: AppOperation = new AppOperation()
     public editForm: FormGroup
     public isNewAction: boolean
-    private activeCode: AppOperationCode = new AppOperationCode()
+    public activeCode: AppOperationCode = new AppOperationCode()
 
     constructor(public svc: OperationsService,
                 private appTypesSvc: AppTypesService,

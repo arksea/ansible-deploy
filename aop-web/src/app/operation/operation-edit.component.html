@@ -77,7 +77,8 @@
                         </ul>
                     </div>
                     <div class="card-body">
-                        <textarea id="code" class="form-control" rows="17" formControlName="codeContent"></textarea>
+                        <textarea id="code" class="form-control" rows="17"
+                            formControlName="codeContent" *ngIf="activeCode.fileName"></textarea>
                     </div>
                 </div>
             </div>

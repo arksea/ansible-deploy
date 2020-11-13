@@ -8,6 +8,7 @@ import akka.dispatch.Futures;
 import akka.dispatch.OnComplete;
 import akka.japi.Creator;
 import akka.japi.pf.ReceiveBuilder;
+import net.arksea.ansible.deploy.api.manage.entity.App;
 import net.arksea.ansible.deploy.api.manage.entity.AppOperation;
 import net.arksea.ansible.deploy.api.manage.entity.AppOperationType;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
@@ -19,6 +20,7 @@ import scala.concurrent.duration.Duration;
 import java.io.File;
 import java.io.FileWriter;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -31,12 +33,13 @@ public class JobPlayer extends AbstractActor {
     private Logger logger = LogManager.getLogger(JobPlayer.class);
     private final OperationJob job;
     private final AppOperation operation;
+    private final App app;
     private final Set<Long> hosts;
     private final LinkedList<String> logs = new LinkedList<>();
     private final JobResources beans;
-    private final long MAX_LOG_LEN_PER_REQUEST = 10240;
-    private final long STOP_JOB_DELAY = 3;
-    private final long JOB_PLAY_TIMEOUT = 300;
+    private final static long MAX_LOG_LEN_PER_REQUEST = 10240;
+    private final static long STOP_JOB_DELAY = 3;
+    private final static long JOB_PLAY_TIMEOUT = 300;
     private FileWriter jobLogFileWriter;
     private boolean noMoreLogs = false;
 
@@ -45,6 +48,7 @@ public class JobPlayer extends AbstractActor {
         this.hosts = hosts;
         this.beans = beans;
         this.operation = beans.appOperationDao.findOne(job.getOperationId());
+        this.app = beans.appDao.findOne(job.getAppId());
     }
 
     static Props props(OperationJob job, Set<Long>hosts, JobResources state) {
@@ -239,7 +243,9 @@ public class JobPlayer extends AbstractActor {
             logger.warn("记录操作结果失败", ex);
         }
     }
+
     private String getJobPath() {
-        return beans.getJobPath(job);
+        LocalDate localDate = LocalDate.now();
+        return beans.jobWorkRoot + "/" + localDate + "/" + app.getApptag() + "/" + job.getId() + "/";
     }
 }

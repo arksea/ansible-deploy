@@ -38,9 +38,4 @@ public class JobResources {
     int systemBindPort;
     @Autowired
     ActorSystem system;
-
-    public String getJobPath(OperationJob job) {
-        LocalDate localDate = LocalDate.now();
-        return jobWorkRoot + "/" + localDate + "/" + job.getId() + "/";
-    }
 }

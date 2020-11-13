@@ -34,13 +34,13 @@ export class AccountService {
 
     private getPermsAndRoles(userName: string) {
         this.loginUserPerms = this.EMETY_SET
-        this.httpGetUserPermissions(userName).subscribe(resp => {
+        this.httpGetUserPermissions().subscribe(resp => {
             if (resp.code === 0) {
                 this.loginUserPerms = new Set<string>(resp.result)
             }
         })
         this.loginUserRoles = this.EMETY_SET
-        this.httpGetUserRoles(userName).subscribe(resp => {
+        this.httpGetUserRoles().subscribe(resp => {
             if (resp.code === 0) {
                 this.loginUserRoles = new Set<string>(resp.result)
             }
@@ -156,13 +156,13 @@ export class AccountService {
         return this.httpUtils.httpGet('用户登出', url)
     }
 
-    private httpGetUserPermissions(userName: string): Observable<ServiceResponse<string[]>> {
-        const url = environment.accountApiUrl + '/api/user/permissions?' + 'name=' + userName
+    private httpGetUserPermissions(): Observable<ServiceResponse<string[]>> {
+        const url = environment.accountApiUrl + '/api/user/permissions'
         return this.httpUtils.httpGet('用户权限查询', url)
     }
 
-    private httpGetUserRoles(userName: string): Observable<ServiceResponse<string[]>> {
-        const url = environment.accountApiUrl + '/api/user/roles?' + 'name=' + userName
+    private httpGetUserRoles(): Observable<ServiceResponse<string[]>> {
+        const url = environment.accountApiUrl + '/api/user/roles'
         return this.httpUtils.httpGet('用户角色查询', url)
     }
 

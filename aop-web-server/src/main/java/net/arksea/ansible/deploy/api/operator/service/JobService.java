@@ -21,6 +21,8 @@ import scala.concurrent.Future;
 import javax.annotation.Resource;
 import java.net.InetAddress;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Set;
 
 import static akka.japi.Util.classTag;
@@ -102,5 +104,13 @@ public class JobService {
             logger.warn("获取主机地址失败", ex);
             return "localhost";
         }
+    }
+
+    @Transactional
+    public void clearJobRecords(long logExpireDays) {
+        LocalDate localDate = LocalDate.now().minusDays(logExpireDays);
+        long epochSecond = localDate.atStartOfDay().toEpochSecond(ZoneOffset.of("+8"));
+        int n = operationJobDao.deleteExpireJobs(new Timestamp(epochSecond*1000));
+        logger.info("删除 {} 前的操作记录 {} 条", localDate, n);
     }
 }

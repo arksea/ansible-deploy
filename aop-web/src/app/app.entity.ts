@@ -129,3 +129,10 @@ export class OperationJob {
     endTime: string
     log: string
 }
+
+export class OperationJobInfo {
+    jobId: number
+    operation: string
+    operator: string
+    startTime: string
+}

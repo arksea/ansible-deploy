@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
-import { App, AppGroup, AppType, OperationJob } from '../app.entity'
+import { App, AppGroup, AppType, OperationJob, OperationJobInfo } from '../app.entity'
 import { ServiceResponse } from '../utils/http-utils'
 import { HttpUtils } from '../utils/http-utils'
 import { environment } from '../../environments/environment'
@@ -187,5 +187,10 @@ export class AppsService {
     public getAppTypes(): Observable<ServiceResponse<Array<AppType>>> {
         const url = environment.apiUrl + '/api/appTypes'
         return this.httpUtils.httpGet('查询应用类型', url)
+    }
+
+    public getAppOperationJobHistory(appId: number): Observable<ServiceResponse<Array<OperationJobInfo>>> {
+        const url = environment.apiUrl + '/api/apps/' + appId + '/operations'
+        return this.httpUtils.httpGet('查询应用操作记录', url)
     }
 }

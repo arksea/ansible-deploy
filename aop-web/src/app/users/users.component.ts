@@ -47,7 +47,7 @@ export class UsersComponent {
             if (result == 'ok') {
                 this.alert.success('修改用户角色成功')
             }
-        })
+        }, reason => {})
     }
 
     onResetBtnClick(user: User) {

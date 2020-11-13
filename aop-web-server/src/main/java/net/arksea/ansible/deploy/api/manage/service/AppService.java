@@ -1,17 +1,21 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
 import net.arksea.ansible.deploy.api.ServiceException;
+import net.arksea.ansible.deploy.api.auth.dao.UserDao;
+import net.arksea.ansible.deploy.api.auth.entity.User;
 import net.arksea.ansible.deploy.api.manage.dao.*;
 import net.arksea.ansible.deploy.api.manage.entity.*;
+import net.arksea.ansible.deploy.api.manage.msg.OperationJobInfo;
+import net.arksea.ansible.deploy.api.operator.dao.OperationJobDao;
 import net.arksea.ansible.deploy.api.operator.dao.OperationTokenDao;
+import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import net.arksea.ansible.deploy.api.operator.entity.OperationToken;
 import net.arksea.restapi.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  *
@@ -36,6 +40,13 @@ public class AppService {
     OperationTokenDao operationTokenDao;
     @Autowired
     PortTypeDao portTypeDao;
+    @Autowired
+    OperationJobDao operationJobDao;
+    @Autowired
+    AppOperationDao appOperationDao;
+    @Autowired
+    UserDao userDao;
+
 
     @Transactional
     public boolean deleteApp(long appId) {
@@ -217,4 +228,18 @@ public class AppService {
         return appDao.findAllGroupIsNull();
     }
 
+    public List<OperationJobInfo> findOperationJobInfos(long appId) {
+        List<OperationJob> jobs = operationJobDao.findByAppId(appId);
+        List<OperationJobInfo> infos = new LinkedList<>();
+        Map<Long, AppOperation> opMap = new HashMap<>();
+        Map<Long, User> userMap = new HashMap<>();
+        for (OperationJob j : jobs) {
+            AppOperation op = opMap.computeIfAbsent(j.getOperationId(), id -> appOperationDao.findOne(id));
+            User user = userMap.computeIfAbsent(j.getOperatorId(), id -> userDao.findOne(id));
+            String operation = op.getName();
+            String operator = user.getName();
+            infos.add(new OperationJobInfo(j.getId(), operation, operator, j.getStartTime()));
+        }
+        return infos;
+    }
 }

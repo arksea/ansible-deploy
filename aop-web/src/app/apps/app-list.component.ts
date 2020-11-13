@@ -110,6 +110,10 @@ export class AppListComponent implements OnInit {
         this.router.navigate(['/apps/new/edit', appType.name])
     }
 
+    onShowHisBtnClick(app: App) {
+        this.router.navigate(['/apps', app.id, 'ophis'])
+    }
+
     appHasTargetHosts(app: App): boolean {
         for (let v of app.versions) {
             if (v.targetHosts.length > 0) {

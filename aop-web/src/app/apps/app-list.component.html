@@ -37,6 +37,11 @@
                         </a>
                         <p>{{a.appType.name}} : {{a.description}}</p>
                     </div>
+                    <div class="p-1 mt-1">
+                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                            [disabled]="account.perm('应用:查询')"
+                            [routerLink]="['/apps',a.id,'operations']">操作记录</button>
+                    </div>
                     <div class="p-1 mt-1" [title] = "appHasTargetHosts(a) ? '请先删除此应用的所有目标主机' : ''">
                         <button type="button" class="btn btn-sm btn-outline-danger"
                             [disabled]="account.perm('应用:修改') || appHasTargetHosts(a)"

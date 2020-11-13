@@ -14,7 +14,7 @@ import { JobPlayDialog, StatusJobPlayDialog } from './job-play.dialog'
     templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
-    app: App
+    app: App = new App()
     operations: AppOperation[]
     hostChecked: FormGroup = new FormGroup({})
     constructor(private svc: AppsService,

@@ -1,0 +1,52 @@
+<div class="container-xl mt-3">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a [routerLink]="['/apps']">我的应用</a></li>
+            <li class="breadcrumb-item"><a [routerLink]="['/apps',app.id]">{{app?.apptag}}</a></li>
+            <li class="breadcrumb-item active">操作历史</li>
+        </ol>
+    </nav>
+
+    <div id="group-list">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <div class="d-flex">
+                    <div class="mr-auto">
+                        <form>
+                            <div class="d-flex">
+                                <div><input type="text" class="form-control" id="searchPrefix"
+                                        formControlName="searchPrefix"></div>
+                                <div><button type="submit" class="btn btn-info form-control ml-2">搜索</button></div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-success">
+                            待定功能
+                        </button>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="card">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col">开始时间</div>
+                                <div class="col">操作名称</div>
+                                <div class="col">执行用户</div>
+                            </div>
+                        </li>
+                        <li *ngFor="let h of history" class="list-group-item">
+                            <div class="row">
+                                <div class="col">{{h.startTime}}</div>
+                                <div class="col">{{h.operation}}</div>
+                                <div class="col">{{h.operator}}</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

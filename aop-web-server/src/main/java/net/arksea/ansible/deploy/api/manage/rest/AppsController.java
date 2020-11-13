@@ -2,6 +2,7 @@ package net.arksea.ansible.deploy.api.manage.rest;
 
 import static net.arksea.ansible.deploy.api.ResultCode.*;
 import net.arksea.ansible.deploy.api.manage.entity.App;
+import net.arksea.ansible.deploy.api.manage.msg.OperationJobInfo;
 import net.arksea.ansible.deploy.api.manage.service.AppService;
 import net.arksea.restapi.BaseResult;
 import net.arksea.restapi.ErrorResult;
@@ -72,5 +73,10 @@ public class AppsController {
         return new RestResult<>(SUCCEED, apps, reqid);
     }
     //-------------------------------------------------------------------------
-
+    @RequiresPermissions("应用:查询")
+    @RequestMapping(path="{appId}/operations", method = RequestMethod.GET, produces = MEDIA_TYPE)
+    public RestResult<Iterable<OperationJobInfo>> getAppOperationHistory(@PathVariable("appId") long appId, HttpServletRequest httpRequest) {
+        Iterable<OperationJobInfo> infos = appService.findOperationJobInfos(appId);
+        return new RestResult<>(SUCCEED, infos, httpRequest);
+    }
 }

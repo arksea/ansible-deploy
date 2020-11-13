@@ -17,6 +17,7 @@ import { NewVersionDialog } from './new-version.dialog'
 import { AddHostDialog } from './add-host.dialog'
 import { JobPlayDialog, StatusJobPlayDialog } from './job-play.dialog'
 import { PortSelectDialog } from './port-select.dialog'
+import { AppOperationHistoryComponent } from './app-operation-history.component'
 
 @NgModule({
   imports: [
@@ -27,7 +28,8 @@ import { PortSelectDialog } from './port-select.dialog'
     AccountModule, AppsRoutingModule],
   declarations: [
     AppsComponent, AppListComponent, AppEditComponent, AppComponent, 
-    NewVersionDialog, AddHostDialog,JobPlayDialog,StatusJobPlayDialog,PortSelectDialog
+    NewVersionDialog, AddHostDialog,JobPlayDialog,StatusJobPlayDialog,
+    PortSelectDialog, AppOperationHistoryComponent
   ],
   entryComponents: [
     NewVersionDialog, AddHostDialog,JobPlayDialog,StatusJobPlayDialog,PortSelectDialog

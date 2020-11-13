@@ -2,7 +2,8 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a [routerLink]="['/apps']">我的应用</a></li>
-            <li class="breadcrumb-item active">{{apptag.value}}</li>
+            <li class="breadcrumb-item"><a [routerLink]="['/apps',app.id]">{{apptag.value}}</a></li>
+            <li class="breadcrumb-item active">编辑</li>
         </ol>
     </nav>
     <div>

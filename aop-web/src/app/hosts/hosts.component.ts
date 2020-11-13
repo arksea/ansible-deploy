@@ -46,7 +46,7 @@ export class HostsComponent implements OnInit {
                 this.hostList.push(host)
                 this.alert.success('保存成功')
             }
-        })
+        }, reason => {})
     }
 
     editHost(host: Host) {
@@ -56,7 +56,7 @@ export class HostsComponent implements OnInit {
             if (result == 'ok') {
                 this.alert.success('保存成功')
             }
-        })
+        }, reason => {})
     }
 
     switchStatus(host: Host) {

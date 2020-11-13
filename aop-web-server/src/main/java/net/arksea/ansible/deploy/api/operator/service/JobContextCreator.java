@@ -14,11 +14,15 @@ public class JobContextCreator {
 
     private JobResources resources;
     private OperationJob job;
+    private AppOperation operation;
     private Set<Long> hosts;
     private IJobEventListener jobLogger;
+    private String jobPath;
 
-    public JobContextCreator(OperationJob job, Set<Long> hosts, JobResources resources, IJobEventListener jobLogger) {
+    public JobContextCreator(String jobPath, OperationJob job, AppOperation op, Set<Long> hosts, JobResources resources, IJobEventListener jobLogger) {
+        this.jobPath = jobPath;
         this.job = job;
+        this.operation = op;
         this.hosts = hosts;
         this.resources = resources;
         this.jobLogger = jobLogger;
@@ -35,17 +39,17 @@ public class JobContextCreator {
     }
 
     private String getJobPath() {
-        return resources.getJobPath(job);
+        return jobPath;
     }
 
     private void generateCodeFiles() throws IOException {
         log("生成脚本文件...");
-        AppOperation op = resources.appOperationDao.findOne(job.getOperationId());
-        for (AppOperationCode c : op.getCodes()) {
+        for (AppOperationCode c : operation.getCodes()) {
             generateCodeFile(c);
         }
         log("成功\n");
     }
+
     private void generateCodeFile(AppOperationCode code) throws IOException {
         String path = getJobPath() + code.getFileName();
         final File file = new File(path);
@@ -60,7 +64,7 @@ public class JobContextCreator {
         chmod(code.getFileName());
     }
 
-    protected void chmod(final String fileName) throws IOException {
+    private void chmod(final String fileName) throws IOException {
         String cmd = "chmod u+x " + getJobPath() + fileName;
         final Process process = Runtime.getRuntime().exec(cmd);
         try (BufferedReader inReader = new BufferedReader(new InputStreamReader(process.getInputStream()));

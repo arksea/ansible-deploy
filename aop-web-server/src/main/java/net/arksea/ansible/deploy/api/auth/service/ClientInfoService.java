@@ -25,7 +25,10 @@ public class ClientInfoService implements IUserService {
         String userName = (String)subject.getSession().getAttribute("user_name");
         if (userId == null || userName == null) {
             //session失效则根据remberMe记录的用户Id重新设置session
-            userId = (long)subject.getPrincipal();
+            userId = (Long)subject.getPrincipal();
+            if (userId == null) {
+                throw new UnauthenticatedException("令牌失效，请重新登录");
+            }
             logger.debug("session失效，重新加载，userID={}", userId);
             User user = userDao.findOne(userId);
             if (user == null) {

@@ -4,9 +4,12 @@ import akka.actor.AbstractActor;
 import akka.actor.Actor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
+import akka.dispatch.Futures;
 import akka.dispatch.OnComplete;
 import akka.japi.Creator;
 import akka.japi.pf.ReceiveBuilder;
+import net.arksea.ansible.deploy.api.manage.entity.AppOperation;
+import net.arksea.ansible.deploy.api.manage.entity.AppOperationType;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import net.arksea.ansible.deploy.api.operator.entity.OperationToken;
 import org.apache.logging.log4j.LogManager;
@@ -27,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 public class JobPlayer extends AbstractActor {
     private Logger logger = LogManager.getLogger(JobPlayer.class);
     private final OperationJob job;
+    private final AppOperation operation;
     private final Set<Long> hosts;
     private final LinkedList<String> logs = new LinkedList<>();
     private final JobResources beans;
@@ -40,6 +44,7 @@ public class JobPlayer extends AbstractActor {
         this.job = job;
         this.hosts = hosts;
         this.beans = beans;
+        this.operation = beans.appOperationDao.findOne(job.getOperationId());
     }
 
     static Props props(OperationJob job, Set<Long>hosts, JobResources state) {
@@ -98,7 +103,9 @@ public class JobPlayer extends AbstractActor {
         job.setEndTime(new Timestamp(System.currentTimeMillis()));
         StringBuilder sb = new StringBuilder();
         logs.forEach(sb::append);
-        job.setLog(sb.toString());
+        if (operation.getType() != AppOperationType.STATUS) { //为了减少日志占用数据库空间，状态查询日志只记录到文件
+            job.setLog(sb.toString());
+        }
         beans.operationJobDao.save(job);
         OperationToken t = beans.operationTokenDao.findByAppId(job.getAppId());
         if (t != null) {
@@ -139,7 +146,7 @@ public class JobPlayer extends AbstractActor {
             }
             jobLogFileWriter = new FileWriter(file);
             offerLog("初始化操作任务:\n");
-            JobContextCreator creator = new JobContextCreator(job, hosts, beans, this::offerLog);
+            JobContextCreator creator = new JobContextCreator(getJobPath(), job, operation, hosts, beans, this::offerLog);
             creator.run();
             self().tell(new StartJob(), self());
         } catch (Exception ex) {
@@ -151,20 +158,22 @@ public class JobPlayer extends AbstractActor {
 
     private void handleStartJob(StartJob msg) {
         ActorRef self = self();
-        JobCommandRunner runner = new JobCommandRunner(job, beans,
-                new IJobEventListener() {
-                    @Override
-                    public void log(String str) {
-                        self.tell(new OfferLog(str), ActorRef.noSender());
-                    }
+        IJobEventListener listener = new IJobEventListener() {
+            @Override
+            public void log(String str) {
+                self.tell(new OfferLog(str), ActorRef.noSender());
+            }
 
-                    @Override
-                    public void onFinished() {
-                        delayStopJob();
-                    }
-                }
-        );
-        runner.run().onComplete(new OnComplete<Boolean>() {
+            @Override
+            public void onFinished() {
+                delayStopJob();
+            }
+        };
+        String cmd = getJobPath() + operation.getCommand();
+        Futures.future(() -> {
+            JobCommandRunner.exec(cmd, listener);
+            return true;
+        }, context().dispatcher()).onComplete(new OnComplete<Boolean>() {
             @Override
             public void onComplete(Throwable failure, Boolean success) {
                 delayStopJob();

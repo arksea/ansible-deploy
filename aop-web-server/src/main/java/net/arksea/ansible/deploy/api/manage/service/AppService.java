@@ -233,12 +233,21 @@ public class AppService {
         List<OperationJobInfo> infos = new LinkedList<>();
         Map<Long, AppOperation> opMap = new HashMap<>();
         Map<Long, User> userMap = new HashMap<>();
+        Map<Long, Version> verMap = new HashMap<>();
         for (OperationJob j : jobs) {
             AppOperation op = opMap.computeIfAbsent(j.getOperationId(), id -> appOperationDao.findOne(id));
             User user = userMap.computeIfAbsent(j.getOperatorId(), id -> userDao.findOne(id));
+            String version;
+            if (j.getVersionId() == null) {
+                version = "/";
+            } else {
+                Version ver = verMap.computeIfAbsent(j.getVersionId(), id -> versionDao.findOne(id));
+                version = ver.getName();
+            }
             String operation = op.getName();
             String operator = user.getName();
-            infos.add(new OperationJobInfo(j.getId(), operation, operator, j.getStartTime()));
+
+            infos.add(new OperationJobInfo(j.getId(), operation, operator, version, j.getStartTime(), j.getEndTime()));
         }
         return infos;
     }

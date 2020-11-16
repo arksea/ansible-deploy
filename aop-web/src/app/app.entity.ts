@@ -134,5 +134,7 @@ export class OperationJobInfo {
     jobId: number
     operation: string
     operator: string
+    version: string
     startTime: string
+    endTime: string
 }

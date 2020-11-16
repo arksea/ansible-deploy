@@ -32,15 +32,21 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">
                             <div class="row">
+                                <div class="col-1">任务ID</div>
                                 <div class="col">开始时间</div>
+                                <div class="col">结束时间</div>
                                 <div class="col">操作名称</div>
-                                <div class="col">执行用户</div>
+                                <div class="col">应用版本</div>
+                                <div class="col">操作者</div>
                             </div>
                         </li>
-                        <li *ngFor="let h of history" class="list-group-item">
+                        <li *ngFor="let h of history" class="list-group-item list-group-item-action">
                             <div class="row">
+                                <div class="col-1">{{h.jobId}}</div>
                                 <div class="col">{{h.startTime}}</div>
+                                <div class="col">{{h.endTime}}</div>
                                 <div class="col">{{h.operation}}</div>
+                                <div class="col">{{h.version}}</div>
                                 <div class="col">{{h.operator}}</div>
                             </div>
                         </li>

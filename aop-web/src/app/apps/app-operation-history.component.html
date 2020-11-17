@@ -7,52 +7,53 @@
         </ol>
     </nav>
 
-    <div id="group-list">
+    <div class="d-flex mb-2" [formGroup]="form">
+        <mat-form-field class="ml-1 mr-5">
+            <mat-label>选择开始时间</mat-label>
+            <mat-date-range-input [rangePicker]="picker">
+                <input matStartDate formControlName="startTime" placeholder="开始">
+                <input matEndDate formControlName="endTime" placeholder="结束">
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker disabled="false"></mat-date-range-picker>
+        </mat-form-field>
+        <mat-form-field class="mr-auto">
+            <mat-label>操作者</mat-label>
+            <input class="mr-5" type="text" matInput placeholder="请输入名字" formControlName="operator">
+        </mat-form-field>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-success mb-3 mt-1 mr-1" (click)="query(0)">
+                查询
+            </button>
+        </div>
+    </div>
+
+    <div class="card">
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
-                <div class="d-flex">
-                    <div class="mr-auto">
-                        <form>
-                            <div class="d-flex">
-                                <div><input type="text" class="form-control" id="searchPrefix"
-                                        formControlName="searchPrefix"></div>
-                                <div><button type="submit" class="btn btn-info form-control ml-2">搜索</button></div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-success">
-                            待定功能
-                        </button>
-                    </div>
+                <div class="row">
+                    <div class="col-1">任务ID</div>
+                    <div class="col">开始时间</div>
+                    <div class="col">结束时间</div>
+                    <div class="col">操作名称</div>
+                    <div class="col">应用版本</div>
+                    <div class="col">操作者</div>
                 </div>
             </li>
-            <li class="list-group-item">
-                <div class="card">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
-                            <div class="row">
-                                <div class="col-1">任务ID</div>
-                                <div class="col">开始时间</div>
-                                <div class="col">结束时间</div>
-                                <div class="col">操作名称</div>
-                                <div class="col">应用版本</div>
-                                <div class="col">操作者</div>
-                            </div>
-                        </li>
-                        <li *ngFor="let h of history" class="list-group-item list-group-item-action">
-                            <div class="row">
-                                <div class="col-1">{{h.jobId}}</div>
-                                <div class="col">{{h.startTime}}</div>
-                                <div class="col">{{h.endTime}}</div>
-                                <div class="col">{{h.operation}}</div>
-                                <div class="col">{{h.version}}</div>
-                                <div class="col">{{h.operator}}</div>
-                            </div>
-                        </li>
-                    </ul>
+            <li *ngFor="let h of history.items" class="list-group-item list-group-item-action">
+                <div class="row">
+                    <div class="col-1">{{h.jobId}}</div>
+                    <div class="col">{{h.startTime}}</div>
+                    <div class="col">{{h.endTime}}</div>
+                    <div class="col">{{h.operation}}</div>
+                    <div class="col">{{h.version}}</div>
+                    <div class="col">{{h.operator}}</div>
                 </div>
             </li>
         </ul>
     </div>
+
+    <mat-paginator [length]="history.total" [pageSize]="pageSize" [pageSizeOptions]="[15, 25, 45, 100]"
+        (page)="onPageEvent($event)">
+    </mat-paginator>
 </div>

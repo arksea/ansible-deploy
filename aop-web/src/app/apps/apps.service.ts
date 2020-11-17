@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
-import { App, AppGroup, AppType, OperationJob, OperationJobInfo } from '../app.entity'
 import { ServiceResponse } from '../utils/http-utils'
 import { HttpUtils } from '../utils/http-utils'
 import { environment } from '../../environments/environment'
 import { map } from 'rxjs/operators'
-import { Version, AppVarDefine, AppOperation, Host, Port } from '../app.entity'
+import { App, AppGroup, AppType, OperationJob, Version, AppVarDefine, 
+         AppOperation, Host, Port, OperationJobPage } from '../app.entity'
 
 class StartOpeartionJob {
     appId: number
@@ -189,8 +189,20 @@ export class AppsService {
         return this.httpUtils.httpGet('查询应用类型', url)
     }
 
-    public getAppOperationJobHistory(appId: number): Observable<ServiceResponse<Array<OperationJobInfo>>> {
-        const url = environment.apiUrl + '/api/apps/' + appId + '/operations'
+    public getAppOperationJobHistory(appId: number,
+                page: number, pageSize: number,
+                startTime: string, endTime: string,
+                operator: string): Observable<ServiceResponse<OperationJobPage>> {
+        let url = environment.apiUrl + '/api/apps/' + appId + '/operations?page='+page+'&pageSize='+pageSize
+        if (startTime != '') {
+            url = url + '&startTime='+startTime
+        }
+        if (endTime != '') {
+            url = url + '&endTime='+endTime
+        }
+        if (operator != '') {
+            url = url + '&operator=' + encodeURI(operator)
+        }
         return this.httpUtils.httpGet('查询应用操作记录', url)
     }
 }

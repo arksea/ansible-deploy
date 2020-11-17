@@ -6,15 +6,34 @@ import net.arksea.ansible.deploy.api.auth.entity.User;
 import net.arksea.ansible.deploy.api.manage.dao.*;
 import net.arksea.ansible.deploy.api.manage.entity.*;
 import net.arksea.ansible.deploy.api.manage.msg.OperationJobInfo;
+import net.arksea.ansible.deploy.api.manage.msg.OperationJobQuery;
+import net.arksea.ansible.deploy.api.manage.msg.OperationJobPage;
 import net.arksea.ansible.deploy.api.operator.dao.OperationJobDao;
 import net.arksea.ansible.deploy.api.operator.dao.OperationTokenDao;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import net.arksea.ansible.deploy.api.operator.entity.OperationToken;
 import net.arksea.restapi.RestException;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -24,6 +43,7 @@ import java.util.*;
 @Component
 public class AppService {
 
+    Logger logger = LogManager.getLogger(AppService.class);
     @Autowired
     private AppDao appDao;
     @Autowired
@@ -47,6 +67,7 @@ public class AppService {
     @Autowired
     UserDao userDao;
 
+    ZoneId zoneId = ZoneId.of("+8");
 
     @Transactional
     public boolean deleteApp(long appId) {
@@ -212,7 +233,7 @@ public class AppService {
     }
 
     public App findOne(final Long id) {
-        return appDao.findOne(id);  //不能使用findOne方法，结果不正确
+        return appDao.findOne(id);
     }
 
     @Transactional
@@ -228,8 +249,39 @@ public class AppService {
         return appDao.findAllGroupIsNull();
     }
 
-    public List<OperationJobInfo> findOperationJobInfos(long appId) {
-        List<OperationJob> jobs = operationJobDao.findByAppId(appId);
+    public OperationJobPage findOperationJobInfos(OperationJobQuery msg) {
+        int page = msg.page < 1 ? 0 : msg.page - 1;
+        Pageable pageable = new PageRequest(page, msg.pageSize, Sort.Direction.DESC, "id");
+        Specification<OperationJob> specification = new Specification<OperationJob>() {
+            @Override
+            public Predicate toPredicate(Root<OperationJob> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                List<Predicate> predicateList = new ArrayList<>();
+                predicateList.add(cb.equal(root.get("appId").as(Long.class), msg.appId));
+                if (StringUtils.isNotBlank(msg.startTime)) {
+                    Timestamp start = Timestamp.valueOf(LocalDateTime.parse(msg.startTime, DateTimeFormatter.ISO_DATE_TIME));
+                    predicateList.add(cb.greaterThanOrEqualTo(root.get("startTime").as(Timestamp.class), start));
+                }
+                if (StringUtils.isNotBlank(msg.endTime)) {
+                    ZonedDateTime zend = ZonedDateTime.parse(msg.endTime, DateTimeFormatter.ISO_DATE_TIME);
+                    LocalDateTime end = zend.withZoneSameInstant(zoneId).toLocalDateTime().plusDays(1);
+                    Timestamp t = Timestamp.valueOf(end);
+                    predicateList.add(cb.lessThan(root.get("startTime").as(Timestamp.class), t));
+                }
+                if (StringUtils.isNotBlank(msg.operator)) {
+                    User user = userDao.findOneByName(msg.operator);
+                    if (user == null) {
+                        throw new ServiceException("未找到用户["+msg.operator+"]");
+                    }
+                    predicateList.add(cb.equal(root.get("operatorId").as(Long.class), user.getId()));
+                }
+                return cb.and(predicateList.toArray(new Predicate[0]));
+            }
+        };
+        Page<OperationJob> jobs = operationJobDao.findAll(specification, pageable);
+        return new OperationJobPage(jobs.getTotalElements(),jobs.getTotalPages(), jobsToInfos(jobs));
+    }
+
+    private List<OperationJobInfo> jobsToInfos(Iterable<OperationJob> jobs) {
         List<OperationJobInfo> infos = new LinkedList<>();
         Map<Long, AppOperation> opMap = new HashMap<>();
         Map<Long, User> userMap = new HashMap<>();

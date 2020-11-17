@@ -8,15 +8,14 @@ import java.sql.Timestamp;
  * Create by xiaohaixing on 2020/11/13
  */
 public class OperationJobInfo {
-    private Long jobId;
-    private String operation;
-    private String operator;
-    private String version;
-    private Timestamp startTime;
-    private Timestamp endTime;
-
-    private OperationJobInfo() {
-    }
+    public final Long jobId;
+    public final String operation;
+    public final String operator;
+    public final String version;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+08:00")
+    public final Timestamp startTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+08:00")
+    public final Timestamp endTime;
 
     public OperationJobInfo(Long jobId, String operation, String operator, String ver, Timestamp startTime, Timestamp endTime) {
         this.jobId = jobId;
@@ -25,31 +24,5 @@ public class OperationJobInfo {
         this.version = ver;
         this.startTime = startTime;
         this.endTime = endTime;
-    }
-
-    public Long getJobId() {
-        return jobId;
-    }
-
-    public String getOperation() {
-        return operation;
-    }
-
-    public String getOperator() {
-        return operator;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+08:00")
-    public Timestamp getStartTime() {
-        return startTime;
-    }
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+08:00")
-    public Timestamp getEndTime() {
-        return endTime;
     }
 }

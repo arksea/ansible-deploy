@@ -13,7 +13,7 @@ import { PageEvent } from '@angular/material/paginator';
     templateUrl: './app-operation-history.component.html'
 })
 export class AppOperationHistoryComponent implements OnInit {
-    pageSize: number = 15
+    pageSize: number = 14
     app: App = new App()
     public form: FormGroup = new FormGroup({
         startTime: new FormControl({ value: '', disabled: true }),

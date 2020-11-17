@@ -252,19 +252,31 @@ public class AppService {
     public OperationJobPage findOperationJobInfos(OperationJobQuery msg) {
         int page = msg.page < 1 ? 0 : msg.page - 1;
         Pageable pageable = new PageRequest(page, msg.pageSize, Sort.Direction.DESC, "id");
+        App app = appDao.findOne(msg.appId);
+        List<Long> statusOperationIds = new LinkedList<>();
+        if (app != null) {
+            Iterable<AppOperation> ops = appOperationDao.findByAppTypeId(app.getAppType().getId());
+            for (AppOperation op : ops) {
+                if (op.getType() == AppOperationType.STATUS) {
+                    statusOperationIds.add(op.getId());
+                }
+            }
+        }
         Specification<OperationJob> specification = new Specification<OperationJob>() {
             @Override
             public Predicate toPredicate(Root<OperationJob> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 List<Predicate> predicateList = new ArrayList<>();
                 predicateList.add(cb.equal(root.get("appId").as(Long.class), msg.appId));
                 if (StringUtils.isNotBlank(msg.startTime)) {
-                    Timestamp start = Timestamp.valueOf(LocalDateTime.parse(msg.startTime, DateTimeFormatter.ISO_DATE_TIME));
-                    predicateList.add(cb.greaterThanOrEqualTo(root.get("startTime").as(Timestamp.class), start));
+                    ZonedDateTime z = ZonedDateTime.parse(msg.startTime, DateTimeFormatter.ISO_DATE_TIME);
+                    LocalDateTime l = z.withZoneSameInstant(zoneId).toLocalDateTime();
+                    Timestamp t = Timestamp.valueOf(l);
+                    predicateList.add(cb.greaterThanOrEqualTo(root.get("startTime").as(Timestamp.class), t));
                 }
                 if (StringUtils.isNotBlank(msg.endTime)) {
-                    ZonedDateTime zend = ZonedDateTime.parse(msg.endTime, DateTimeFormatter.ISO_DATE_TIME);
-                    LocalDateTime end = zend.withZoneSameInstant(zoneId).toLocalDateTime().plusDays(1);
-                    Timestamp t = Timestamp.valueOf(end);
+                    ZonedDateTime z = ZonedDateTime.parse(msg.endTime, DateTimeFormatter.ISO_DATE_TIME);
+                    LocalDateTime l = z.withZoneSameInstant(zoneId).toLocalDateTime().plusDays(1);
+                    Timestamp t = Timestamp.valueOf(l);
                     predicateList.add(cb.lessThan(root.get("startTime").as(Timestamp.class), t));
                 }
                 if (StringUtils.isNotBlank(msg.operator)) {
@@ -273,6 +285,9 @@ public class AppService {
                         throw new ServiceException("未找到用户["+msg.operator+"]");
                     }
                     predicateList.add(cb.equal(root.get("operatorId").as(Long.class), user.getId()));
+                }
+                for (Long opId: statusOperationIds) { //过滤状态查询操作
+                    predicateList.add(cb.notEqual(root.get("operationId").as(Long.class), opId));
                 }
                 return cb.and(predicateList.toArray(new Predicate[0]));
             }

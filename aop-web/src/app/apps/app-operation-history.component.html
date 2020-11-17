@@ -9,7 +9,7 @@
 
     <div class="d-flex mb-2" [formGroup]="form">
         <mat-form-field class="ml-1 mr-5">
-            <mat-label>选择开始时间</mat-label>
+            <mat-label>选择操作时间</mat-label>
             <mat-date-range-input [rangePicker]="picker">
                 <input matStartDate formControlName="startTime" placeholder="开始">
                 <input matEndDate formControlName="endTime" placeholder="结束">
@@ -53,7 +53,7 @@
         </ul>
     </div>
 
-    <mat-paginator [length]="history.total" [pageSize]="pageSize" [pageSizeOptions]="[15, 25, 45, 100]"
+    <mat-paginator [length]="history.total" [pageSize]="pageSize" [pageSizeOptions]="[14, 30, 50, 100]"
         (page)="onPageEvent($event)">
     </mat-paginator>
 </div>

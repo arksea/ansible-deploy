@@ -5,8 +5,8 @@ import static net.arksea.ansible.deploy.api.ResultCode.*;
 import net.arksea.ansible.deploy.api.auth.entity.User;
 import net.arksea.ansible.deploy.api.auth.info.ClientInfo;
 import net.arksea.ansible.deploy.api.auth.service.ClientInfoService;
-import net.arksea.ansible.deploy.api.manage.entity.App;
 import net.arksea.ansible.deploy.api.manage.entity.AppGroup;
+import net.arksea.ansible.deploy.api.manage.msg.GetUserApps;
 import net.arksea.ansible.deploy.api.manage.service.AppService;
 import net.arksea.ansible.deploy.api.manage.service.GroupsService;
 import net.arksea.ansible.deploy.api.manage.service.UsersService;
@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  *
@@ -57,11 +56,13 @@ public class UserController {
 
     //-------------------------------------------------------------------------
     @RequestMapping(path="user/apps", method = RequestMethod.GET, produces = MEDIA_TYPE)
-    public RestResult<List<App>> getUserApps(HttpServletRequest httpRequest) {
+    public RestResult<GetUserApps.Response> getUserApps(
+                @RequestParam int page, @RequestParam int pageSize,
+                @RequestParam(required = false) String nameSearch,
+                HttpServletRequest httpRequest) {
         ClientInfo info = clientInfoService.getClientInfo(httpRequest);
-        List<App> apps = appService.findByUserId(info.userId);
-        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        return new RestResult<>(SUCCEED, apps, reqid);
+        GetUserApps.Request msg = new GetUserApps.Request(info.userId, nameSearch, page, pageSize);
+        return new RestResult<>(SUCCEED, appService.findUserApps(msg), httpRequest);
     }
 
     //-------------------------------------------------------------------------

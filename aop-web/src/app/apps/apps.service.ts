@@ -4,8 +4,8 @@ import { ServiceResponse } from '../utils/http-utils'
 import { HttpUtils } from '../utils/http-utils'
 import { environment } from '../../environments/environment'
 import { map } from 'rxjs/operators'
-import { App, AppGroup, AppType, OperationJob, Version, AppVarDefine, 
-         AppOperation, Host, Port, OperationJobPage } from '../app.entity'
+import { App, AppGroup, AppType, OperationJob, Version, AppVarDefine } from '../app.entity'
+import { AppOperation, Host, Port, OperationJobPage, UserAppsPage } from '../app.entity'
 
 class StartOpeartionJob {
     appId: number
@@ -48,7 +48,7 @@ export class AppsService {
         )
     }
 
-    public queryUserApps() {
+    public queryVarDefine() {
         let url = environment.apiUrl + '/api/varDefines'
         this.httpUtils.httpGet('查询变量定义',url).subscribe(ret => {
             if (ret.code == 0) {
@@ -60,8 +60,11 @@ export class AppsService {
         })
     }
 
-    public getUserApps(): Observable<ServiceResponse<App[]>> {
-        let url = environment.apiUrl + '/api/user/apps'
+    public getUserApps(page: number, pageSize: number, nameSearch: string): Observable<ServiceResponse<UserAppsPage>> {
+        let url = environment.apiUrl + '/api/user/apps?page='+page+'&pageSize='+pageSize
+        if (nameSearch != '') {
+            url = url + '&nameSearch='+nameSearch
+        }
         return this.httpUtils.httpGet('查询用户应用', url)
     }
 

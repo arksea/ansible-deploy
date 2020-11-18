@@ -144,3 +144,9 @@ export class OperationJobPage {
     totalPages: number = 0
     items: Array<OperationJobInfo> = []
 }
+
+export class UserAppsPage {
+    total: number = 0
+    totalPages: number = 0
+    items: Array<App> = []
+}

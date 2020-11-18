@@ -5,9 +5,8 @@ import net.arksea.ansible.deploy.api.auth.dao.UserDao;
 import net.arksea.ansible.deploy.api.auth.entity.User;
 import net.arksea.ansible.deploy.api.manage.dao.*;
 import net.arksea.ansible.deploy.api.manage.entity.*;
-import net.arksea.ansible.deploy.api.manage.msg.OperationJobInfo;
-import net.arksea.ansible.deploy.api.manage.msg.OperationJobQuery;
-import net.arksea.ansible.deploy.api.manage.msg.OperationJobPage;
+import net.arksea.ansible.deploy.api.manage.msg.GetOperationJobHistory;
+import net.arksea.ansible.deploy.api.manage.msg.GetUserApps;
 import net.arksea.ansible.deploy.api.operator.dao.OperationJobDao;
 import net.arksea.ansible.deploy.api.operator.dao.OperationTokenDao;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
@@ -241,15 +240,30 @@ public class AppService {
         deleteApp(id);
     }
 
-    public List<App> findByUserId(long userId) {
-        return appDao.findByUserId(userId);
+    public GetUserApps.Response findUserApps(GetUserApps.Request msg) {
+        int offset = (msg.page < 1 ? 0 : msg.page - 1) * msg.pageSize;
+        List<App> apps;
+        long total;
+        if (StringUtils.isBlank(msg.nameSearch)) {
+            apps = appDao.findPageByUserId(msg.userId, offset, msg.pageSize);
+            total = appDao.getUserAppsCount(msg.userId);
+        } else {
+            String like = "%" + msg.nameSearch + "%";
+            apps = appDao.findPageByUserId(msg.userId, like, offset, msg.pageSize);
+            total = appDao.getUserAppsCount(msg.userId, like);
+        }
+        long totalPages = total/msg.pageSize;
+        if (total % msg.pageSize > 0) {
+            totalPages++;
+        }
+        return new GetUserApps.Response(total, totalPages, apps);
     }
 
     public List<App> findNotInGroup() {
         return appDao.findAllGroupIsNull();
     }
 
-    public OperationJobPage findOperationJobInfos(OperationJobQuery msg) {
+    public GetOperationJobHistory.Response findOperationJobInfos(GetOperationJobHistory.Request msg) {
         int page = msg.page < 1 ? 0 : msg.page - 1;
         Pageable pageable = new PageRequest(page, msg.pageSize, Sort.Direction.DESC, "id");
         App app = appDao.findOne(msg.appId);
@@ -293,11 +307,11 @@ public class AppService {
             }
         };
         Page<OperationJob> jobs = operationJobDao.findAll(specification, pageable);
-        return new OperationJobPage(jobs.getTotalElements(),jobs.getTotalPages(), jobsToInfos(jobs));
+        return new GetOperationJobHistory.Response(jobs.getTotalElements(),jobs.getTotalPages(), jobsToInfos(jobs));
     }
 
-    private List<OperationJobInfo> jobsToInfos(Iterable<OperationJob> jobs) {
-        List<OperationJobInfo> infos = new LinkedList<>();
+    private List<GetOperationJobHistory.OperationJobInfo> jobsToInfos(Iterable<OperationJob> jobs) {
+        List<GetOperationJobHistory.OperationJobInfo> infos = new LinkedList<>();
         Map<Long, AppOperation> opMap = new HashMap<>();
         Map<Long, User> userMap = new HashMap<>();
         Map<Long, Version> verMap = new HashMap<>();
@@ -314,7 +328,7 @@ public class AppService {
             String operation = op.getName();
             String operator = user.getName();
 
-            infos.add(new OperationJobInfo(j.getId(), operation, operator, version, j.getStartTime(), j.getEndTime()));
+            infos.add(new GetOperationJobHistory.OperationJobInfo(j.getId(), operation, operator, version, j.getStartTime(), j.getEndTime()));
         }
         return infos;
     }

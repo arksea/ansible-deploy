@@ -197,7 +197,7 @@ task ngBuildDev(type: Exec) {
 }
 //拷贝部署文件到指定目录
 task publishDev {
-    dependsOn(build,ngBuildDev)
+    dependsOn(build)
     doLast {
         //拷贝前先删除部署目录
         delete('tomcat/webapps/aop-web-server')

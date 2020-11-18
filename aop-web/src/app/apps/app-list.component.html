@@ -11,25 +11,31 @@
                     <div class="mr-auto">
                         <form (submit)="search($event)" [formGroup]="searchForm">
                             <div class="d-flex">
-                                <div><input type="text" class="form-control" id="searchPrefix"
-                                        formControlName="searchPrefix"></div>
-                                <div><button type="submit" class="btn btn-info form-control ml-2">搜索</button></div>
+                                <div>
+                                    <input type="text" class="form-control" id="searchPrefix"
+                                        placeholder="请输入应用名称或部分名称"
+                                        formControlName="searchPrefix">
+                                </div>
+                                <div>
+                                    <button type="submit" class="btn btn-info form-control ml-2">搜索</button>
+                                </div>
                             </div>
                         </form>
                     </div>
                     <div class="btn-group" role="group">
                         <button id="btnGroupDropNewApp" type="button" class="btn btn-success dropdown-toggle"
-                            [disabled]="account.perm('应用:修改')"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            [disabled]="account.perm('应用:修改')" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
                             新建应用
                         </button>
                         <div class="dropdown-menu" aria-labelledby="btnGroupDropNewApp">
-                            <a class="dropdown-item" *ngFor="let t of appTypes" (click)="onNewBtnClick(t)">{{t.name}}</a>
+                            <a class="dropdown-item" *ngFor="let t of appTypes"
+                                (click)="onNewBtnClick(t)">{{t.name}}</a>
                         </div>
                     </div>
                 </div>
             </li>
-            <li *ngFor="let a of appList;index as i;" class="list-group-item">
+            <li *ngFor="let a of appList.items;index as i;" class="list-group-item">
                 <div class="d-flex mt-2">
                     <div class="mr-auto">
                         <a (click)="onViewBtnClick(a)" class="btn btn-link p-0 m-0">
@@ -39,10 +45,9 @@
                     </div>
                     <div class="p-1 mt-1">
                         <button type="button" class="btn btn-sm btn-outline-secondary"
-                            [disabled]="account.perm('应用:查询')"
-                            [routerLink]="['/apps',a.id,'operations']">操作记录</button>
+                            [disabled]="account.perm('应用:查询')" [routerLink]="['/apps',a.id,'operations']">操作记录</button>
                     </div>
-                    <div class="p-1 mt-1" [title] = "appHasTargetHosts(a) ? '请先删除此应用的所有目标主机' : ''">
+                    <div class="p-1 mt-1" [title]="appHasTargetHosts(a) ? '请先删除此应用的所有目标主机' : ''">
                         <button type="button" class="btn btn-sm btn-outline-danger"
                             [disabled]="account.perm('应用:修改') || appHasTargetHosts(a)"
                             (click)="onDelBtnClick(a)">删除</button>
@@ -55,4 +60,7 @@
             </li>
         </ul>
     </div>
+    <mat-paginator [length]="appList.total" [pageSize]="pageSize" [pageSizeOptions]="[14, 30, 50, 100]"
+        (page)="onPageEvent($event)">
+    </mat-paginator>
 </div>

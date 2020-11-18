@@ -37,7 +37,6 @@ import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core'
     // `MomentDateAdapter` and `MAT_MOMENT_DATE_FORMATS` can be automatically provided by importing
     // `MatMomentDateModule` in your applications root module. We provide it at the component level
     // here, due to limitations of our example generation script.
-    // {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: true}}
     // {
     //   provide: DateAdapter,
     //   useClass: MomentDateAdapter,

@@ -2,8 +2,7 @@ package net.arksea.ansible.deploy.api.manage.rest;
 
 import static net.arksea.ansible.deploy.api.ResultCode.*;
 import net.arksea.ansible.deploy.api.manage.entity.App;
-import net.arksea.ansible.deploy.api.manage.msg.OperationJobQuery;
-import net.arksea.ansible.deploy.api.manage.msg.OperationJobPage;
+import net.arksea.ansible.deploy.api.manage.msg.GetOperationJobHistory;
 import net.arksea.ansible.deploy.api.manage.service.AppService;
 import net.arksea.restapi.BaseResult;
 import net.arksea.restapi.ErrorResult;
@@ -76,15 +75,15 @@ public class AppsController {
     //-------------------------------------------------------------------------
     @RequiresPermissions("应用:查询")
     @RequestMapping(path="{appId}/operations", method = RequestMethod.GET, produces = MEDIA_TYPE)
-    public RestResult<OperationJobPage> getAppOperationHistory(
+    public RestResult<GetOperationJobHistory.Response> getAppOperationHistory(
                     @PathVariable("appId") long appId,
                     @RequestParam int page, @RequestParam int pageSize,
                     @RequestParam(required = false) String startTime,
                     @RequestParam(required = false) String endTime,
                     @RequestParam(required = false) String operator,
                     HttpServletRequest httpRequest) {
-        OperationJobQuery query = new OperationJobQuery(appId,page,pageSize,startTime,endTime,operator);
-        OperationJobPage infos = appService.findOperationJobInfos(query);
+        GetOperationJobHistory.Request query = new GetOperationJobHistory.Request(appId,page,pageSize,startTime,endTime,operator);
+        GetOperationJobHistory.Response infos = appService.findOperationJobInfos(query);
         return new RestResult<>(SUCCEED, infos, httpRequest);
     }
 }

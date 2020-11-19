@@ -1,29 +1,26 @@
-import { Component, OnInit, ViewChild } from '@angular/core'
+import { Component, OnInit } from '@angular/core'
 import { FormDataEvent } from '@angular/forms/esm2015'
-import { FormGroup, FormControl, Validators, NgModel } from '@angular/forms'
+import { FormGroup, FormControl, Validators } from '@angular/forms'
+import { PageEvent } from '@angular/material/paginator';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap'
 import { EditHostDialog } from './edit-host.dialog'
 import { HostsService } from './hosts.service'
 import { ConfirmDialog } from '../utils/confirm.dialog'
 import { MessageNotify } from '../utils/message-notify'
-import { Host } from '../app.entity'
+import { Host, HostsPage } from '../app.entity'
 import { AccountService } from '../account/account.service'
 @Component({
     selector: 'hosts',
     templateUrl: './hosts.component.html'
 })
 export class HostsComponent implements OnInit {
-
-    hostList: Array<Host> = []
+    pageSize: number = 8
+    hostList: HostsPage = new HostsPage()
 
     constructor(private modal: NgbModal, public svc: HostsService,
             public account: AccountService,
             private alert: MessageNotify) {
-        this.svc.getHosts().subscribe(ret => {
-            if (ret.code == 0) {
-                this.hostList = ret.result
-            }
-        })
+        this.query(0, -1, '')
     }
 
     searchForm: FormGroup = new FormGroup({
@@ -35,6 +32,23 @@ export class HostsComponent implements OnInit {
     search(event: FormDataEvent) {
         event.preventDefault()
         let pre = this.searchForm.get('searchPrefix').value
+        this.query(0, -1, pre)
+    }
+
+    public onPageEvent(event: PageEvent): PageEvent {
+        let page = event.pageIndex + 1;
+        this.pageSize = event.pageSize;
+        let search = this.searchForm.get('searchPrefix').value
+        this.query(page, -1, search)
+        return event;
+    }
+
+    query(page:number, groupId: number, ipSearch: string) {
+        this.svc.getHosts(page, this.pageSize, groupId, ipSearch).subscribe(ret => {
+            if (ret.code == 0) {
+                this.hostList = ret.result
+            }
+        })
     }
 
     newHost() {
@@ -43,7 +57,7 @@ export class HostsComponent implements OnInit {
         ref.componentInstance.setHost(host)
         ref.result.then(result => {
             if (result == 'ok') {
-                this.hostList.push(host)
+                this.hostList.items.push(host)
                 this.alert.success('保存成功')
             }
         }, reason => {})

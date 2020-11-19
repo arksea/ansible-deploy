@@ -1,7 +1,6 @@
 package net.arksea.ansible.deploy.api.manage.dao;
 
 import net.arksea.ansible.deploy.api.manage.entity.App;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -11,7 +10,7 @@ import java.util.List;
  *
  * @author xiaohaixing
  */
-public interface AppDao extends CrudRepository<App, Long>, JpaSpecificationExecutor<App> {
+public interface AppDao extends CrudRepository<App, Long> {
    App findByApptag(String tag);
 
    @Query(nativeQuery = true,

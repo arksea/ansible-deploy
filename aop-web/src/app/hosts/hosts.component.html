@@ -13,39 +13,44 @@
                     <div class="mr-auto">
                         <form (submit)="search($event)" [formGroup]="searchForm">
                             <div class="d-flex">
-                                <div><input type="text" class="form-control" id="searchPrefix"
-                                        formControlName="searchPrefix"></div>
-                                <div><button type="submit" class="btn btn-info form-control ml-2">搜索</button></div>
+                                <div>
+                                    <input type="text" class="form-control" id="searchPrefix"
+                                        placeholder="请输入要搜索的主机IP"
+                                        formControlName="searchPrefix">
+                                </div>
+                                <div>
+                                    <button type="submit" class="btn btn-info form-control ml-2">搜索</button>
+                                </div>
                             </div>
                         </form>
                     </div>
                     <button type="button" class="btn btn-success" (click)="newHost()"
-                        [disabled]="account.perm('组管理:修改')">新增主机
+                        [disabled]="account.perm('主机管理:修改')">新增主机
                     </button>
                 </div>
             </li>
-            <li *ngFor="let h of hostList;index as i;" class="list-group-item">
+            <li *ngFor="let h of hostList.items;index as i;" class="list-group-item">
                 <div class="d-flex mt-2">
                     <div class="mr-auto">
                         <strong>{{h.privateIp}}</strong><span [hidden]="h.enabled" class="text-danger"> (已禁用)</span>
                         <p>{{h.description}}</p>
                     </div>
                     <div class="p-1 mt-1">
-                            <button type="button" class="btn btn-sm"
-                                [class.btn-outline-danger]="h.enabled"
-                                [class.btn-outline-info]="!h.enabled"
-                                [disabled]="account.perm('组管理:修改')"
-                                (click)="switchStatus(h)">{{h.enabled?'禁用':'启用'}}
-                            </button>
-                        </div>
+                        <button type="button" class="btn btn-sm" [class.btn-outline-danger]="h.enabled"
+                            [class.btn-outline-info]="!h.enabled" [disabled]="account.perm('主机管理:修改')"
+                            (click)="switchStatus(h)">{{h.enabled?'禁用':'启用'}}
+                        </button>
+                    </div>
                     <div class="p-1 mt-1">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
-                            [disabled]="account.perm('组管理:修改')"
-                            (click)="editHost(h)">编辑
+                            [disabled]="account.perm('主机管理:修改')" (click)="editHost(h)">编辑
                         </button>
                     </div>
                 </div>
             </li>
         </ul>
     </div>
+    <mat-paginator [length]="hostList.total" [pageSize]="pageSize" [pageSizeOptions]="[14, 30, 50, 100]"
+        (page)="onPageEvent($event)">
+    </mat-paginator>
 </div>

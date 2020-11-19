@@ -150,3 +150,9 @@ export class UserAppsPage {
     totalPages: number = 0
     items: Array<App> = []
 }
+
+export class HostsPage {
+    total: number = 0
+    totalPages: number = 0
+    items: Array<Host> = []
+}

@@ -20,7 +20,8 @@
             <input type="password" class="form-control" id="password" formControlName="password">
           </div>
           <button type="submit" class="btn btn-primary form-control btn-top" [disabled]="!loginForm.valid">登录</button>
-          <a class="link form-control" [routerLink]="['/signup']">注册新用户</a>
+          <a class="link form-control" [hidden]="!openRegister" [routerLink]="['/signup']">注册新用户</a>
+          <div class="text-danger text-center mt-2" [hidden]="openRegister">系统未开放注册，请联系管理员创建账号</div>
         </form>
       </div>
     </div>

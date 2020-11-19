@@ -63,6 +63,24 @@ export class HostsComponent implements OnInit {
         }, reason => {})
     }
 
+    onDelHostBtnClick(host: Host) {
+        let ref = this.modal.open(ConfirmDialog)
+        ref.componentInstance.title = "删除主机: " + host.privateIp
+        ref.componentInstance.message = "确认要删除吗?"
+        ref.result.then(result => {
+            if (result == "ok") {
+                this.svc.deleteHost(host.id).subscribe(ret => {
+                    if (ret.code == 0) {
+                        this.hostList.items = this.hostList.items.filter(it => it.id != host.id)
+                        this.alert.success('已删除')
+                    } else {
+                        this.alert.error('无法删除主机，可能有应用部署')
+                    }
+                })
+            }
+        }, resaon => { })
+    }
+
     editHost(host: Host) {
         let ref: NgbModalRef = this.modal.open(EditHostDialog)
         ref.componentInstance.setHost(host)
@@ -76,9 +94,8 @@ export class HostsComponent implements OnInit {
     switchStatus(host: Host) {
         let ref = this.modal.open(ConfirmDialog)
         let opType = host.enabled ? "禁用" : "启用"
-        ref.componentInstance.title = opType + "主机: " + host.privateIp
-        ref.componentInstance.message = "确认要" + opType + "吗?"
-        ref.componentInstance.detail = "此操作将把主机'" + host.privateIp + "'标记为" + opType + "状态, 不会删除或添加主机记录"
+        ref.componentInstance.title = "确认要" + opType + "吗?"
+        ref.componentInstance.message = "此操作将" + opType + "主机: " + host.privateIp
         ref.result.then(result => {
             if (result == "ok") {
                 host.enabled = !host.enabled

@@ -1,10 +1,11 @@
 package net.arksea.ansible.deploy.api.auth.service;
 
+import net.arksea.ansible.deploy.api.ServiceException;
 import net.arksea.ansible.deploy.api.auth.dao.RoleDao;
 import net.arksea.ansible.deploy.api.auth.entity.Role;
 import net.arksea.ansible.deploy.api.auth.entity.User;
 import net.arksea.ansible.deploy.api.auth.dao.UserDao;
-import org.apache.commons.lang3.tuple.Pair;
+import net.arksea.ansible.deploy.api.manage.service.UsersService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +29,15 @@ public class SignupService implements ISignupService {
     private UserDao userDao;
     @Autowired
     private RoleDao roleDao;
+    @Autowired
+    private UsersService usersService;
 
-
-    public Pair<SignupStatus, User> signup(SignupInfo info) {
+    public User signup(SignupInfo info) {
         if (userDao.existsByName(info.getName())) {
-            return Pair.of(SignupStatus.USERNAME_EXISTS, null);
+            throw new ServiceException("注册失败，用户名已被使用");
+        }
+        if (!usersService.getOpenRegister()) {
+            throw new ServiceException("系统未开放注册，请联系管理员创建账号");
         }
         try {
             String salt = CredentialsMatcherImpl.createSalt();
@@ -46,20 +51,19 @@ public class SignupService implements ISignupService {
             Date today = new Date();
             user.setRegisterDate(today);
             user.setLastLogin(today);
-            if ("admin".equals(info.getName())) {
-                Role role = roleDao.findOne(1L);
-                if (role != null) {
-                    Set<Role> roles = new HashSet<>();
-                    roles.add(role);
-                    user.setRoles(roles);
-                }
+            long defaultRole = "admin".equals(info.getName()) ? 1L : 2L;
+            Role role = roleDao.findOne(defaultRole);
+            if (role != null) {
+                Set<Role> roles = new HashSet<>();
+                roles.add(role);
+                user.setRoles(roles);
             }
             User saved = userDao.save(user);
             logger.info("SignUp succeed， name={}, email={}", info.getName(), info.getEmail());
-            return Pair.of(SignupStatus.SUCCEED, saved);
+            return saved;
         } catch (Exception ex) {
             logger.warn("SignUp failed: name={}, email={}", info.getName(), info.getEmail(), ex);
-            return Pair.of(SignupStatus.FAILED, null);
+            throw new ServiceException("注册失败", ex);
         }
     }
 }

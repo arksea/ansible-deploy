@@ -19,16 +19,15 @@
                             </div>
                         </form>
                     </div>
-
-                    <div class="btn-group pr-4" role="group">
-                        <button type="button" class="btn btn-light" routerLinkActive="active" [routerLink]="['/users/active']">活跃的账号</button>
-                        <button type="button" class="btn btn-light" routerLinkActive="active" [routerLink]="['/users/blocked']">禁用的账号</button>
-                    </div>
-        
-                    <!-- <button type="button" class="btn btn-success" 
+                    <mat-slide-toggle class="mr-5 mt-1"
+                        [hidden]="account.loginUser != 'admin'"
+                        [formControl]="openRegistry"
+                        (click)="onUpdateRegStatus($event)">{{openRegistry.value?'开放注册':'关闭注册'}}
+                    </mat-slide-toggle>
+                    <button type="button" class="btn btn-success"
                         [disabled]="account.perm('用户管理:修改')"
-                        (click)="newUser()">新建用户
-                    </button> -->
+                        (click)="onNewUserBtnClick()">新建用户
+                    </button>
                 </div>
             </li>
             <li *ngFor="let u of userList;index as i;" class="list-group-item">
@@ -38,15 +37,16 @@
                         <p>{{u.email}}</p>
                     </div>
                     <div class="p-1">
-                        <button type="button" [hidden]="hiddenUnblockBtn()" 
+                        <button type="button" [hidden]="!u.locked" 
                             [disabled]="account.perm('用户管理:修改')"
                             class="btn btn-outline-info btn-sm"
                             (click)="this.onUnblockBtnClick(u)">启用</button>
                     </div>
                     <div class="p-1">
                         <button type="button" class="btn btn-outline-danger btn-sm"
+                            [hidden]="u.name == 'admin'"
                             [disabled]="account.perm('用户管理:修改')"
-                            (click)="onDelBtnClick(u)">{{getDelBtnLabel()}}</button>
+                            (click)="onDelBtnClick(u)">{{u.locked?'删除':'禁用'}}</button>
                     </div>
                     <div class="p-1">
                         <button type="button" class="btn btn-outline-secondary btn-sm"

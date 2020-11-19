@@ -36,9 +36,14 @@
                         <p>{{h.description}}</p>
                     </div>
                     <div class="p-1 mt-1">
-                        <button type="button" class="btn btn-sm" [class.btn-outline-danger]="h.enabled"
+                        <button type="button" class="btn btn-sm" [class.btn-outline-warning]="h.enabled"
                             [class.btn-outline-info]="!h.enabled" [disabled]="account.perm('主机管理:修改')"
                             (click)="switchStatus(h)">{{h.enabled?'禁用':'启用'}}
+                        </button>
+                    </div>
+                    <div class="p-1 mt-1">
+                        <button type="button" class="btn btn-outline-danger btn-sm"
+                            [disabled]="account.perm('主机管理:修改')" (click)="onDelHostBtnClick(h)">删除
                         </button>
                     </div>
                     <div class="p-1 mt-1">

@@ -78,7 +78,7 @@ public class HostsService {
     @Transactional
     public void deleteHost(long id) {
         try {
-            hostDao.deleteById(id);
+            hostDao.delete(id);
         } catch (Exception ex) {
             throw new RestException("删除主机失败", ex);
         }

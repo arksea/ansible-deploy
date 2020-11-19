@@ -14,8 +14,8 @@ export class UsersService {
         this.queryRoles()
     }
 
-    public getUsers(type: string): Observable<ServiceResponse<Array<User>>> {
-        let url = environment.apiUrl + '/api/users/' + type
+    public getUsers(): Observable<ServiceResponse<Array<User>>> {
+        let url = environment.apiUrl + '/api/users'
         return this.httpUtils.httpGet('查询用户信息', url)
     }
 
@@ -54,4 +54,13 @@ export class UsersService {
         return this.httpUtils.httpPut('更新用户角色列表', url, '')
     }
     
+    public setOpenRegister(status: boolean): Observable<ServiceResponse<any>> {
+        const url = environment.apiUrl + '/api/sys/openRegistry'
+        return this.httpUtils.httpPut('读取开放注册状态', url, status)
+    }
+
+    public getOpenRegister(): Observable<ServiceResponse<boolean>> {
+        const url = environment.apiUrl + '/api/sys/openRegistry'
+        return this.httpUtils.httpGet('读取开放注册状态', url)
+    }
 }

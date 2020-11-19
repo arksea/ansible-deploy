@@ -10,6 +10,7 @@ import { FormGroup,FormControl,Validators } from '@angular/forms';
 })
 export class LoginComponent implements OnInit {
 
+  public openRegister: boolean = true;
   constructor(private accountService: AccountService) {
   }
 
@@ -19,6 +20,11 @@ export class LoginComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.accountService.getOpenRegister().subscribe(ret => {
+        if (ret.code == 0) {
+          this.openRegister = ret.result
+        }
+    })
   }
 
   login(event: FormDataEvent) {

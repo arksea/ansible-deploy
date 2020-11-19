@@ -67,7 +67,11 @@ export class AccountService {
                     this.getPermsAndRoles(info.name)
                     localStorage.setItem('token_expires', response.result)
                     localStorage.setItem('login_user', info.name)
-                    this.router.navigate(['/apps'])
+                    if (this.loginUser == 'admin') {
+                        this.router.navigate(['/users'])
+                    } else {
+                        this.router.navigate(['/apps'])
+                    }
                 } else {
                     this.loginUser = ''
                     this.loginUserPerms = this.EMETY_SET
@@ -174,5 +178,10 @@ export class AccountService {
     public modifyPassword(pwd: string): Observable<ServiceResponse<boolean>> {
         const url = environment.accountApiUrl + '/api/user/password'
         return this.httpUtils.httpPut('子权限查询', url, pwd)
+    }
+
+    public getOpenRegister(): Observable<ServiceResponse<boolean>> {
+        const url = environment.apiUrl + '/api/sys/openRegistry'
+        return this.httpUtils.httpGet('读取开放注册状态', url)
     }
 }

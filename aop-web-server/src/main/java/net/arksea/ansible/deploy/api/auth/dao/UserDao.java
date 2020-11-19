@@ -15,9 +15,6 @@ public interface UserDao extends CrudRepository<User, Long>, JpaSpecificationExe
 
     boolean existsByName(String name);
 
-    @Query("select u from User u where u.locked=?1 order by u.name")
-    Iterable<User> findAllByLocked(boolean locked);
-
     @Query(nativeQuery = true,
            value="select * from sys_users u where u.id not in (select g.user_id from dp2_app_group_users g where g.app_group_id=?1)")
     Iterable<User> findUsersNotInGroup(long groupId);

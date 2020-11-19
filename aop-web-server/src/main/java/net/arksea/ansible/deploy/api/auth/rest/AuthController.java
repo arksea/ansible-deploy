@@ -48,7 +48,6 @@ public class AuthController {
         return RestUtils.createResult(ResultCode.SUCCEED, roles, reqid);
     }
 
-    @RequiresPermissions("用户管理:查询")
     @RequestMapping(path="permissions/childs", method = RequestMethod.GET, produces = MEDIA_TYPE)
     public String getAllPermissionsChilds(final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");

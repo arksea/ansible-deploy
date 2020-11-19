@@ -9,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatSelectModule } from '@angular/material/select'
 import { MatDialogModule } from '@angular/material/dialog'
 import { MatMomentDateModule, MomentDateModule } from '@angular/material-moment-adapter'
+import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 import { MatPaginatorModule } from '@angular/material/paginator'
 import { MatInputModule } from '@angular/material/input'
 import { MAT_MOMENT_DATE_FORMATS } from '@angular/material-moment-adapter'
@@ -28,7 +29,8 @@ import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core'
     MatMomentDateModule,
     MomentDateModule,
     MatPaginatorModule,
-    MatInputModule
+    MatInputModule,
+    MatSlideToggleModule
   ],
   providers: [
     // The locale would typically be provided on the root module of your application. We do it at

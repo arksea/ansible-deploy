@@ -75,8 +75,10 @@ export class GroupListComponent implements OnInit {
     }
 
     onViewBtnClick(group: AppGroup) {
-        this.svc.setSelectedGroup(group.id)
-        this.router.navigate(['/groups', group.id, 'members'])
+        if (this.account.hasPerm('组管理:修改')) {
+            this.svc.setSelectedGroup(group.id)
+            this.router.navigate(['/groups', group.id, 'members'])
+        }
     }
 
     perm(): boolean {

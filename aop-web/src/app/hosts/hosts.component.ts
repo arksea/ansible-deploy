@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core'
 import { FormDataEvent } from '@angular/forms/esm2015'
 import { FormGroup, FormControl, Validators } from '@angular/forms'
-import { PageEvent } from '@angular/material/paginator';
+import { PageEvent } from '@angular/material/paginator'
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap'
 import { EditHostDialog } from './edit-host.dialog'
 import { HostsService } from './hosts.service'
 import { ConfirmDialog } from '../utils/confirm.dialog'
 import { MessageNotify } from '../utils/message-notify'
-import { Host, HostsPage } from '../app.entity'
+import { Host, Page } from '../app.entity'
 import { AccountService } from '../account/account.service'
 @Component({
     selector: 'hosts',
@@ -15,12 +15,12 @@ import { AccountService } from '../account/account.service'
 })
 export class HostsComponent implements OnInit {
     pageSize: number = 8
-    hostList: HostsPage = new HostsPage()
+    hostList: Page<Host> = new Page()
 
     constructor(private modal: NgbModal, public svc: HostsService,
             public account: AccountService,
             private alert: MessageNotify) {
-        this.query(0, -1, '')
+        this.query(0, '')
     }
 
     searchForm: FormGroup = new FormGroup({
@@ -32,19 +32,19 @@ export class HostsComponent implements OnInit {
     search(event: FormDataEvent) {
         event.preventDefault()
         let pre = this.searchForm.get('searchPrefix').value
-        this.query(0, -1, pre)
+        this.query(0, pre)
     }
 
     public onPageEvent(event: PageEvent): PageEvent {
         let page = event.pageIndex + 1;
         this.pageSize = event.pageSize;
         let search = this.searchForm.get('searchPrefix').value
-        this.query(page, -1, search)
+        this.query(page, search)
         return event;
     }
 
-    query(page:number, groupId: number, ipSearch: string) {
-        this.svc.getHosts(page, this.pageSize, groupId, ipSearch).subscribe(ret => {
+    query(page:number, ipSearch: string) {
+        this.svc.getHosts(page, this.pageSize, ipSearch).subscribe(ret => {
             if (ret.code == 0) {
                 this.hostList = ret.result
             }

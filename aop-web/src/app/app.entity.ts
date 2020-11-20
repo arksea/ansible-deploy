@@ -139,20 +139,8 @@ export class OperationJobInfo {
     endTime: string = ''
 }
 
-export class OperationJobPage {
+export class Page<T> {
     total: number = 0
     totalPages: number = 0
-    items: Array<OperationJobInfo> = []
-}
-
-export class UserAppsPage {
-    total: number = 0
-    totalPages: number = 0
-    items: Array<App> = []
-}
-
-export class HostsPage {
-    total: number = 0
-    totalPages: number = 0
-    items: Array<Host> = []
+    items: Array<T> = []
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
 import { User, Role } from './users.entity'
+import { Page } from '../app.entity'
 import { ServiceResponse } from '../utils/http-utils'
 import { HttpUtils } from '../utils/http-utils'
 import { environment } from '../../environments/environment'
@@ -14,9 +15,12 @@ export class UsersService {
         this.queryRoles()
     }
 
-    public getUsers(): Observable<ServiceResponse<Array<User>>> {
-        let url = environment.apiUrl + '/api/users'
-        return this.httpUtils.httpGet('查询用户信息', url)
+    public getUsers(page: number, pageSize: number, nameSearch: string): Observable<ServiceResponse<Page<User>>> {
+        let url = environment.apiUrl + '/api/users?page='+page+'&pageSize='+pageSize
+        if (nameSearch != '') {
+            url = url + '&nameSearch='+nameSearch
+        }
+        return this.httpUtils.httpGet('查询用户列表', url)
     }
 
     private queryRoles() {

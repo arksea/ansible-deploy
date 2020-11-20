@@ -5,7 +5,7 @@ import { HttpUtils } from '../utils/http-utils'
 import { environment } from '../../environments/environment'
 import { map } from 'rxjs/operators'
 import { App, AppGroup, AppType, OperationJob, Version, AppVarDefine } from '../app.entity'
-import { AppOperation, Host, Port, OperationJobPage, UserAppsPage } from '../app.entity'
+import { AppOperation, Host, Port, Page } from '../app.entity'
 
 class StartOpeartionJob {
     appId: number
@@ -60,7 +60,7 @@ export class AppsService {
         })
     }
 
-    public getUserApps(page: number, pageSize: number, nameSearch: string): Observable<ServiceResponse<UserAppsPage>> {
+    public getUserApps(page: number, pageSize: number, nameSearch: string): Observable<ServiceResponse<Page<App>>> {
         let url = environment.apiUrl + '/api/user/apps?page='+page+'&pageSize='+pageSize
         if (nameSearch != '') {
             url = url + '&nameSearch='+nameSearch
@@ -195,7 +195,7 @@ export class AppsService {
     public getAppOperationJobHistory(appId: number,
                 page: number, pageSize: number,
                 startTime: string, endTime: string,
-                operator: string): Observable<ServiceResponse<OperationJobPage>> {
+                operator: string): Observable<ServiceResponse<Page<OperationJob>>> {
         let url = environment.apiUrl + '/api/apps/' + appId + '/operations?page='+page+'&pageSize='+pageSize
         if (startTime != '') {
             url = url + '&startTime='+startTime

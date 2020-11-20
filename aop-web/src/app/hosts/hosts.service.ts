@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
-import { Host, HostsPage } from '../app.entity'
+import { Host, Page } from '../app.entity'
 import { ServiceResponse } from '../utils/http-utils'
 import { HttpUtils } from '../utils/http-utils'
 import { environment } from '../../environments/environment'
@@ -21,11 +21,8 @@ export class HostsService {
         return this.httpUtils.httpDelete('删除主机', url)
     }
 
-    public getHosts(page: number, pageSize: number, groupId: number, ipSearch: string): Observable<ServiceResponse<HostsPage>> {
+    public getHosts(page: number, pageSize: number, ipSearch: string): Observable<ServiceResponse<Page<Host>>> {
         let url = environment.apiUrl + '/api/hosts?page='+page+'&pageSize='+pageSize
-        if (groupId != null && groupId != undefined) {
-            url = url + '&groupId='+groupId
-        }
         if (ipSearch != '') {
             url = url + '&ipSearch='+ipSearch
         }

@@ -16,6 +16,16 @@ public interface UserDao extends CrudRepository<User, Long>, JpaSpecificationExe
     boolean existsByName(String name);
 
     @Query(nativeQuery = true,
+            value ="select u.* from sys_users u inner join dp2_app_group_users gu " +
+                    " on gu.app_group_id = ?1 and u.id = gu.app_group_id order by u.name limit ?2, ?3")
+    List<User> findPageInGroupId(long groupId, int offset, int count);
+
+    @Query(nativeQuery = true,
+           value ="select count(*) from sys_users u inner join dp2_app_group_users gu " +
+                  " on gu.app_group_id = ?1 and u.id = gu.app_group_id")
+    long getUsersCountInGroupId(long groupId);
+
+    @Query(nativeQuery = true,
            value="select * from sys_users u where u.id not in (select g.user_id from dp2_app_group_users g where g.app_group_id=?1)")
     Iterable<User> findUsersNotInGroup(long groupId);
 

@@ -15,12 +15,12 @@ public interface AppDao extends CrudRepository<App, Long> {
 
    @Query(nativeQuery = true,
            value ="select app.* from dp2_app_group_users gu, dp2_app app " +
-                   " where gu.user_id = ?1 and app.app_group_id = gu.app_group_id limit ?2, ?3")
+                   " where gu.user_id = ?1 and app.app_group_id = gu.app_group_id order by app.apptag limit ?2, ?3")
    List<App> findPageByUserId(long userId, int offset, int count);
 
    @Query(nativeQuery = true,
            value ="select app.* from dp2_app_group_users gu, dp2_app app " +
-                   " where gu.user_id = ?1 and app.app_group_id = gu.app_group_id and app.apptag like ?2 limit ?3, ?4")
+                   " where gu.user_id = ?1 and app.app_group_id = gu.app_group_id and app.apptag like ?2 order by app.apptag limit ?3, ?4")
    List<App> findPageByUserId(long userId, String nameSearch, int offset, int count);
 
    @Query(nativeQuery = true,

@@ -8,10 +8,19 @@ import net.arksea.ansible.deploy.api.auth.entity.User;
 import net.arksea.ansible.deploy.api.auth.service.CredentialsMatcherImpl;
 import net.arksea.ansible.deploy.api.manage.dao.SystemPropertyDao;
 import net.arksea.ansible.deploy.api.manage.entity.SystemProperty;
+import net.arksea.ansible.deploy.api.manage.msg.GetUsers;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -35,8 +44,18 @@ public class UsersService {
         return roleDao.findAll();
     }
 
-    public Iterable<User> getUsers() {
-        return userDao.findAll();
+    public GetUsers.Response findUsers(GetUsers.Request msg) {
+        int page = msg.page < 1 ? 0 : msg.page - 1;
+        Pageable pageable = new PageRequest(page, msg.pageSize, Sort.Direction.ASC, "name");
+        Specification<User> specification = (root, query, cb) -> {
+            List<Predicate> predicateList = new ArrayList<>();
+            if (StringUtils.isNotBlank(msg.nameSearch)) {
+                predicateList.add(cb.like(root.get("name"), "%" + msg.nameSearch + "%"));
+            }
+            return cb.and(predicateList.toArray(new Predicate[0]));
+        };
+        Page<User> users = userDao.findAll(specification, pageable);
+        return new GetUsers.Response(users.getTotalElements(),users.getTotalPages(), users.getContent());
     }
 
     public Iterable<User> getUsersNotInGroup(long groupId) {

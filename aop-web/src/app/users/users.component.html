@@ -19,50 +19,45 @@
                             </div>
                         </form>
                     </div>
-                    <mat-slide-toggle class="mr-5 mt-1"
-                        [hidden]="account.loginUser != 'admin'"
-                        [formControl]="openRegistry"
-                        (click)="onUpdateRegStatus($event)">{{openRegistry.value?'开放注册':'关闭注册'}}
+                    <mat-slide-toggle class="mr-5 mt-1" [hidden]="account.loginUser != 'admin'"
+                        [formControl]="openRegistry" (click)="onUpdateRegStatus($event)">
+                        {{openRegistry.value?'开放注册':'关闭注册'}}
                     </mat-slide-toggle>
-                    <button type="button" class="btn btn-success"
-                        [disabled]="account.perm('用户管理:修改')"
+                    <button type="button" class="btn btn-success" [disabled]="account.perm('用户管理:修改')"
                         (click)="onNewUserBtnClick()">新建用户
                     </button>
                 </div>
             </li>
-            <li *ngFor="let u of userList;index as i;" class="list-group-item">
+            <li *ngFor="let u of userList.items;index as i;" class="list-group-item">
                 <div class="d-flex mt-2">
                     <div class="mr-auto">
                         <strong>{{u.name}}</strong>
                         <p>{{u.email}}</p>
                     </div>
                     <div class="p-1">
-                        <button type="button" [hidden]="!u.locked" 
-                            [disabled]="account.perm('用户管理:修改')"
-                            class="btn btn-outline-info btn-sm"
-                            (click)="this.onUnblockBtnClick(u)">启用</button>
+                        <button type="button" [hidden]="!u.locked" [disabled]="account.perm('用户管理:修改')"
+                            class="btn btn-outline-info btn-sm" (click)="this.onUnblockBtnClick(u)">启用</button>
                     </div>
                     <div class="p-1">
-                        <button type="button" class="btn btn-outline-danger btn-sm"
-                            [hidden]="u.name == 'admin'"
+                        <button type="button" class="btn btn-outline-danger btn-sm" [hidden]="u.name == 'admin'"
                             [disabled]="account.perm('用户管理:修改')"
                             (click)="onDelBtnClick(u)">{{u.locked?'删除':'禁用'}}</button>
                     </div>
                     <div class="p-1">
-                        <button type="button" class="btn btn-outline-secondary btn-sm"
-                            title="重置密码"
-                            [disabled]="account.perm('用户管理:修改')"
-                            (click)="onResetBtnClick(u)">重置
+                        <button type="button" class="btn btn-outline-secondary btn-sm" title="重置密码"
+                            [disabled]="account.perm('用户管理:修改')" (click)="onResetBtnClick(u)">重置
                         </button>
                     </div>
                     <div class="p-1">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
-                            [disabled]="account.perm('用户管理:查询')"
-                            (click)="onUserRolesBtnClick(u)">角色
+                            [disabled]="account.perm('用户管理:查询')" (click)="onUserRolesBtnClick(u)">角色
                         </button>
                     </div>
                 </div>
             </li>
         </ul>
     </div>
+    <mat-paginator [length]="userList.total" [pageSize]="pageSize" [pageSizeOptions]="[14, 30, 50, 100]"
+        (page)="onPageEvent($event)">
+    </mat-paginator>
 </div>

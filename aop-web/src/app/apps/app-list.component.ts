@@ -6,7 +6,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { AppsService } from './apps.service'
 import { ConfirmDialog } from '../utils/confirm.dialog'
 import { MessageNotify } from '../utils/message-notify'
-import { App, AppType, UserAppsPage } from '../app.entity'
+import { App, AppType, Page } from '../app.entity'
 import { AccountService } from '../account/account.service'
 import { Router } from '@angular/router'
 import { JobPlayDialog } from './job-play.dialog'
@@ -17,7 +17,7 @@ import { JobPlayDialog } from './job-play.dialog'
 })
 export class AppListComponent implements OnInit {
     pageSize: number = 7
-    appList : UserAppsPage = new UserAppsPage()
+    appList : Page<App> = new Page()
     appTypes: AppType[] = []
 
     constructor(

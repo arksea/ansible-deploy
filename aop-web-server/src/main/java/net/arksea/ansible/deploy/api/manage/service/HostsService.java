@@ -1,15 +1,7 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
-import net.arksea.ansible.deploy.api.ServiceException;
-import net.arksea.ansible.deploy.api.auth.entity.User;
-import net.arksea.ansible.deploy.api.manage.entity.App;
-import net.arksea.ansible.deploy.api.manage.entity.AppOperation;
-import net.arksea.ansible.deploy.api.manage.entity.AppOperationType;
 import net.arksea.ansible.deploy.api.manage.entity.Host;
 import net.arksea.ansible.deploy.api.manage.msg.GetHosts;
-import net.arksea.ansible.deploy.api.manage.msg.GetOperationJobHistory;
-import net.arksea.ansible.deploy.api.manage.msg.GetUserApps;
-import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import net.arksea.restapi.RestException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +18,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -62,9 +49,6 @@ public class HostsService {
             @Override
             public Predicate toPredicate(Root<Host> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 List<Predicate> predicateList = new ArrayList<>();
-                if (msg.groupId == null || msg.groupId > 0) {
-                    predicateList.add(cb.equal(root.get("appGroupIp").as(Long.class), msg.groupId));
-                }
                 if (StringUtils.isNotBlank(msg.ipSearch)) {
                     predicateList.add(cb.like(root.get("privateIp"), "%" + msg.ipSearch + "%"));
                 }

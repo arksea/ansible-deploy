@@ -26,13 +26,13 @@ export class AccountService {
             const userName = localStorage.getItem('login_user')
             if (userName) {
                 this.loginUser = userName
-                this.getPermsAndRoles(userName)
+                this.getPermsAndRoles()
             }
         }
         this.getAllPermChilds();
     }
 
-    private getPermsAndRoles(userName: string) {
+    private getPermsAndRoles() {
         this.loginUserPerms = this.EMETY_SET
         this.httpGetUserPermissions().subscribe(resp => {
             if (resp.code === 0) {
@@ -64,7 +64,7 @@ export class AccountService {
             response => {
                 if (response.code === 0) {
                     this.loginUser = info.name
-                    this.getPermsAndRoles(info.name)
+                    this.getPermsAndRoles()
                     localStorage.setItem('token_expires', response.result)
                     localStorage.setItem('login_user', info.name)
                     if (this.loginUser == 'admin') {
@@ -84,7 +84,7 @@ export class AccountService {
         this.httpSignup(info).subscribe(resp => {
             if (resp.code === 0) {
                 this.loginUser = info.name
-                this.getPermsAndRoles(info.name)
+                this.getPermsAndRoles()
                 localStorage.setItem('token_expires', resp.result)
                 localStorage.setItem('login_user', info.name)
                 this.router.navigate(['/apps'])

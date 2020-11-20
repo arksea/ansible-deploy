@@ -1,12 +1,14 @@
-import { Component, OnInit } from '@angular/core'
+import { Component } from '@angular/core'
 import { FormDataEvent } from '@angular/forms/esm2015'
 import { FormGroup, FormControl, Validators } from '@angular/forms'
+import { PageEvent } from '@angular/material/paginator'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { UsersService } from './users.service'
 import { ConfirmDialog } from '../utils/confirm.dialog'
 import { MessageNotify } from '../utils/message-notify'
 import { AccountService } from '../account/account.service'
 import { User } from './users.entity'
+import { Page } from '../app.entity'
 import { UserRolesDialog } from './user-roles.dialog'
 
 @Component({
@@ -14,8 +16,11 @@ import { UserRolesDialog } from './user-roles.dialog'
     templateUrl: './users.component.html'
 })
 export class UsersComponent {
-
-    userList: Array<User> = []
+    pageSize: number = 8
+    userList: Page<User> = new Page()
+    searchForm: FormGroup = new FormGroup({
+        searchPrefix: new FormControl('', [Validators.required]),
+    })
     public openRegistry: FormControl = new FormControl('')
 
     constructor(
@@ -23,7 +28,7 @@ export class UsersComponent {
             public account: AccountService,
             protected alert: MessageNotify,
             protected modal: NgbModal) {
-        this.getUsers()
+        this.query(0, '')
         this.svc.getOpenRegister().subscribe(ret => {
             if (ret.code == 0) {
                 this.openRegistry.setValue(ret.result)
@@ -31,21 +36,26 @@ export class UsersComponent {
         })
     }
 
-    protected getUsers() {
-        this.svc.getUsers().subscribe(ret => {
+    public onPageEvent(event: PageEvent): PageEvent {
+        let page = event.pageIndex + 1;
+        this.pageSize = event.pageSize;
+        let search = this.searchForm.get('searchPrefix').value
+        this.query(page, search)
+        return event;
+    }
+
+    query(page:number, nameSearch: string) {
+        this.svc.getUsers(page, this.pageSize, nameSearch).subscribe(ret => {
             if (ret.code == 0) {
                 this.userList = ret.result
             }
         })
     }
 
-    searchForm: FormGroup = new FormGroup({
-        searchPrefix: new FormControl('', [Validators.required]),
-    })
-
     search(event: FormDataEvent) {
         event.preventDefault()
-        //let pre = this.searchForm.get('searchPrefix').value
+        let pre = this.searchForm.get('searchPrefix').value
+        this.query(0, pre)
     }
 
     onNewUserBtnClick() {
@@ -92,7 +102,7 @@ export class UsersComponent {
                 if (user.locked) {
                     this.svc.deleteUser(user).subscribe(ret => {
                         if (ret.code == 0) {
-                            this.userList = this.userList.filter(it => it.id != user.id)
+                            this.userList.items = this.userList.items.filter(it => it.id != user.id)
                             this.alert.success('删除账号成功')
                         }
                     })

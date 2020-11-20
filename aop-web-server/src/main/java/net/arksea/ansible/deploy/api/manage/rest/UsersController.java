@@ -5,6 +5,7 @@ import net.arksea.ansible.deploy.api.auth.entity.Role;
 import net.arksea.ansible.deploy.api.auth.entity.User;
 import net.arksea.ansible.deploy.api.auth.info.ClientInfo;
 import net.arksea.ansible.deploy.api.auth.service.ClientInfoService;
+import net.arksea.ansible.deploy.api.manage.msg.GetUsers;
 import net.arksea.ansible.deploy.api.manage.service.UsersService;
 import net.arksea.restapi.BaseResult;
 import net.arksea.restapi.RestException;
@@ -35,8 +36,12 @@ public class UsersController {
     //-------------------------------------------------------------------------
     @RequiresPermissions("用户管理:查询")
     @RequestMapping(path="users", method = RequestMethod.GET, produces = MEDIA_TYPE)
-    public RestResult<Iterable<User>> getUsers(final HttpServletRequest httpRequest) {
-        return new RestResult<>(SUCCEED, usersService.getUsers(), httpRequest);
+    public RestResult<GetUsers.Response> getUsers(
+                @RequestParam int page, @RequestParam int pageSize,
+                @RequestParam(required = false) String nameSearch,
+                final HttpServletRequest httpRequest) {
+        GetUsers.Request msg = new GetUsers.Request(nameSearch, page, pageSize);
+        return new RestResult<>(SUCCEED, usersService.findUsers(msg), httpRequest);
     }
     //-------------------------------------------------------------------------
     @RequiresPermissions("用户管理:查询")

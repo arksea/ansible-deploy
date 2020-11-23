@@ -28,3 +28,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 #job-logs {
     min-height: 400px;
 }
+
+.icon-btn {
+    cursor:pointer;
+}

@@ -14,6 +14,7 @@
                         <form (submit)="search($event)" [formGroup]="searchForm">
                             <div class="d-flex">
                                 <div><input type="text" class="form-control" id="searchPrefix"
+                                        placeholder="请输入要搜索的用户名"
                                         formControlName="searchPrefix"></div>
                                 <div><button type="submit" class="btn btn-info form-control ml-2">搜索</button></div>
                             </div>

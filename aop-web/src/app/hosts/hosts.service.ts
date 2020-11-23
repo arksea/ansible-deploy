@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
-import { Host, Page } from '../app.entity'
+import { Host, Page, AppGroup } from '../app.entity'
 import { ServiceResponse } from '../utils/http-utils'
 import { HttpUtils } from '../utils/http-utils'
 import { environment } from '../../environments/environment'
@@ -32,5 +32,10 @@ export class HostsService {
     public getHostsInGroup(groupId: number): Observable<ServiceResponse<Array<Host>>> {
         const url = environment.apiUrl + '/api/hosts?groupId='+groupId
         return this.httpUtils.httpGet('查询主机列表', url)
+    }
+
+    public getGroups(): Observable<ServiceResponse<Array<AppGroup>>> {
+        const url = environment.apiUrl + '/api/groups'
+        return this.httpUtils.httpGet('查询组信息', url)
     }
 }

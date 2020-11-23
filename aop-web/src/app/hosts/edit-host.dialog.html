@@ -4,16 +4,30 @@
     </div>
     <div class="modal-body">
         <div class="form-group">
-            <label for="privateIp">IP地址</label>
-            <input id="privateIp" class="form-control" formControlName="privateIp"/>
+            <label for="privateIp">IP地址
+                <span class="text-danger" *ngIf="ip.errors?.required">*</span>
+                <span class="text-danger" *ngIf="ip.errors?.minlength || ip.errors?.maxlength">(长度7至36)</span>
+            </label>
+            <input id="privateIp" [readonly]="editing" class="form-control" formControlName="privateIp"/>
         </div>
         <div class="form-group">
-            <label for="host-desc">描述</label>
+            <label for="appGroup">所属分组
+                <span class="text-danger" *ngIf="gid.errors?.required">*</span>
+            </label>
+            <select id="appGroup" name="appGroup" class="form-control" formControlName="appGroupId">
+                <option *ngFor="let g of groups" [value]="g.id">{{g.name}}</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="host-desc">描述
+                <span class="text-danger" *ngIf="desc.errors?.required">*</span>
+                <span class="text-danger" *ngIf="desc.errors?.minlength || desc.errors?.maxlength">(长度2至32)</span>
+            </label>
             <input type="text" class="form-control" id="host-desc" formControlName="description">
         </div>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')">取消</button>
-        <button type="submit" class="btn btn-danger" [disabled]="!form.valid">确认</button>
+        <button type="submit" class="btn btn-danger" [disabled]="!form.valid || form.pristine || account.perm('主机管理:修改')">确认</button>
     </div>
 </form>

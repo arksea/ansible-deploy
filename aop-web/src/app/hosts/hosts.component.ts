@@ -14,7 +14,7 @@ import { AccountService } from '../account/account.service'
     templateUrl: './hosts.component.html'
 })
 export class HostsComponent implements OnInit {
-    pageSize: number = 8
+    pageSize: number = 9
     hostList: Page<Host> = new Page()
 
     constructor(private modal: NgbModal, public svc: HostsService,

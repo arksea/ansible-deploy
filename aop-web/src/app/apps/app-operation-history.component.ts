@@ -4,7 +4,7 @@ import { FormGroup, FormControl, AbstractControl } from '@angular/forms'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { AppsService } from './apps.service'
 import { MessageNotify } from '../utils/message-notify'
-import { App, OperationJob, Page } from '../app.entity'
+import { App, OperationJobInfo, Page } from '../app.entity'
 import { AccountService } from '../account/account.service'
 import { PageEvent } from '@angular/material/paginator';
 
@@ -20,7 +20,7 @@ export class AppOperationHistoryComponent implements OnInit {
         endTime: new FormControl({ value: '', disabled: true }),
         operator: new FormControl('')
     });
-    public history: Page<OperationJob> = new Page()
+    public history: Page<OperationJobInfo> = new Page()
 
     constructor(private svc: AppsService,
         public account: AccountService,

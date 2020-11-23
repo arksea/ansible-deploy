@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.Set;
+
 public interface AppGroupDao extends CrudRepository<AppGroup, Long> {
 
     @Modifying
@@ -23,5 +25,5 @@ public interface AppGroupDao extends CrudRepository<AppGroup, Long> {
     long userInGroup(long groupId, long userId);
 
     @Query(nativeQuery = true, value="select g.* from dp2_app_group g,dp2_app_group_users r where r.user_id=?1 and r.app_group_id = g.id")
-    Iterable<AppGroup> findByUserId(long userId);
+    Set<AppGroup> findByUserId(long userId);
 }

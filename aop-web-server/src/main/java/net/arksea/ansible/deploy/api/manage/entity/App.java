@@ -19,7 +19,7 @@ public class App extends IdEntity implements Comparable<App> {
     private String apptag = "";     //应用标签，通常用来部署时建立应用目录名
     private AppType appType;
     private String description = "";  //应用描述
-    private Long appGroupId;
+    private AppGroup appGroup;
     private Set<AppVariable> vars;// 变量
     private Set<Port> ports;
     private Set<Version> versions;
@@ -55,13 +55,14 @@ public class App extends IdEntity implements Comparable<App> {
         this.description = description;
     }
 
-    @Column
-    public Long getAppGroupId() {
-        return appGroupId;
+    @ManyToOne
+    @JoinColumn(name = "app_group_id")
+    public AppGroup getAppGroup() {
+        return appGroup;
     }
 
-    public void setAppGroupId(Long appGroupId) {
-        this.appGroupId = appGroupId;
+    public void setAppGroup(AppGroup appGroup) {
+        this.appGroup = appGroup;
     }
 
     @OneToMany(mappedBy = "appId", fetch = FetchType.EAGER, orphanRemoval = true)

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
 import { User, Role } from './users.entity'
-import { Page } from '../app.entity'
+import { Page, AppGroup } from '../app.entity'
 import { ServiceResponse } from '../utils/http-utils'
 import { HttpUtils } from '../utils/http-utils'
 import { environment } from '../../environments/environment'
@@ -10,9 +10,11 @@ import { environment } from '../../environments/environment'
 export class UsersService {
 
     public roles: Array<Role> = []
+    public groups: Array<AppGroup> = []
 
     public constructor(private httpUtils: HttpUtils) {
         this.queryRoles()
+        this.queryGroups()
     }
 
     public getUsers(page: number, pageSize: number, nameSearch: string): Observable<ServiceResponse<Page<User>>> {
@@ -29,6 +31,16 @@ export class UsersService {
         ret.subscribe(data => {
             if (data.code == 0) {
                 this.roles= data.result
+            }
+        })
+    }
+
+    public queryGroups() {
+        const url = environment.apiUrl + '/api/groups'
+        let ret: Observable<ServiceResponse<Array<AppGroup>>> = this.httpUtils.httpGet('查询组信息', url)
+        ret.subscribe(data => {
+            if (data.code == 0) {
+                this.groups = data.result
             }
         })
     }
@@ -66,5 +78,15 @@ export class UsersService {
     public getOpenRegister(): Observable<ServiceResponse<boolean>> {
         const url = environment.apiUrl + '/api/sys/openRegistry'
         return this.httpUtils.httpGet('读取开放注册状态', url)
+    }
+
+    public getUserGroups(userId: number): Observable<ServiceResponse<Array<AppGroup>>> {
+        const url = environment.apiUrl + '/api/groups/user/'+userId
+        return this.httpUtils.httpGet('读取用户加入的分组', url)
+    }
+
+    public updateUserGroups(userId: number, ids: Array<number>) {
+        const url = environment.apiUrl + '/api/groups/user/' + userId
+        return this.httpUtils.httpPut('更新用户加入的分组', url, ids)
     }
 }

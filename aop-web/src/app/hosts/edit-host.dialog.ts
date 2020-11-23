@@ -16,6 +16,7 @@ export class EditHostDialog {
     form: FormGroup
     groups: AppGroup[]
     editing: boolean = false
+    private groupMap: Map<number,AppGroup> = new Map()
     constructor(public modal: NgbActiveModal, private svc: HostsService, public account: AccountService) {
         this.form = new FormGroup({
             description: new FormControl('',[Validators.required, Validators.minLength(2), Validators.maxLength(32)]),
@@ -25,6 +26,7 @@ export class EditHostDialog {
         this.svc.getGroups().subscribe(ret => {
             if (ret.code == 0) {
                 this.groups = ret.result
+                this.groups.forEach(it => this.groupMap.set(it.id, it))
             }
         })
     }
@@ -35,14 +37,14 @@ export class EditHostDialog {
         this.title = this.editing ? '修改主机信息' : '新增主机'
         this.desc.setValue(host.description)
         this.ip.setValue(host.privateIp)
-        this.gid.setValue(host.appGroupId)
+        this.gid.setValue(host.appGroup.id)
     }
 
     save(event: FormDataEvent) {
         event.preventDefault()
         this.host.description = this.desc.value
         this.host.privateIp = this.ip.value
-        this.host.appGroupId = this.gid.value
+        this.host.appGroup = this.groupMap.get(Number(this.gid.value))
         this.svc.saveHost(this.host).subscribe(ret => {
             if (ret.code == 0) {
                 if (!this.editing) {

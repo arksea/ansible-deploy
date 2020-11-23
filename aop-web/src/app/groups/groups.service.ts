@@ -40,6 +40,11 @@ export class GroupsService {
         return this.httpUtils.httpGet('查询组信息', url)
     }
 
+    public getGroupsAndStat(): Observable<ServiceResponse<Array<AppGroup>>> {
+        const url = environment.apiUrl + '/api/groups?countStat=true'
+        return this.httpUtils.httpGet('查询组信息', url)
+    }
+
     public getCurrentGroup(): Observable<ServiceResponse<AppGroup>> {
         const url = environment.apiUrl + '/api/groups/'+this.currentGroupId
         return this.httpUtils.httpGet('查询组信息', url)

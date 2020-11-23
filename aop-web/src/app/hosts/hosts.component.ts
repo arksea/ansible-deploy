@@ -36,11 +36,11 @@ export class HostsComponent implements OnInit {
     }
 
     public onPageEvent(event: PageEvent): PageEvent {
-        let page = event.pageIndex + 1;
-        this.pageSize = event.pageSize;
+        let page = event.pageIndex + 1
+        this.pageSize = event.pageSize
         let search = this.searchForm.get('searchPrefix').value
         this.query(page, search)
-        return event;
+        return event
     }
 
     query(page:number, ipSearch: string) {

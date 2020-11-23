@@ -2,16 +2,24 @@ package net.arksea.ansible.deploy.api.manage.service;
 
 import net.arksea.ansible.deploy.api.ServiceException;
 import net.arksea.ansible.deploy.api.auth.dao.UserDao;
+import net.arksea.ansible.deploy.api.auth.entity.Role;
+import net.arksea.ansible.deploy.api.auth.entity.User;
 import net.arksea.ansible.deploy.api.manage.dao.AppDao;
 import net.arksea.ansible.deploy.api.manage.dao.AppGroupDao;
 import net.arksea.ansible.deploy.api.manage.entity.App;
 import net.arksea.ansible.deploy.api.manage.entity.AppGroup;
 import net.arksea.ansible.deploy.api.manage.entity.Host;
 import net.arksea.restapi.RestException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -19,7 +27,7 @@ import javax.transaction.Transactional;
  */
 @Component
 public class GroupsService {
-
+    private static Logger logger = LogManager.getLogger(GroupsService.class);
     @Autowired
     AppGroupDao appGroupDao;
 
@@ -62,125 +70,117 @@ public class GroupsService {
     }
 
     public Iterable<AppGroup> getAppGroups() {
-        try {
-            return appGroupDao.findAll();
-        } catch (Exception ex) {
-            throw new RestException("查询组信息失败", ex);
-        }
+        return appGroupDao.findAll();
+    }
+
+    public Iterable<AppGroup> getAppGroupsAndStat() {
+        Iterable<AppGroup> groups = appGroupDao.findAll();
+        groups.forEach(g -> {
+            long ac = appDao.countInAppGroup(g.getId());
+            g.setAppCount(ac);
+            long uc = userDao.countInAppGroup(g.getId());
+            g.setUserCount(uc);
+            long hc = hostDao.countInAppGroup(g.getId());
+            g.setHostCount(hc);
+        });
+        return groups;
     }
 
     public AppGroup getAppGroupById(long id) {
-        try {
-            return appGroupDao.findOne(id);
-        } catch (Exception ex) {
-            throw new RestException("查询组信息失败", ex);
-        }
+        return appGroupDao.findOne(id);
     }
 
     public Iterable<AppGroup> getUserGroups(long userId) {
-        try {
-            return appGroupDao.findByUserId(userId);
-        } catch (Exception ex) {
-            throw new RestException("查询组信息失败", ex);
-        }
+        return appGroupDao.findByUserId(userId);
     }
 
     @Transactional
     public void deleteAppGroup(long id) {
-        try {
-            appGroupDao.delete(id);
-        } catch (Exception ex) {
-            throw new RestException("删除组失败", ex);
-        }
+        appGroupDao.delete(id);
     }
 
     @Transactional
     public void addHost(long groupId, long hostId) {
-        try {
-            Host host = hostDao.findOne(hostId);
-            if (host.getAppGroupId() != null) {
-                throw new ServiceException("主机已分配给分组："+groupId);
-            }
-            host.setAppGroupId(groupId);
-            hostDao.save(host);
-        } catch (ServiceException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new RestException("向分组添加主机失败", ex);
+        Host host = hostDao.findOne(hostId);
+        if (host.getAppGroup() != null) {
+            throw new ServiceException("主机已分配给分组："+host.getAppGroup().getName());
         }
+        AppGroup g = new AppGroup();
+        g.setId(groupId);
+        host.setAppGroup(g);
+        hostDao.save(host);
     }
 
     @Transactional
     public void removeHost(long groupId, long hostId) {
-        try {
-            Host host = hostDao.findOne(hostId);
-            if (host.getAppGroupId() == null) {
-                return;
-            }
-            if (host.getAppGroupId() != groupId) {
-                throw new ServiceException("主机不属于指定分组");
-            }
-            host.setAppGroupId(null);
-            hostDao.save(host);
-        } catch (ServiceException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new RestException("从分组移除主机失败", ex);
+        Host host = hostDao.findOne(hostId);
+        if (host.getAppGroup() == null) {
+            return;
         }
+        if (host.getAppGroup().getId() != groupId) {
+            throw new ServiceException("主机不属于指定分组");
+        }
+        host.setAppGroup(null);
+        hostDao.save(host);
     }
 
     @Transactional
     public void addMember(long groupId, long userId) {
-        try {
-            if (appGroupDao.userInGroup(groupId, userId) == 0) {
-                appGroupDao.addUserToGroup(groupId, userId);
-            }
-        } catch (Exception ex) {
-            throw new RestException("向分组添加成员失败", ex);
+        if (appGroupDao.userInGroup(groupId, userId) == 0) {
+            appGroupDao.addUserToGroup(groupId, userId);
         }
     }
 
     @Transactional
     public void removeMember(long groupId, long userId) {
-        try {
-            appGroupDao.removeUserFromGroup(groupId, userId);
-        } catch (Exception ex) {
-            throw new RestException("从分组移除成员失败", ex);
-        }
+        appGroupDao.removeUserFromGroup(groupId, userId);
     }
 
     @Transactional
     public void addApp(long groupId, long appId) {
-        try {
-            App app = appDao.findOne(appId);
-            if (app.getAppGroupId() != null) {
-                throw new ServiceException("应用已属于分组："+app.getAppGroupId());
-            }
-            app.setAppGroupId(groupId);
-            appDao.save(app);
-        } catch (ServiceException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new RestException("向分组添加应用失败", ex);
+        App app = appDao.findOne(appId);
+        if (app.getAppGroup() != null) {
+            throw new ServiceException("应用已属于分组："+app.getAppGroup().getName());
         }
+        AppGroup g = new AppGroup();
+        g.setId(groupId);
+        app.setAppGroup(g);
+        appDao.save(app);
     }
 
     @Transactional
     public void removeApp(long groupId, long appId) {
-        try {
-            App app = appDao.findOne(appId);
-            if (app.getAppGroupId() == null) {
-                return;
+        App app = appDao.findOne(appId);
+        if (app.getAppGroup() == null) {
+            return;
+        }
+        if (app.getAppGroup().getId() != groupId) {
+            throw new ServiceException("应用不属于指定分组");
+        }
+        app.setAppGroup(null);
+        appDao.save(app);
+    }
+
+    @Transactional
+    public void updateUserGroups(long userId, List<Long> groupIdList) {
+        Set<AppGroup> old = appGroupDao.findByUserId(userId);
+        StringBuilder sb = new StringBuilder();
+        sb.append("======");
+        for (AppGroup g: old) {
+            sb.append(g.getId()).append(";");
+        }
+        logger.info(sb.toString());
+        for (Long id : groupIdList) {
+            AppGroup g = new AppGroup();
+            g.setId(id);
+            if (!old.contains(g)) {
+                appGroupDao.addUserToGroup(id, userId);
             }
-            if (app.getAppGroupId() != groupId) {
-                throw new ServiceException("应用不属于指定分组");
+        }
+        for (AppGroup g: old) {
+            if (!groupIdList.contains(g.getId())) {
+                appGroupDao.removeUserFromGroup(g.getId(), userId);
             }
-            app.setAppGroupId(null);
-            appDao.save(app);
-        } catch (ServiceException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new RestException("从分组移除应用失败", ex);
         }
     }
 }

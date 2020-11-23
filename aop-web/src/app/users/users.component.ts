@@ -10,6 +10,7 @@ import { AccountService } from '../account/account.service'
 import { User } from './users.entity'
 import { Page } from '../app.entity'
 import { UserRolesDialog } from './user-roles.dialog'
+import { UserGroupsDialog } from './user-groups.dialog'
 
 @Component({
     selector: 'users',
@@ -37,11 +38,11 @@ export class UsersComponent {
     }
 
     public onPageEvent(event: PageEvent): PageEvent {
-        let page = event.pageIndex + 1;
-        this.pageSize = event.pageSize;
+        let page = event.pageIndex + 1
+        this.pageSize = event.pageSize
         let search = this.searchForm.get('searchPrefix').value
         this.query(page, search)
-        return event;
+        return event
     }
 
     query(page:number, nameSearch: string) {
@@ -68,6 +69,16 @@ export class UsersComponent {
         ref.result.then(result => {
             if (result == 'ok') {
                 this.alert.success('修改用户角色成功')
+            }
+        }, reason => {})
+    }
+
+    onUserGroupsBtnClick(user: User) {
+        let ref = this.modal.open(UserGroupsDialog, {size: 'lg'})
+        ref.componentInstance.user = user
+        ref.result.then(result => {
+            if (result == 'ok') {
+                this.alert.success('修改用户分组成功')
             }
         }, reason => {})
     }

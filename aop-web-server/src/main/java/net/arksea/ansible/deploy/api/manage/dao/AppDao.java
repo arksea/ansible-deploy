@@ -33,6 +33,9 @@ public interface AppDao extends CrudRepository<App, Long> {
                    " where gu.user_id = ?1 and app.app_group_id = gu.app_group_id and app.apptag like ?2")
    long getUserAppsCount(long userId, String nameSearch);
 
-   @Query("select a from App a where a.appGroupId is null")
+   @Query("select a from App a where a.appGroup is null")
    List<App> findAllGroupIsNull();
+
+   @Query("select count(*) from App a where a.appGroup.id = ?1")
+   long countInAppGroup(long appGroupId);
 }

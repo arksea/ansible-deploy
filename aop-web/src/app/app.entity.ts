@@ -78,7 +78,7 @@ export class Host {
     publicIp: string|null = null  //公网IP
     privateIp: string|null = null //内网IP
     description: string = ''//主机用途描述
-    appGroupId: number|null = null //所属分组
+    appGroup: AppGroup|null = null //所属分组
     enabled: boolean = false  //是否可用状态
     createTime: string|null = null//创建时间
     status: Map<string, HostStatus> = new Map()
@@ -89,7 +89,7 @@ export class App {
     apptag: string = ''     //应用标签，通常用来部署时建立应用目录名
     appType: AppType|null = null    //应用的类型
     description: string = ''  //应用描述
-    appGroupId: number|null = null //应用所属分组
+    appGroup: AppGroup|null = null //应用所属分组
     vars: Array<AppVariable> = []// 变量
     versions: Array<Version> = []
     createTime: string|null = null //创建时间
@@ -100,15 +100,9 @@ export class AppGroup {
     name: string = ''        // 分组名称
     description: string = ''  // 分组描述
     avatar: string = ''      // 分组头像
-    apps: Array<App>  = []  // 分组管理的应用
-    hosts: Array<Host>  = []// 分组管理的主机
-    users: Array<User> = [] // 加入分组的用户
-
-    public constructor() {
-        this.apps = []
-        this.hosts = []
-        this.users = []
-    }
+    appCount: number  = -1  // 分组管理的应用
+    hostCount: number  = -1// 分组管理的主机
+    userCount: number = -1 // 加入分组的用户
 }
 
 export class PortSection {

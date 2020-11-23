@@ -25,6 +25,7 @@ export class AppEditComponent implements OnInit {
     public appForm: FormGroup
     public isNewAction: boolean
     public userGroups: AppGroup[]
+    private groupMap: Map<number,AppGroup> = new Map()
     portModifyed: boolean = false
 
     constructor(private svc: AppsService,
@@ -43,6 +44,7 @@ export class AppEditComponent implements OnInit {
         this.svc.getUserGroups().subscribe(ret => {
             if (ret.code == 0) {
                 this.userGroups = ret.result
+                this.userGroups.forEach(it => this.groupMap.set(it.id, it))
                 let params: ParamMap =  this.route.snapshot.paramMap
                 let idStr = params.get('id')
                 let appType = params.get('appType')
@@ -81,7 +83,7 @@ export class AppEditComponent implements OnInit {
 
     private setFormValue(app: App) {
         this.apptag.setValue(app.apptag)
-        this.appGroupId.setValue(app.appGroupId)
+        this.appGroupId.setValue(app.appGroup.id)
         this.desc.setValue(app.description)
         for (let v of app.vars) {
             this.appForm.addControl('var_' + v.name, new FormControl({ value: v.value, disabled: v.isPort }, [Validators.maxLength(128)]))
@@ -93,7 +95,7 @@ export class AppEditComponent implements OnInit {
         let a = this.app
         a.apptag = this.apptag.value
         a.description = this.desc.value
-        a.appGroupId = Number(this.appGroupId.value)
+        a.appGroup = this.groupMap.get(Number(this.appGroupId.value))
         for (let i of a.vars) {
             let c = f.get('var_' + i.name)
             i.value = c.value

@@ -54,6 +54,11 @@
                             [disabled]="account.perm('用户管理:查询')" (click)="onUserRolesBtnClick(u)">角色
                         </button>
                     </div>
+                    <div class="p-1">
+                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                            [disabled]="account.perm('用户管理:查询')" (click)="onUserGroupsBtnClick(u)">分组
+                        </button>
+                    </div>
                 </div>
             </li>
         </ul>

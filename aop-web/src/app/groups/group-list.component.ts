@@ -22,7 +22,7 @@ export class GroupListComponent implements OnInit {
             private account: AccountService,
             private alert: MessageNotify,
             private router: Router) {
-        this.svc.getGroups().subscribe(ret => {
+        this.svc.getGroupsAndStat().subscribe(ret => {
             if (ret.code == 0) {
                 this.groupList = ret.result
             }
@@ -86,6 +86,6 @@ export class GroupListComponent implements OnInit {
     }
 
     canDel(g: AppGroup): boolean {
-        return g.apps.length==0 && g.users.length==0 || g.hosts.length==0
+        return g.appCount==0 && g.userCount==0 || g.hostCount==0
     }
 }

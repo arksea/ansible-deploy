@@ -8,15 +8,7 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
                 <div class="d-flex">
-                    <div class="mr-auto">
-                        <form (submit)="search($event)" [formGroup]="searchForm">
-                            <div class="d-flex">
-                                <div><input type="text" class="form-control" id="searchPrefix"
-                                        formControlName="searchPrefix"></div>
-                                <div><button type="submit" class="btn btn-info form-control ml-2">搜索</button></div>
-                            </div>
-                        </form>
-                    </div>
+                    <div class="mr-auto"></div>
                     <button type="button" class="btn btn-success" (click)="newGroup()"
                         [disabled]="perm()">新建分组
                     </button>

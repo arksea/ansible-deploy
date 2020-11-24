@@ -164,12 +164,6 @@ public class GroupsService {
     @Transactional
     public void updateUserGroups(long userId, List<Long> groupIdList) {
         Set<AppGroup> old = appGroupDao.findByUserId(userId);
-        StringBuilder sb = new StringBuilder();
-        sb.append("======");
-        for (AppGroup g: old) {
-            sb.append(g.getId()).append(";");
-        }
-        logger.info(sb.toString());
         for (Long id : groupIdList) {
             AppGroup g = new AppGroup();
             g.setId(id);

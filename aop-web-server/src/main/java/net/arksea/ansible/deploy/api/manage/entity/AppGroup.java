@@ -97,6 +97,11 @@ public class AppGroup extends IdEntity implements Comparable<AppGroup> {
             return true;
         } else if (o instanceof AppGroup) {
             AppGroup g = (AppGroup)o;
+            if (g.id == null && this.id == null) {
+                return this.name.equals(g.name);
+            } else if (g.id == null || this.id == null) {
+                return false;
+            }
             return this.id.equals(g.id);
         } else {
             return false;
@@ -110,6 +115,6 @@ public class AppGroup extends IdEntity implements Comparable<AppGroup> {
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return name.hashCode();
     }
 }

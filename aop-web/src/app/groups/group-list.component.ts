@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core'
-import { FormDataEvent } from '@angular/forms/esm2015'
-import { FormGroup, FormControl, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { NewGroupDialog } from './new-group.dialog'
@@ -29,21 +27,15 @@ export class GroupListComponent implements OnInit {
         })
     }
 
-    searchForm: FormGroup = new FormGroup({
-        searchPrefix: new FormControl('', [Validators.required]),
-    })
-
     ngOnInit(): void {
-    }
-
-    search(event: FormDataEvent) {
-        event.preventDefault()
-        let pre = this.searchForm.get('searchPrefix').value
     }
 
     newGroup() {
         let ref = this.modal.open(NewGroupDialog)
         let g: AppGroup = new AppGroup()
+        g.userCount = 0
+        g.appCount = 0
+        g.hostCount = 0
         ref.componentInstance.appGroup = g
         ref.result.then(result => {
             if (result == 'ok') {

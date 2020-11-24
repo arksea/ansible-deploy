@@ -1,5 +1,6 @@
 package net.arksea.ansible.deploy.api.system;
 
+import net.arksea.ansible.deploy.api.auth.service.AuthService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ public class ConfigDataInitializer {
     @Autowired
     DataSource dataSource;
 
+    @Autowired
+    AuthService authService;
+
     JdbcTemplate jdbcTemplate;
 
     //初始化静态配置表
@@ -37,6 +41,7 @@ public class ConfigDataInitializer {
             try {
                 init(conn);
                 conn.commit();
+                authService.reloadAuth();
             } catch (Exception ex) {
                 conn.rollback();
                 logger.warn("初始化数据库静态数据失败");
@@ -52,7 +57,7 @@ public class ConfigDataInitializer {
     }
 
     private void init(Connection conn) throws Exception {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("config-data-init.sql")));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/config-data-init.sql")));
         String line = reader.readLine();
         while(line != null) {
             conn.prepareStatement(line).executeUpdate();

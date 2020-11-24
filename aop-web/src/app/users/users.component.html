@@ -29,7 +29,6 @@
 
                         >新建用户
                     </button>
-                    <!-- [routerLink]="['/signup/true']" -->
                 </div>
             </li>
             <li *ngFor="let u of userList.items;index as i;" class="list-group-item">
@@ -39,13 +38,15 @@
                         <p>{{u.email}}</p>
                     </div>
                     <div class="p-1">
-                        <button type="button" [hidden]="!u.locked" [disabled]="account.perm('用户管理:修改')"
-                            class="btn btn-outline-info btn-sm" (click)="this.onUnblockBtnClick(u)">启用</button>
+                        <button type="button" class="btn btn-sm" [hidden]="u.name == 'admin'"
+                            [class]="u.locked?'btn-outline-success':'btn-outline-danger'"
+                            [disabled]="account.perm('用户管理:修改')"
+                            (click)="u.locked?onUnblockBtnClick(u):onBlockBtnClick(u)">{{u.locked?'启用':'禁用'}}</button>
                     </div>
                     <div class="p-1">
                         <button type="button" class="btn btn-outline-danger btn-sm" [hidden]="u.name == 'admin'"
                             [disabled]="account.perm('用户管理:修改')"
-                            (click)="onDelBtnClick(u)">{{u.locked?'删除':'禁用'}}</button>
+                            (click)="onDelBtnClick(u)">删除</button>
                     </div>
                     <div class="p-1">
                         <button type="button" class="btn btn-outline-secondary btn-sm" title="重置密码"

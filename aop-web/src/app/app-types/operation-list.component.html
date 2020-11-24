@@ -40,8 +40,8 @@
                     </div> -->
                     <div class="p-1 mt-1">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
-                            [disabled]="account.perm('操作管理:修改')"
-                            [routerLink]="['/operations', o.id]">编辑
+                            [disabled]="account.perm('操作管理:查询')"
+                            [routerLink]="['/operations', o.id]">{{account.perm('操作管理:修改')?'查看':'编辑'}}
                         </button>
                     </div>
                 </div>

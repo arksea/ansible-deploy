@@ -5,6 +5,7 @@ import { AccountService } from '../account/account.service'
 import { MessageNotify } from "../utils/message-notify"
 import { FormDataEvent } from "@angular/forms/esm2015"
 import { FormGroup, FormControl, Validators, AbstractControl } from '@angular/forms'
+import { User } from './users.entity';
 
 @Component({
     selector: 'new-user',
@@ -31,7 +32,7 @@ export class NewUserDialog implements OnInit {
             body.password = this.pwd.value
             this.accountService.createUser(body).subscribe(ret => {
                 if (ret.code == 0) {
-                    this.modal.close('ok')
+                    this.modal.close(ret.result)
                 }
             })
         } else {

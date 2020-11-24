@@ -7,6 +7,8 @@ import net.arksea.ansible.deploy.api.manage.service.OperationsService;
 import net.arksea.restapi.BaseResult;
 import net.arksea.restapi.RestResult;
 import static net.arksea.ansible.deploy.api.ResultCode.*;
+
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -29,13 +31,13 @@ public class AppTypesController {
     private static final String MEDIA_TYPE = "application/json; charset=UTF-8";
 
     //-------------------------------------------------------------------------
-    @RequiresPermissions("应用:查询")
+    @RequiresPermissions(value={"应用:查询","操作管理:查询"},logical= Logical.OR)
     @RequestMapping(method = RequestMethod.GET, produces = MEDIA_TYPE)
     public RestResult<Iterable<AppType>> getAppTypes(HttpServletRequest httpRequest) {
         return new RestResult<>(SUCCEED, appTypesService.findAll(), httpRequest);
     }
     //-------------------------------------------------------------------------
-    @RequiresPermissions("应用:查询")
+    @RequiresPermissions(value={"应用:查询","操作管理:查询"},logical= Logical.OR)
     @RequestMapping(path="{typeId}", method = RequestMethod.GET, produces = MEDIA_TYPE)
     public RestResult<AppType> findOne(@PathVariable(name = "typeId") final long typeId,
                                        HttpServletRequest httpRequest) {
@@ -56,7 +58,7 @@ public class AppTypesController {
         return new BaseResult(SUCCEED, httpRequest);
     }
     //-------------------------------------------------------------------------
-    @RequiresPermissions("应用:查询")
+    @RequiresPermissions(value={"应用:查询","操作管理:查询"},logical= Logical.OR)
     @RequestMapping(path="{appTypeId}/operations", method = RequestMethod.GET, produces = MEDIA_TYPE)
     public RestResult<Iterable<AppOperation>> getOperationsByAppTypeId(
                 @PathVariable(name="appTypeId") Long appTypeId,

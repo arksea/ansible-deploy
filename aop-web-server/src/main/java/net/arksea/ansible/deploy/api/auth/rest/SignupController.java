@@ -1,5 +1,6 @@
 package net.arksea.ansible.deploy.api.auth.rest;
 
+import net.arksea.ansible.deploy.api.auth.entity.User;
 import net.arksea.ansible.deploy.api.auth.service.ClientInfoService;
 import net.arksea.ansible.deploy.api.auth.service.ISignupService;
 import net.arksea.ansible.deploy.api.auth.service.SignupInfo;
@@ -46,8 +47,8 @@ public class SignupController {
 
     @RequiresPermissions("用户管理:修改")
     @RequestMapping(path="adminCreate", method = RequestMethod.POST, produces = MEDIA_TYPE)
-    public BaseResult adminSignup(@RequestBody final SignupInfo info, final HttpServletRequest httpRequest) {
-        signupService.signup(info, true);
-        return new BaseResult(SUCCEED,  httpRequest);
+    public RestResult<User> adminSignup(@RequestBody final SignupInfo info, final HttpServletRequest httpRequest) {
+        User user = signupService.signup(info, true);
+        return new RestResult(SUCCEED,  user, httpRequest);
     }
 }

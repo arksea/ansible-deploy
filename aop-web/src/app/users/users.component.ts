@@ -62,7 +62,8 @@ export class UsersComponent {
 
     onNewUserBtnClick() {
         this.modal.open(NewUserDialog).result.then(ret => {
-            if (ret == 'ok') {
+            if (ret.id) {
+                this.userList.items.push(ret)
                 this.alert.success('新建用户成功')
             }
         },reason => {})
@@ -108,29 +109,17 @@ export class UsersComponent {
 
     onDelBtnClick(user: User) {
         let ref = this.modal.open(ConfirmDialog)
-        ref.componentInstance.title = user.locked ? "确认要删除吗?" : "确认要禁用吗?"
-        ref.componentInstance.message = (user.locked ? "删除" : "禁用") + "账号: " + user.name
-        ref.componentInstance.detail = user.locked ?
-                "此操作将删除账号'" + user.name + "',此操作不可恢复请谨慎操作！" :
-                "此操作将把账号'" + user.name + "'标记为禁用状态，不会直接删除用户及其相关数据"
+        ref.componentInstance.title  = "确认要删除吗?"
+        ref.componentInstance.message= "删除账号: " + user.name
+        ref.componentInstance.detail = "此操作将删除账号'" + user.name + "',此操作不可恢复请谨慎操作！"
         ref.result.then(result => {
             if (result == "ok") {
-                if (user.locked) {
-                    this.svc.deleteUser(user).subscribe(ret => {
-                        if (ret.code == 0) {
-                            this.userList.items = this.userList.items.filter(it => it.id != user.id)
-                            this.alert.success('删除账号成功')
-                        }
-                    })
-                } else {
-                    this.svc.blockUser(user).subscribe(ret => {
-                        if (ret.code == 0) {
-                            user.locked = true
-                            this.alert.success('禁用账号成功')
-                        }
-                    })
-                }
-
+                this.svc.deleteUser(user).subscribe(ret => {
+                    if (ret.code == 0) {
+                        this.userList.items = this.userList.items.filter(it => it.id != user.id)
+                        this.alert.success('删除账号成功')
+                    }
+                })
             }
         }, resaon => { })
     }
@@ -146,6 +135,23 @@ export class UsersComponent {
                     if (ret.code == 0) {
                         user.locked = false
                         this.alert.success('启用账号成功')
+                    }
+                })
+            }
+        }, resaon => { })
+    }
+
+    onBlockBtnClick(user: User) {
+        let ref = this.modal.open(ConfirmDialog)
+        ref.componentInstance.title = "确认要禁用吗?"
+        ref.componentInstance.message = "禁用账号: " + user.name
+        ref.componentInstance.detail = "此操作将把账号'" + user.name + "'标记为禁用状态，不会直接删除用户及其相关数据"
+        ref.result.then(result => {
+            if (result == "ok") {
+                this.svc.blockUser(user).subscribe(ret => {
+                    if (ret.code == 0) {
+                        user.locked = true
+                        this.alert.success('禁用账号成功')
                     }
                 })
             }

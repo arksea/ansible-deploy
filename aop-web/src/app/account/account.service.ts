@@ -6,6 +6,7 @@ import { ServiceResponse } from '../utils/http-utils'
 import { HttpUtils } from '../utils/http-utils'
 import { MessageNotify } from "../utils/message-notify"
 import { environment } from '../../environments/environment'
+import { User } from '../users/users.entity'
 
 type ChildPermMap = Map<string, Set<string>>
 
@@ -80,7 +81,7 @@ export class AccountService {
             })
     }
 
-    public createUser(info: SignupInfo): Observable<ServiceResponse<any>> {
+    public createUser(info: SignupInfo): Observable<ServiceResponse<User>> {
         return this.httpSignupAdmin(info)
     }
 
@@ -91,7 +92,11 @@ export class AccountService {
                 this.getPermsAndRoles()
                 localStorage.setItem('token_expires', resp.result)
                 localStorage.setItem('login_user', info.name)
-                this.router.navigate(['/apps'])
+                if (this.loginUser == 'admin') {
+                    this.router.navigate(['/users'])
+                } else {
+                    this.router.navigate(['/apps'])
+                }
                 this.alert.success("注册成功")
             } else {
                 this.loginUser = ''
@@ -159,7 +164,7 @@ export class AccountService {
         return this.httpUtils.httpPost('用户注册', url, info)
     }
 
-    private httpSignupAdmin(info: SignupInfo): Observable<ServiceResponse<string>> {
+    private httpSignupAdmin(info: SignupInfo): Observable<ServiceResponse<User>> {
         const url = environment.accountApiUrl + '/api/signup/adminCreate'
         return this.httpUtils.httpPost('用户注册', url, info)
     }

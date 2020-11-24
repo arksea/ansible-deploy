@@ -23,7 +23,7 @@ export class OperationEditComponent implements OnInit {
 
     constructor(public svc: OperationsService,
                 private appTypesSvc: AppTypesService,
-                public account: AccountService,
+                private account: AccountService,
                 protected alert: MessageNotify,
                 protected modal: NgbModal,
                 private router: Router,
@@ -34,11 +34,11 @@ export class OperationEditComponent implements OnInit {
         let params: ParamMap =  this.route.snapshot.paramMap
         let idStr = params.get('id')
         this.editForm = new FormGroup({
-            name: new FormControl('',[Validators.required,Validators.maxLength(32),Validators.minLength(2)]),
-            description: new FormControl('',[Validators.required,Validators.maxLength(128),Validators.minLength(1)]),
-            command: new FormControl('',[Validators.required,Validators.maxLength(256),Validators.minLength(1)]),
-            opType: new FormControl('COMMON',[Validators.required]),
-            codeContent: new FormControl('', [Validators.maxLength(65535)])
+            name: new FormControl({value:'',disabled:this.readonly()},[Validators.required,Validators.maxLength(32),Validators.minLength(2)]),
+            description: new FormControl({value:'',disabled:this.readonly()},[Validators.required,Validators.maxLength(128),Validators.minLength(1)]),
+            command: new FormControl({value:'',disabled:this.readonly()},[Validators.required,Validators.maxLength(256),Validators.minLength(1)]),
+            opType: new FormControl({value:'COMMON',disabled:this.readonly()},[Validators.required]),
+            codeContent: new FormControl({value:'',disabled:this.readonly()}, [Validators.maxLength(65535)])
         })
         if (idStr == 'new') {
             this.isNewAction = true
@@ -151,6 +151,10 @@ export class OperationEditComponent implements OnInit {
 
     selectCode(code: AppOperationCode) {
         this.setActiveCode(code)
+    }
+
+    readonly(): boolean {
+        return this.account.perm('操作管理:修改')
     }
 
     public cancel() {

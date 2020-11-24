@@ -52,9 +52,9 @@
                 <label for="playbook">脚本文件</label>
                 <ul class="nav nav-tabs mb-1">
                     <li *ngFor="let c of operation.codes" class="nav-item">
-                        <a class="nav-link pr-2" [class.active]="isActiveCode(c)">
+                        <a class="icon-btn nav-link mr-2" [class.active]="isActiveCode(c)" (click)="selectCode(c)">
                             <div class="d-flex">
-                                <div class="mr-3 mt-1" (click)="selectCode(c)">
+                                <div class="mr-3 mt-1">
                                 {{c.fileName}}
                                 </div>
                                 <div>

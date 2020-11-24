@@ -115,6 +115,10 @@ public class AppGroup extends IdEntity implements Comparable<AppGroup> {
 
     @Override
     public int hashCode() {
-        return name.hashCode();
+        if (name == null) {
+            return super.hashCode();
+        } else {
+            return name.hashCode();
+        }
     }
 }

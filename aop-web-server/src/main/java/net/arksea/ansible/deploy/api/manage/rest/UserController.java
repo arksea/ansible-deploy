@@ -66,10 +66,14 @@ public class UserController {
     }
 
     //-------------------------------------------------------------------------
+    public static class ModifyPassword {
+        public String oldPassword;
+        public String newPassword;
+    }
     @RequestMapping(path="user/password", method = RequestMethod.PUT, produces = MEDIA_TYPE)
-    public RestResult<Boolean> modifyUserPwd(@RequestBody String pwd, HttpServletRequest httpRequest) {
+    public RestResult<Boolean> modifyUserPwd(@RequestBody ModifyPassword pwd, HttpServletRequest httpRequest) {
         ClientInfo info = clientInfoService.getClientInfo(httpRequest);
-        usersService.setUserPassword(info.userId, pwd);
+        usersService.modifyUserPassword(info.userId, pwd.oldPassword, pwd.newPassword);
         return new RestResult<>(SUCCEED, true, httpRequest);
     }
 

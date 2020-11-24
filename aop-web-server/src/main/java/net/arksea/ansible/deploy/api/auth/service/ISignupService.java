@@ -7,5 +7,5 @@ import net.arksea.ansible.deploy.api.auth.entity.User;
  * Create by xiaohaixing on 2020/4/30
  */
 public interface ISignupService {
-    User signup(SignupInfo info);
+    User signup(SignupInfo info, boolean adminCreate);
 }

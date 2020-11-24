@@ -80,6 +80,10 @@ export class AccountService {
             })
     }
 
+    public createUser(info: SignupInfo): Observable<ServiceResponse<any>> {
+        return this.httpSignupAdmin(info)
+    }
+
     public signup(info: SignupInfo): void {
         this.httpSignup(info).subscribe(resp => {
             if (resp.code === 0) {
@@ -155,6 +159,11 @@ export class AccountService {
         return this.httpUtils.httpPost('用户注册', url, info)
     }
 
+    private httpSignupAdmin(info: SignupInfo): Observable<ServiceResponse<string>> {
+        const url = environment.accountApiUrl + '/api/signup/adminCreate'
+        return this.httpUtils.httpPost('用户注册', url, info)
+    }
+
     private httpLogout(): Observable<ServiceResponse<string>> {
         const url = environment.accountApiUrl + '/api/logout'
         return this.httpUtils.httpGet('用户登出', url)
@@ -175,9 +184,9 @@ export class AccountService {
         return this.httpUtils.httpGet('子权限查询', url)
     }
 
-    public modifyPassword(pwd: string): Observable<ServiceResponse<boolean>> {
+    public modifyPassword(oldpwd: string, pwd: string): Observable<ServiceResponse<boolean>> {
         const url = environment.accountApiUrl + '/api/user/password'
-        return this.httpUtils.httpPut('子权限查询', url, pwd)
+        return this.httpUtils.httpPut('修改密码', url, {oldPassword: oldpwd, newPassword:pwd})
     }
 
     public getOpenRegister(): Observable<ServiceResponse<boolean>> {

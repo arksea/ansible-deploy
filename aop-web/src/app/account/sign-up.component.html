@@ -1,31 +1,54 @@
-<div class="row login-form">
-  <div class="col-lg-4 col-md-2"></div>
-  <div class="col-lg-4 col-md-8">
-    <div class="card">
-      <div class="card-header">注册 AnsibleDeploy 新用户</div>
-      <div class="card-body">
-        <form (submit)="signup($event)" [formGroup]="signUpForm">
-          <div class="form-group">
-            <label for="userName">用户名</label>
-            <input class="form-control" type="text" id="userName" name="userName" formControlName="username">
-          </div>
-          <div class="form-group">
-            <label for="userEmail">邮箱</label>
-            <input type="email" class="form-control" id="userEmail" name="userEmail" formControlName="email">
-          </div>
-          <div class="form-group">
-            <label for="password">密码</label>
-            <input type="password" class="form-control" id="password" name="password" formControlName="password">
-          </div>
-          <div class="form-group">
-            <label for="password2">密码确认</label>
-            <input type="password" class="form-control" id="password2" name="password2" formControlName="password2">
-          </div>
-          <button type="submit" class="btn btn-primary form-control btn-top" [disabled]="!signUpForm.valid">注册</button>
-          <a class="link form-control" [routerLink]="['/login']">用现有账号登录</a>
-        </form>
-      </div>
+<div class="modal-body">
+    <div class="row login-form">
+        <div class="col-lg-4 col-md-2"></div>
+        <div class="col-lg-4 col-md-8">
+            <div class="card">
+                <div class="card-header">注册 AnsibleDeploy 新用户</div>
+                <div class="card-body">
+                    <form (submit)="signup($event)" [formGroup]="signUpForm">
+                        <div class="form-group">
+                            <label for="userName">用户名
+                                <span class="text-danger" *ngIf="name.errors?.required">*</span>
+                                <span class="text-danger"
+                                    *ngIf="name.errors?.minlength || name.errors?.maxlength">(长度4至24)</span>
+                            </label>
+                            <input class="form-control" type="text" id="userName" name="userName"
+                                formControlName="username">
+                        </div>
+                        <div class="form-group">
+                            <label for="userEmail">邮箱
+                                <span class="text-danger" *ngIf="email.errors?.required">*</span>
+                                <span class="text-danger"
+                                    *ngIf="email.errors?.minlength || email.errors?.maxlength">(长度6至32)</span>
+                            </label>
+                            <input type="email" class="form-control" id="userEmail" name="userEmail"
+                                formControlName="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">密码
+                                <span class="text-danger" *ngIf="pwd.errors?.required">*</span>
+                                <span class="text-danger"
+                                    *ngIf="pwd.errors?.minlength || pwd.errors?.maxlength">(长度4至32)</span>
+                            </label>
+                            <input type="password" class="form-control" id="password" name="password"
+                                formControlName="password">
+                        </div>
+                        <div class="form-group">
+                            <label for="password2">密码确认
+                                <span class="text-danger" *ngIf="pwd2.errors?.required">*</span>
+                                <span class="text-danger"
+                                    *ngIf="pwd2.errors?.minlength || pwd2.errors?.maxlength">(长度4至32)</span>
+                            </label>
+                            <input type="password" class="form-control" id="password2" name="password2"
+                                formControlName="password2">
+                        </div>
+                        <button type="submit" class="btn btn-primary form-control btn-top"
+                            [disabled]="!signUpForm.valid">注册</button>
+                        <a class="link form-control" [routerLink]="['/login']">用现有账号登录</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-2"></div>
     </div>
-  </div>
-  <div class="col-lg-4 col-md-2"></div>
 </div>

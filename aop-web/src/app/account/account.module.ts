@@ -29,6 +29,7 @@ import { ModifyPwdDialog } from './modify-pwd.dialog'
     ModifyPwdDialog
   ],
   entryComponents: [
+    SignUpComponent,
     ModifyPwdDialog
   ],
   providers: [AuthGuard, AccountService],

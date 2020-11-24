@@ -11,6 +11,7 @@ import { User } from './users.entity'
 import { Page } from '../app.entity'
 import { UserRolesDialog } from './user-roles.dialog'
 import { UserGroupsDialog } from './user-groups.dialog'
+import { NewUserDialog } from './new-user.dialog'
 
 @Component({
     selector: 'users',
@@ -60,7 +61,11 @@ export class UsersComponent {
     }
 
     onNewUserBtnClick() {
-        //this.modal.open(NewUserDialog)
+        this.modal.open(NewUserDialog).result.then(ret => {
+            if (ret == 'ok') {
+                this.alert.success('新建用户成功')
+            }
+        },reason => {})
     }
 
     onUserRolesBtnClick(user: User) {

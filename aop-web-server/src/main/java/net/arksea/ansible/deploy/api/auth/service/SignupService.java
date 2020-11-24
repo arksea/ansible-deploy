@@ -32,11 +32,11 @@ public class SignupService implements ISignupService {
     @Autowired
     private UsersService usersService;
 
-    public User signup(SignupInfo info) {
+    public User signup(SignupInfo info, boolean adminCreate) {
         if (userDao.existsByName(info.getName())) {
             throw new ServiceException("注册失败，用户名已被使用");
         }
-        if (!usersService.getOpenRegister()) {
+        if (!adminCreate && !usersService.getOpenRegister()) {
             throw new ServiceException("系统未开放注册，请联系管理员创建账号");
         }
         try {

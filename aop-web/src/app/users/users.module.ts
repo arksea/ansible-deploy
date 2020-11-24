@@ -12,6 +12,7 @@ import { AccountModule } from '../account/account.module'
 import { UsersService } from './users.service'
 import { UserRolesDialog } from './user-roles.dialog'
 import { UserGroupsDialog } from './user-groups.dialog'
+import { NewUserDialog } from './new-user.dialog'
 
 @NgModule({
   imports: [
@@ -21,10 +22,10 @@ import { UserGroupsDialog } from './user-groups.dialog'
     VenderModule, NgbPaginationModule, NgbAlertModule, NgbModule,
     AccountModule, UsersRoutingModule],
   declarations: [
-    UsersComponent, UserRolesDialog,UserGroupsDialog
+    UsersComponent, UserRolesDialog,UserGroupsDialog,NewUserDialog
   ],
   entryComponents: [
-    UserRolesDialog, UserGroupsDialog
+    UserRolesDialog, UserGroupsDialog,NewUserDialog
   ],
   providers: [UsersService],
   exports: []

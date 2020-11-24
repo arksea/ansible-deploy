@@ -120,19 +120,23 @@ public class UsersService {
     }
 
     @Transactional
-    public void setUserPassword(Long userId, String pwd) {
+    public void modifyUserPassword(Long userId, String oldPwd, String newPwd) {
         try {
             User user = userDao.findOne(userId);
             if (user == null) {
                 throw new ServiceException("用户不存在: "+userId);
             }
-            String pwdHash = CredentialsMatcherImpl.hashPassword(pwd.toCharArray(), user.getSalt());
+            String oldHash = CredentialsMatcherImpl.hashPassword(oldPwd.toCharArray(), user.getSalt());
+            if (!oldHash.equals(user.getPassword())) {
+                throw new ServiceException("输入的旧密码错误");
+            }
+            String pwdHash = CredentialsMatcherImpl.hashPassword(newPwd.toCharArray(), user.getSalt());
             user.setPassword(pwdHash);
             userDao.save(user);
         } catch (ServiceException ex) {
             throw ex;
         } catch (Exception ex) {
-            throw new ServiceException("设置用户密码失败: "+userId, ex);
+            throw new ServiceException("修改用户密码失败: "+ex.getMessage(), ex);
         }
     }
 

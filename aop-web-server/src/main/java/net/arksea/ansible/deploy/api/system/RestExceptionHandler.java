@@ -27,6 +27,6 @@ public class RestExceptionHandler extends net.arksea.restapi.RestExceptionHandle
 
     @ExceptionHandler({IncorrectCredentialsException.class})
     public final ResponseEntity<?> handleException(IncorrectCredentialsException ex, WebRequest request) {
-        return this.handle(new UnauthenticatedException("用户名或密码错误",ex), HttpStatus.FORBIDDEN, request);
+        return this.handle(new UnauthenticatedException("用户名或密码错误",ex), HttpStatus.UNAUTHORIZED, request);
     }
 }

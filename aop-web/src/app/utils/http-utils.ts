@@ -61,8 +61,14 @@ export class HttpUtils {
         console.error(request + '发生异常: ' + JSON.stringify(respond))
         if (respond.status === 401) {
             this.router.navigate(['/login'])
+        } else if (respond.status === 403) {
+            this.alert.error(request + '发生异常：没有操作权限')
         } else {
-            this.alert.error(request + '发生异常')
+            if (respond.error.error && respond.error.error.length < 32) {
+                this.alert.error(respond.error.error)
+            } else {
+                this.alert.error(request + '发生异常')
+            }
         }
         return new BehaviorSubject(respond.error)
     }
@@ -74,8 +80,14 @@ export class HttpUtils {
             console.error(request + '失败: ' + JSON.stringify(result))
             if (result.code === 401 || result.status === 401) {
                 this.router.navigate(['/login'])
+            } else if ((result.code === 403 || result.status === 403)) {
+                this.alert.error(request + '失败：没有操作权限')
             } else {
-                this.alert.error(request + '失败')
+                if (result.error && result.error.length < 32) {
+                    this.alert.error(result.error)
+                } else {
+                    this.alert.error(request + '失败')
+                }
             }
         }
         return new BehaviorSubject(result)

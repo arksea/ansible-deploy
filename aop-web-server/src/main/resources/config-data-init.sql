@@ -40,7 +40,7 @@ INSERT INTO `dp2_app_type` (`id`, `description`, `name`) VALUES (3, '用Shell脚
 INSERT INTO `dp2_port_type` (`id`, `all_count`, `description`, `name`, `rest_count`) VALUES (1, 0, 'Web站点或RestAPI接口', 'HTTP', 0);
 INSERT INTO `dp2_port_type` (`id`, `all_count`, `description`, `name`, `rest_count`) VALUES (2, 0, '通用端口', '通用', 0);
 INSERT INTO `dp2_port_type` (`id`, `all_count`, `description`, `name`, `rest_count`) VALUES (3, 0, '应用服务端口', '应用', 0);
-INSERT INTO `dp2_port_type` (`id`, `all_count`, `description`, `name`, `rest_count`) VALUES (4, 0, '旧版本部署系统已分配HTTP端口', '旧端口', 99);
+INSERT INTO `dp2_port_type` (`id`, `all_count`, `description`, `name`, `rest_count`) VALUES (4, 0, '旧版本部署系统已分配HTTP端口', '旧端口', 0);
 INSERT INTO `dp2_port_type` (`id`, `all_count`, `description`, `name`, `rest_count`) VALUES (8, 0, 'JMX监控', 'JMX', 0);
 INSERT INTO `dp2_app_var_define` (`id`, `app_type_id`, `default_value`, `form_label`, `input_addon`, `name`, `port_type_id`) VALUES (1, 1, '', ' 服务管理端口', '', 'server_port', 2);
 INSERT INTO `dp2_app_var_define` (`id`, `app_type_id`, `default_value`, `form_label`, `input_addon`, `name`, `port_type_id`) VALUES (2, 1, '', 'HTTP端口', '', 'http_port', 1);

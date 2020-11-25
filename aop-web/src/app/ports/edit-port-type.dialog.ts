@@ -9,7 +9,8 @@ import { PortType } from '../app.entity'
 
 @Component({
     selector: 'edit-port-type-dialog',
-    templateUrl: './edit-port-type.dialog.html'
+    templateUrl: './edit-port-type.dialog.html',
+    styles: ['.row-text {display: block;padding: 0.6rem;}']
 })
 export class EditPortTypeDialog {
     modifing: PortType
@@ -25,12 +26,12 @@ export class EditPortTypeDialog {
         })
         this.form = new FormGroup({
             formNew: new FormGroup({
-                newTypeName: new FormControl('', [Validators.required, Validators.max(16)]),
-                newTypeDesc: new FormControl('', [Validators.max(64)])
+                newTypeName: new FormControl('', [Validators.required, Validators.maxLength(16)]),
+                newTypeDesc: new FormControl('', [Validators.maxLength(64)])
             }),
             formModify: new FormGroup({
-                modifyTypeName: new FormControl('', [Validators.required, Validators.max(16)]),
-                modifyTypeDesc: new FormControl('', [Validators.max(64)])
+                modifyTypeName: new FormControl('', [Validators.required, Validators.maxLength(16)]),
+                modifyTypeDesc: new FormControl('', [Validators.maxLength(64)])
             })
         })
     }

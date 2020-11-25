@@ -7,11 +7,16 @@
             <li class="list-group-item" formGroupName="formNew">
                 <div class="row">
                     <div class="form-group col-sm-4">
-                        <label for="port-type-name">类型名称</label>
+                        <label for="port-type-name">类型名称
+                            <span class="text-danger" *ngIf="newTypeName.errors?.required">*</span>
+                            <span class="text-danger" *ngIf="newTypeName.errors?.maxlength">(名称太长了)</span>
+                        </label>
                         <input id="port-type-name" type="text" class="form-control" formControlName="newTypeName">
                     </div>
                     <div class="form-group col">
-                        <label for="port-type-desc">用途描述</label>
+                        <label for="port-type-desc">用途描述
+                            <span class="text-danger" *ngIf="newTypeDesc.errors?.maxlength">(描述太长了)</span>
+                        </label>
                         <input id="port-type-desc" type="text" class="form-control" formControlName="newTypeDesc">
                     </div>
                     <div class="form-group col-sm-2 text-center mt-3 pt-3">
@@ -22,14 +27,14 @@
                 </div>
             </li>
             <li class="list-group-item" *ngFor="let t of portTypes" formGroupName="formModify">
-                <div class="row ml-1" *ngIf="modifing?.name!=t.name">
-                    <div class="col-sm-4 mt-1"  (click)="startModify(t)">
-                        {{t.name}}
+                <div class="row ml-1 icon-btn" *ngIf="modifing?.name!=t.name" title="点击修改">
+                    <div class="col-4"  (click)="startModify(t)">
+                        <span class="row-text">{{t.name}}</span>
                     </div>
-                    <div class="col mt-1"  (click)="startModify(t)">
-                        {{t.description}}
+                    <div class="col"  (click)="startModify(t)">
+                        <span class="row-text">{{t.description}}</span>
                     </div>
-                    <div class="col-sm-2 text-center"
+                    <div class="col-2 text-center mt-1"
                         [title]="t.allCount == 0?'删除':'不能删除，此类型端口数不为0'">
                         <button class="btn btn-sm text-danger"
                                 [class]="t.allCount == 0?'text-danger':'text-dark'"
@@ -44,13 +49,13 @@
                     </div>
                 </div>
                 <div class="row" *ngIf="modifing?.name==t.name">
-                    <div class="form-group col-sm-4 mt-2">
+                    <div class="form-group col-4 pb-0 mb-0">
                         <input type="text" class="form-control" formControlName="modifyTypeName">
                     </div>
-                    <div class="form-group col mt-2">
+                    <div class="form-group col pb-0 mb-0">
                         <input type="text" class="form-control" formControlName="modifyTypeDesc">
                     </div>
-                    <div class="col-sm-2 text-left mt-2 pt-1">
+                    <div class="col-2 text-left mt-1">
                         <button class="btn btn-sm text-dark" title="取消" (click)="cancelModify()">
                             <svg width="1.6em" height="1.6em" viewBox="0 0 16 16" class="bi bi-x" fill="currentColor"
                                 xmlns="http://www.w3.org/2000/svg">

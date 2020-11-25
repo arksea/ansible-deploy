@@ -11,22 +11,19 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item" routerLinkActive="active" [hidden]="perm('组管理:查询')">
-                <a class="nav-link" [routerLink]="['/groups']">分组管理</a>
+                <a class="nav-link" [routerLink]="['/groups']">分组</a>
             </li>
             <li class="nav-item" routerLinkActive="active" [hidden]="perm('用户管理:查询')">
-                <a class="nav-link" [routerLink]="['/users']">用户管理</a>
+                <a class="nav-link" [routerLink]="['/users']">用户</a>
             </li>
             <li class="nav-item" routerLinkActive="active" [hidden]="perm('组管理:查询')">
-                <a class="nav-link" [routerLink]="['/hosts']">主机管理</a>
+                <a class="nav-link" [routerLink]="['/hosts']">主机</a>
             </li>
             <li class="nav-item" routerLinkActive="active" [hidden]="perm('端口管理:查询')">
-                <a class="nav-link" [routerLink]="['/ports']">端口管理</a>
+                <a class="nav-link" [routerLink]="['/ports']">端口</a>
             </li>
-            <!-- <li class="nav-item" routerLinkActive="active" [hidden]="perm('操作管理:查询')">
-                <a class="nav-link" [routerLink]="['/operations']">操作管理</a>
-            </li> -->
             <li class="nav-item" routerLinkActive="active" [hidden]="perm('操作管理:查询')">
-                <a class="nav-link" [routerLink]="['/app-types']">应用类型</a>
+                <a class="nav-link" [routerLink]="['/app-types']">操作</a>
             </li>
             <li class="nav-item" routerLinkActive="active" [hidden]="perm('应用:查询')">
                 <a class="nav-link" [routerLink]="['/apps']">我的应用</a>

@@ -24,7 +24,7 @@ export class AppTypeEditComponent implements OnInit {
     })
 
     constructor(private svc: AppTypesService,
-                public account: AccountService,
+                private account: AccountService,
                 protected alert: MessageNotify,
                 protected modal: NgbModal,
                 private router: Router,
@@ -104,5 +104,9 @@ export class AppTypeEditComponent implements OnInit {
 
     get description() {
         return this.typeForm.get('description')
+    }
+
+    get readonly() {
+        return this.account.perm('操作管理:修改')
     }
 }

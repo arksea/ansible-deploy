@@ -37,7 +37,9 @@ export class EditHostDialog {
         this.title = this.editing ? '修改主机信息' : '新增主机'
         this.desc.setValue(host.description)
         this.ip.setValue(host.privateIp)
-        this.gid.setValue(host.appGroup.id)
+        if (host.appGroup != null) {
+            this.gid.setValue(host.appGroup.id)
+        }
     }
 
     save(event: FormDataEvent) {

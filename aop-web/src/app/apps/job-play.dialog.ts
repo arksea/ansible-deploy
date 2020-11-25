@@ -14,7 +14,8 @@ const JOB_LOGS_MAX_POLL_COUNT = 300
 
 @Component({
     selector: 'job-play-dialog',
-    templateUrl: './job-play.dialog.html'
+    templateUrl: './job-play.dialog.html',
+    styles: ['#job-logs {min-height: 400px;}']
 })
 export class JobPlayDialog implements OnInit, OnDestroy, AfterViewChecked {
 
@@ -135,7 +136,8 @@ export class JobPlayDialog implements OnInit, OnDestroy, AfterViewChecked {
 
 @Component({
     selector: 'status-job-play-dialog',
-    templateUrl: './job-play.dialog.html'
+    templateUrl: './job-play.dialog.html',
+    styles: ['#job-logs {min-height: 400px;}']
 })
 export class StatusJobPlayDialog extends JobPlayDialog {
     constructor(public modal: NgbActiveModal, public svc: AppsService) {

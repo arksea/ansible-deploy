@@ -1,5 +1,6 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
+import net.arksea.ansible.deploy.api.manage.entity.AppGroup;
 import net.arksea.ansible.deploy.api.manage.entity.Host;
 import net.arksea.ansible.deploy.api.manage.msg.GetHosts;
 import net.arksea.restapi.RestException;
@@ -51,6 +52,9 @@ public class HostsService {
                 List<Predicate> predicateList = new ArrayList<>();
                 if (StringUtils.isNotBlank(msg.ipSearch)) {
                     predicateList.add(cb.like(root.get("privateIp"), "%" + msg.ipSearch + "%"));
+                }
+                if (msg.groupId != null) {
+                    predicateList.add(cb.equal(root.get("appGroup").get("id"), msg.groupId));
                 }
                 return cb.and(predicateList.toArray(new Predicate[0]));
             }

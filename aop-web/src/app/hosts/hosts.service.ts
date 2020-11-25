@@ -29,8 +29,14 @@ export class HostsService {
         return this.httpUtils.httpGet('查询主机列表', url)
     }
 
-    public getHostsInGroup(groupId: number): Observable<ServiceResponse<Array<Host>>> {
-        const url = environment.apiUrl + '/api/hosts?groupId='+groupId
+    public getHostsInGroup(page: number, pageSize: number, ipSearch: string, groupId: number): Observable<ServiceResponse<Page<Host>>> {
+        let url = environment.apiUrl + '/api/hosts?page='+page+'&pageSize='+pageSize
+        if (groupId != null && groupId != undefined) {
+            url = url + '&groupId='+groupId
+        }
+        if (ipSearch != '') {
+            url = url + '&ipSearch='+ipSearch
+        }
         return this.httpUtils.httpGet('查询主机列表', url)
     }
 

@@ -1,6 +1,17 @@
 <form (ngSubmit)="save()" [formGroup]="formGroup">
     <div class="modal-body">
-        <h3 class="modal-title" id="modal-title">请选择版本 <strong>'{{version?.name}}'</strong> 要添加的主机</h3>
+        <h3 class="modal-title" id="modal-title">请选择版本 <strong class='text-danger'>[{{version?.name}}]</strong> 要添加的主机</h3>
+        <form (submit)="search($event)" [formGroup]="searchForm">
+            <div class="d-flex mb-3">
+                <div>
+                    <input type="text" class="form-control" id="searchPrefix" placeholder="请输入要搜索的主机IP"
+                        formControlName="searchPrefix">
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-info form-control ml-2">搜索</button>
+                </div>
+            </div>
+        </form>
         <table class="table">
             <thead>
                 <tr>
@@ -10,13 +21,16 @@
                 </tr>
             </thead>
             <tbody formArrayName="hosts">
-                <tr *ngFor="let t of hosts; let i=index">
+                <tr *ngFor="let t of hosts.items; let i=index">
                     <td>{{t.privateIp}}</td>
                 <td>{{t.description}} <span [hidden]="t.enabled" class="text-danger">(已禁用)</span></td>
                     <td><input type="checkbox" [formControlName]="i"></td>
                 </tr>
             </tbody>
         </table>
+        <mat-paginator [hidden]="hosts.total<=pageSize" [length]="hosts.total" [pageSize]="pageSize" [pageSizeOptions]="[10, 20, 30]"
+            (page)="onPageEvent($event)">
+        </mat-paginator>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')">取消</button>

@@ -118,14 +118,8 @@ export class AppEditComponent implements OnInit {
 
     onAddHostBtnClick(version: Version) {
         if (this.appGroupId.value) {
-            this.hostSvc.getHostsInGroup(this.appGroupId.value).subscribe(
-                ret => {
-                    if (ret.code == 0) {
-                        let ref = this.modal.open(AddHostDialog)
-                        ref.componentInstance.setParams(this.app, version, ret.result)
-                    }
-                }
-            )
+            let ref = this.modal.open(AddHostDialog)
+            ref.componentInstance.setParams(this.app, version, this.appGroupId.value)
         } else {
             this.alert.warning("应用还未加入分组，不能配置部署主机")
         }

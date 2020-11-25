@@ -12,16 +12,19 @@ public class GetHosts {
 
     public static class Request implements Serializable {
         private static final long serialVersionUID = -2282597973878000475L;
+        public final Long groupId;   //不为null表示查询某分组，null表示不设置过滤条件，相当于查询所有主机
         public final String ipSearch;
         public final int page;
         public final int pageSize;
 
         /**
+         * @param groupId
          * @param ipSearch
          * @param page
          * @param pageSize
          */
-        public Request(String ipSearch, int page, int pageSize) {
+        public Request(Long groupId, String ipSearch, int page, int pageSize) {
+            this.groupId = groupId;
             this.ipSearch = ipSearch;
             this.page = page;
             this.pageSize = pageSize;

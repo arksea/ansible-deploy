@@ -25,10 +25,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     z-index: 10000;
 }
 
-#job-logs {
-    min-height: 400px;
-}
-
 .icon-btn {
     cursor:pointer;
 }

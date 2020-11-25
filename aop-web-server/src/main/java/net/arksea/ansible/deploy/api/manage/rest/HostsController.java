@@ -37,9 +37,10 @@ public class HostsController {
     @RequestMapping(method = RequestMethod.GET, produces = MEDIA_TYPE)
     public RestResult<GetHosts.Response> getHosts(
             @RequestParam int page, @RequestParam int pageSize,
+            @RequestParam(required = false) Long groupId,
             @RequestParam(required = false) String ipSearch,
             final HttpServletRequest httpRequest) {
-        GetHosts.Request msg = new GetHosts.Request(ipSearch, page, pageSize);
+        GetHosts.Request msg = new GetHosts.Request(groupId, ipSearch, page, pageSize);
         return new RestResult<>(SUCCEED, hostsService.findHosts(msg), httpRequest);
     }
 

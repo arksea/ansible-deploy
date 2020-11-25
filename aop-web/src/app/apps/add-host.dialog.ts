@@ -48,6 +48,9 @@ export class AddHostDialog {
                 if (ret.code == 0) {
                     this.hosts = ret.result
                     this.hosts.items = this.hosts.items.filter((h,i,array)=> {
+                        if (!h.enabled) {
+                            return false
+                        }
                         for (let v of this.app.versions) {
                             if (v.targetHosts) {
                                 for (let t of v.targetHosts) { //过滤应用在所有版本中已添加的主机
@@ -60,7 +63,7 @@ export class AddHostDialog {
                         return true
                     })
                     this.formArray.clear()
-                    this.hosts.items.forEach(h => this.formArray.push(new FormControl({value:false,disabled:!h.enabled})))
+                    this.hosts.items.forEach(h => this.formArray.push(new FormControl(false)))
                 }
             }
         )
@@ -88,7 +91,7 @@ export class AddHostDialog {
                 if (!error) {
                     addHosts.forEach(h => this.version.targetHosts.push(h))
                     this.modal.close('ok')
-                    this.alert.info("新增主机成功")
+                    this.alert.success("新增主机成功")
                 }
             })
         } else { //未保存的新建应用

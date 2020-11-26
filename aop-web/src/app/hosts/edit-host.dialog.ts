@@ -12,6 +12,7 @@ import { Host,AppGroup } from '../app.entity'
 })
 export class EditHostDialog {
     title: string
+    hosts: Host[]
     host: Host
     form: FormGroup
     groups: AppGroup[]
@@ -31,8 +32,9 @@ export class EditHostDialog {
         })
     }
 
-    public setHost(host: Host) {
+    public setHost(host: Host, hosts: Host[]) {
         this.host = host
+        this.hosts = hosts
         this.editing = host.id ? true : false
         this.title = this.editing ? '修改主机信息' : '新增主机'
         this.desc.setValue(host.description)
@@ -44,18 +46,28 @@ export class EditHostDialog {
 
     save(event: FormDataEvent) {
         event.preventDefault()
-        this.host.description = this.desc.value
-        this.host.privateIp = this.ip.value
-        this.host.appGroup = this.groupMap.get(Number(this.gid.value))
-        this.svc.saveHost(this.host).subscribe(ret => {
-            if (ret.code == 0) {
-                if (!this.editing) {
-                    this.host.id = ret.result
-                    this.host.createTime = new Date().toISOString()
+        let str: string = this.ip.value
+        if (!this.editing && str.includes('~')) {
+            this.svc.batchAddHosts(str, this.desc.value, Number(this.gid.value)).subscribe(ret => {
+                if (ret.code == 0) {
+                    ret.result.forEach(it => this.hosts.push(it))
+                    this.modal.close('ok')
                 }
-                this.modal.close('ok')
-            }
-        })
+            })
+        } else {
+            this.host.description = this.desc.value
+            this.host.privateIp = this.ip.value
+            this.host.enabled = true
+            this.host.appGroup = this.groupMap.get(Number(this.gid.value))
+            this.svc.saveHost(this.host).subscribe(ret => {
+                if (ret.code == 0) {
+                    if (!this.editing) {
+                        this.hosts.push(ret.result)
+                    }
+                    this.modal.close('ok')
+                }
+            })
+        }
     }
 
     get desc(): AbstractControl {

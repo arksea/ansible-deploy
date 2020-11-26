@@ -11,9 +11,15 @@ export class HostsService {
     public constructor(private httpUtils: HttpUtils) {
     }
 
-    public saveHost(host: Host): Observable<ServiceResponse<number>> {
+    public saveHost(host: Host): Observable<ServiceResponse<Host>> {
         const url = environment.apiUrl + '/api/hosts'
         return this.httpUtils.httpPost('保存主机信息', url, host)
+    }
+
+    public batchAddHosts(ipRange: string, descPrefix: string, groupId: number): Observable<ServiceResponse<Host[]>> {
+        const url = environment.apiUrl + '/api/hosts/batch?ipRange='+ipRange
+            +'&descPrefix='+descPrefix+'&groupId='+groupId
+        return this.httpUtils.httpPost('保存主机信息', url, '')
     }
 
     public deleteHost(hostId: number): Observable<ServiceResponse<any>> {

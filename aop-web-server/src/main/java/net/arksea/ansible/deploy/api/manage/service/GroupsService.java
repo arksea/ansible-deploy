@@ -2,8 +2,6 @@ package net.arksea.ansible.deploy.api.manage.service;
 
 import net.arksea.ansible.deploy.api.ServiceException;
 import net.arksea.ansible.deploy.api.auth.dao.UserDao;
-import net.arksea.ansible.deploy.api.auth.entity.Role;
-import net.arksea.ansible.deploy.api.auth.entity.User;
 import net.arksea.ansible.deploy.api.manage.dao.AppDao;
 import net.arksea.ansible.deploy.api.manage.dao.AppGroupDao;
 import net.arksea.ansible.deploy.api.manage.entity.App;
@@ -16,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -80,7 +76,7 @@ public class GroupsService {
             g.setAppCount(ac);
             long uc = userDao.countInAppGroup(g.getId());
             g.setUserCount(uc);
-            long hc = hostDao.countInAppGroup(g.getId());
+            long hc = hostDao.count(g.getId());
             g.setHostCount(hc);
         });
         return groups;

@@ -54,10 +54,9 @@ export class HostsComponent implements OnInit {
     newHost() {
         let ref = this.modal.open(EditHostDialog)
         let host = new Host()
-        ref.componentInstance.setHost(host)
+        ref.componentInstance.setHost(host, this.hostList.items)
         ref.result.then(result => {
             if (result == 'ok') {
-                this.hostList.items.push(host)
                 this.alert.success('保存成功')
             }
         }, reason => {})
@@ -83,7 +82,7 @@ export class HostsComponent implements OnInit {
 
     editHost(host: Host) {
         let ref: NgbModalRef = this.modal.open(EditHostDialog)
-        ref.componentInstance.setHost(host)
+        ref.componentInstance.setHost(host, this.hostList.items)
         ref.result.then(result => {
             if (result == 'ok') {
                 this.alert.success('保存成功')

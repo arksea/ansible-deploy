@@ -11,7 +11,7 @@ import { HostsService } from '../hosts/hosts.service'
 import { AddHostDialog } from './add-host.dialog'
 import { Version } from '../app.entity'
 import { ConfirmDialog } from '../utils/confirm.dialog'
-import { JobPlayDialog } from './job-play.dialog'
+import { DeleteJobPlayDialog } from './job-play.dialog'
 import { PortSelectDialog } from './port-select.dialog'
 
 @Component({
@@ -83,7 +83,9 @@ export class AppEditComponent implements OnInit {
 
     private setFormValue(app: App) {
         this.apptag.setValue(app.apptag)
-        this.appGroupId.setValue(app.appGroup.id)
+        if (app.appGroup != null) {
+            this.appGroupId.setValue(app.appGroup.id)
+        }
         this.desc.setValue(app.description)
         for (let v of app.vars) {
             this.appForm.addControl('var_' + v.name, new FormControl({ value: v.value, disabled: v.isPort }, [Validators.maxLength(128)]))
@@ -108,7 +110,6 @@ export class AppEditComponent implements OnInit {
             }
         )
     }
-
 
     onNewVersionBtnClick() {
         let ref = this.modal.open(NewVersionDialog)
@@ -151,49 +152,51 @@ export class AppEditComponent implements OnInit {
         }
     }
 
-    onDeleteHostBtnClick(host: Host, version: Version) {
-        if (this.isNewAction) { //未保存的新建应用
-            version.targetHosts = version.targetHosts.filter((h,i,a) => h.id != host.id)
-        } else {
-            let ref = this.modal.open(ConfirmDialog)
-            ref.componentInstance.title = "确认要移除吗?"
-            ref.componentInstance.message = "从版本中移除主机: "+host.privateIp
-            ref.result.then(result => {
-                if (result == "ok") {
-                    this.doDeleteOperation(host, version)
-                }
-            }, resaon => {})
-        }
+    private confirmDeleteHost(host: Host, version: Version) {
+        let ref = this.modal.open(ConfirmDialog)
+        ref.componentInstance.title = "确认要移除吗?"
+        ref.componentInstance.message = "从版本中移除主机: "+host.privateIp
+        ref.result.then(result => {
+            if (result == "ok") {
+                this.doDeleteHostFromVersion(host, version)
+            }
+        }, resaon => {})
     }
 
-    private doDeleteOperation(host: Host, ver: Version) {
-        this.svc.getOperationsByAppTypeId(this.app.appType.id).subscribe(ret => {
-            if (ret.code == 0) {
-                let operations = ret.result
-                let hasDelScript = false
-                for (let op of operations) {
-                    if (op.type == 'DELETE') {
-                        hasDelScript = true
-                        let ref = this.modal.open(JobPlayDialog, {size: 'lg', scrollable: true})
-                        ref.componentInstance.operation = op
-                        ref.componentInstance.app = this.app
-                        ref.componentInstance.hosts = [host]
-                        ref.componentInstance.ver = ver
-                        ref.result.then(result => {
-                                if (result == "ok") {
-                                    this.doDeleteHostFromVersion(host, ver)
-                                }
-                            }, reason => {
-                                this.alert.error("删除失败: " + reason)
-                            })
-                        break
+    onDeleteHostBtnClick(host: Host, ver: Version) {
+        if (this.isNewAction) { //未保存的新建应用
+            ver.targetHosts = ver.targetHosts.filter((h,i,a) => h.id != host.id)
+        } else {
+            this.svc.getOperationsByAppTypeId(this.app.appType.id).subscribe(ret => {
+                if (ret.code == 0) {
+                    let operations = ret.result
+                    let hasDelScript = false
+                    for (let op of operations) {
+                        if (op.type == 'DELETE') {
+                            hasDelScript = true
+                            let ref = this.modal.open(DeleteJobPlayDialog, {size: 'lg', scrollable: true})
+                            ref.componentInstance.operation = op
+                            ref.componentInstance.app = this.app
+                            ref.componentInstance.hosts = [host]
+                            ref.componentInstance.ver = ver
+                            ref.result.then(result => {
+                                    if (result == 'skip') {
+                                        this.confirmDeleteHost(host, ver)
+                                    } else if (result == "ok") {
+                                        this.doDeleteHostFromVersion(host, ver)
+                                    }
+                                }, reason => {
+                                    this.alert.error("删除失败: " + reason)
+                                })
+                            break
+                        }
+                    }
+                    if (!hasDelScript)  {
+                        this.confirmDeleteHost(host, ver)
                     }
                 }
-                if (!hasDelScript)  {
-                    this.doDeleteHostFromVersion(host, ver)
-                }
-            }
-        })
+            })
+        }
     }
 
     private doDeleteHostFromVersion (host: Host, version: Version) {

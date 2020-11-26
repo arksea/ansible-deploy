@@ -27,14 +27,13 @@ export class JobPlayDialog implements OnInit, OnDestroy, AfterViewChecked {
     @ViewChild('scrollLogs')
     private scrollContainer: ElementRef
 
-
+    public isDeleteJob: boolean = false
 
     jobStarted: BehaviorSubject<boolean> = new BehaviorSubject(false)
     // opAddModel     ──┬──＞ updates  ===＞ jobLogs
     opAddModel: Subject<ModelData> = new Subject()
     updates: Subject<IModelOperation> = new Subject()
     jobLogs: Observable<ModelData>
-    isStatusTestJob: boolean = false
 
     constructor(public modal: NgbActiveModal, public svc: AppsService) {
     }
@@ -78,9 +77,6 @@ export class JobPlayDialog implements OnInit, OnDestroy, AfterViewChecked {
                     }
                 })
             }
-            // if (data.index == -1 && this.isStatusTestJob) {
-            //     this.modal.close('ok')
-            // }
         })
     }
 
@@ -99,6 +95,10 @@ export class JobPlayDialog implements OnInit, OnDestroy, AfterViewChecked {
                 })
             }
         })
+    }
+
+    skipJob() {
+        this.modal.close('skip')
     }
 
     private setHostStatus(log: string) {
@@ -142,10 +142,24 @@ export class JobPlayDialog implements OnInit, OnDestroy, AfterViewChecked {
 export class StatusJobPlayDialog extends JobPlayDialog {
     constructor(public modal: NgbActiveModal, public svc: AppsService) {
         super(modal, svc)
-        this.isStatusTestJob = true
     }
     ngOnInit(): void {
         super.ngOnInit()
         this.startJob()
     }
-};
+}
+
+@Component({
+    selector: 'delete-job-play-dialog',
+    templateUrl: './job-play.dialog.html',
+    styles: ['#job-logs {min-height: 400px;}']
+})
+export class DeleteJobPlayDialog extends JobPlayDialog {
+    constructor(public modal: NgbActiveModal, public svc: AppsService) {
+        super(modal, svc)
+        this.isDeleteJob = true
+    }
+    ngOnInit(): void {
+        super.ngOnInit()
+    }
+}

@@ -30,7 +30,17 @@ public class HostsController {
                               final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         Host saved = hostsService.saveHost(host);
-        return RestUtils.createResult(SUCCEED, saved.getId(), reqid);
+        return RestUtils.createResult(SUCCEED, saved, reqid);
+    }
+
+    @RequiresPermissions("主机管理:修改")
+    @RequestMapping(path="batch", method = RequestMethod.POST, produces = MEDIA_TYPE)
+    public RestResult<Iterable<Host>> saveHosts(
+                           @RequestParam String ipRange,
+                           @RequestParam String descPrefix,
+                           @RequestParam long groupId,
+                           final HttpServletRequest httpRequest) {
+        return new RestResult<>(SUCCEED, hostsService.batchAddHosts(ipRange,descPrefix, groupId), httpRequest);
     }
 
     @RequiresPermissions("主机管理:查询")

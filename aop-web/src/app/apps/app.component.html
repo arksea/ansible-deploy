@@ -59,7 +59,7 @@
                                 <div class="col-sm-2">{{h.privateIp}}</div>
                                 <div class="col">{{h.description}}</div>
                                 <div class="col-sm-2 text-center">
-                                    <div *ngFor="let op of operations" [hidden]="op.type!='STATUS'">
+                                    <div *ngFor="let op of status">
                                         <span class="badge" [class]="getHostStatusStyle(h.status[op.name])">{{getHostStatusValue(h.status[op.name])}}</span>
                                     </div>
                                 </div>

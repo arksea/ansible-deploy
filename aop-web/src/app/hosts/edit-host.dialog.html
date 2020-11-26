@@ -8,7 +8,8 @@
                 <span class="text-danger" *ngIf="ip.errors?.required">*</span>
                 <span class="text-danger" *ngIf="ip.errors?.minlength || ip.errors?.maxlength">(长度7至36)</span>
             </label>
-            <input id="privateIp" [readonly]="editing" class="form-control" formControlName="privateIp"/>
+            <input id="privateIp" [readonly]="editing" class="form-control" formControlName="privateIp"
+                placeholder="支持批量添加：192.168.0.10~20"/>
         </div>
         <div class="form-group">
             <label for="appGroup">所属分组

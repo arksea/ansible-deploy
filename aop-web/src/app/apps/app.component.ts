@@ -15,7 +15,7 @@ import { JobPlayDialog, StatusJobPlayDialog } from './job-play.dialog'
 })
 export class AppComponent implements OnInit {
     app: App = new App()
-    operations: AppOperation[]
+    operations: AppOperation[] = []
     hostChecked: FormGroup = new FormGroup({})
     constructor(private svc: AppsService,
                 public account: AccountService,
@@ -140,5 +140,9 @@ export class AppComponent implements OnInit {
         } else {
             return s.value
         } 
+    }
+
+    get status(): AppOperation[] {
+        return this.operations.filter(it => it.type=='STATUS')
     }
 }

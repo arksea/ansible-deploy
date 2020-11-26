@@ -9,7 +9,7 @@ import { MessageNotify } from '../utils/message-notify'
 import { App, AppType, Page } from '../app.entity'
 import { AccountService } from '../account/account.service'
 import { Router } from '@angular/router'
-import { JobPlayDialog } from './job-play.dialog'
+import { DeleteJobPlayDialog } from './job-play.dialog'
 
 @Component({
     selector: 'apps',
@@ -55,18 +55,18 @@ export class AppListComponent implements OnInit {
         this.router.navigate(['/apps', app.id])
     }
 
-    onDelBtnClick(app: App) {
+    private confirmDeleteApp(app: App) {
         let ref = this.modal.open(ConfirmDialog)
         ref.componentInstance.title = "删除应用: " + app.apptag
         ref.componentInstance.message = "确认要删除吗?"
         ref.result.then(result => {
             if (result == "ok") {
-                this.doDeleteOperation(app)
+                this.doDeleteApp(app)
             }
         }, resaon => { })
     }
 
-    private doDeleteOperation(app: App) {
+    onDelBtnClick(app: App) {
         this.svc.getOperationsByAppTypeId(app.appType.id).subscribe(ret => {
             if (ret.code == 0) {
                 let operations = ret.result
@@ -74,12 +74,14 @@ export class AppListComponent implements OnInit {
                 for (let op of operations) {
                     if (op.type == 'DELETE_APP') {
                         hasDelScript = true
-                        let ref = this.modal.open(JobPlayDialog, {size: 'lg', scrollable: true})
+                        let ref = this.modal.open(DeleteJobPlayDialog, {size: 'lg', scrollable: true})
                         ref.componentInstance.operation = op
                         ref.componentInstance.app = app
                         ref.componentInstance.hosts = []
                         ref.result.then(result => {
-                                if (result == "ok") {
+                                if (result == 'skip') {
+                                    this.confirmDeleteApp(app)
+                                } else if (result == "ok") {
                                     this.doDeleteApp(app)
                                 }
                             }, reason => {
@@ -89,7 +91,7 @@ export class AppListComponent implements OnInit {
                     }
                 }
                 if (!hasDelScript)  {
-                    this.doDeleteApp(app)
+                    this.confirmDeleteApp(app)
                 }
             }
         })

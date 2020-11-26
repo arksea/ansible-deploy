@@ -13,7 +13,6 @@ export class PortsService {
     public portTypesMap: Map<number,PortType> = new Map()
 
     public constructor(private httpUtils: HttpUtils) {
-        this.updatePortTypes()
     }
 
     //更新各类型端口使用情况的统计数据

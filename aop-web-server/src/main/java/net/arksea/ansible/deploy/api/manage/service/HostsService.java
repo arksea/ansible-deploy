@@ -1,6 +1,5 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
-import net.arksea.ansible.deploy.api.manage.entity.AppGroup;
 import net.arksea.ansible.deploy.api.manage.entity.Host;
 import net.arksea.ansible.deploy.api.manage.msg.GetHosts;
 import net.arksea.restapi.RestException;

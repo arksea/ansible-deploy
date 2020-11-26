@@ -58,6 +58,14 @@ public class PortsController {
         return new RestResult<>(SUCCEED, portsService.getPortTypes(), httpRequest);
     }
 
+    @RequiresPermissions("端口管理:修改")
+    @RequestMapping(path = "types", method = RequestMethod.POST, produces = MEDIA_TYPE)
+    public RestResult<List<PortType>> savePortTypes(
+                final @RequestBody List<PortType> types,
+                final HttpServletRequest httpRequest) {
+        return new RestResult<>(SUCCEED, portsService.savePortTypes(types), httpRequest);
+    }
+
     @RequiresPermissions("端口管理:查询")
     @RequestMapping(path = "prefix/{prefix}", method = RequestMethod.GET, produces = MEDIA_TYPE)
     public RestResult<List<Port>> searchByPrefix(@PathVariable("prefix") final String prefix,

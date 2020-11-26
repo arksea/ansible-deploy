@@ -4,9 +4,13 @@ import akka.actor.AbstractActor;
 import akka.actor.Actor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
+import akka.dispatch.Futures;
 import akka.dispatch.OnComplete;
 import akka.japi.Creator;
 import akka.japi.pf.ReceiveBuilder;
+import net.arksea.ansible.deploy.api.manage.entity.App;
+import net.arksea.ansible.deploy.api.manage.entity.AppOperation;
+import net.arksea.ansible.deploy.api.manage.entity.AppOperationType;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import net.arksea.ansible.deploy.api.operator.entity.OperationToken;
 import org.apache.logging.log4j.LogManager;
@@ -16,6 +20,7 @@ import scala.concurrent.duration.Duration;
 import java.io.File;
 import java.io.FileWriter;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -27,12 +32,14 @@ import java.util.concurrent.TimeUnit;
 public class JobPlayer extends AbstractActor {
     private Logger logger = LogManager.getLogger(JobPlayer.class);
     private final OperationJob job;
+    private final AppOperation operation;
+    private final App app;
     private final Set<Long> hosts;
     private final LinkedList<String> logs = new LinkedList<>();
     private final JobResources beans;
-    private final long MAX_LOG_LEN_PER_REQUEST = 10240;
-    private final long STOP_JOB_DELAY = 3;
-    private final long JOB_PLAY_TIMEOUT = 300;
+    private final static long MAX_LOG_LEN_PER_REQUEST = 10240;
+    private final static long STOP_JOB_DELAY = 3;
+    private final static long JOB_PLAY_TIMEOUT = 300;
     private FileWriter jobLogFileWriter;
     private boolean noMoreLogs = false;
 
@@ -40,9 +47,11 @@ public class JobPlayer extends AbstractActor {
         this.job = job;
         this.hosts = hosts;
         this.beans = beans;
+        this.operation = beans.appOperationDao.findOne(job.getOperationId());
+        this.app = beans.appDao.findOne(job.getAppId());
     }
 
-    public static Props props(OperationJob job, Set<Long>hosts, JobResources state) {
+    static Props props(OperationJob job, Set<Long>hosts, JobResources state) {
         return Props.create(new Creator<Actor>() {
             @Override
             public Actor create() {
@@ -51,10 +60,10 @@ public class JobPlayer extends AbstractActor {
         });
     }
 
-    public static class Init {}
-    public static class PollLogs {
-        public final int index;
-        public PollLogs(int index) {
+    private static class Init {}
+    static class PollLogs {
+        final int index;
+        PollLogs(int index) {
             this.index = index;
         }
     }
@@ -63,27 +72,27 @@ public class JobPlayer extends AbstractActor {
         public int index;
         public int size;
         private PollLogsResult() {}
-        public PollLogsResult(String log, int index, int size) {
+        PollLogsResult(String log, int index, int size) {
             this.log = log;
             this.index = index;
             this.size = size;
         }
     }
-    public static class OfferLog {
-        public final String log;
-        public OfferLog(String log) {
+    private static class OfferLog {
+        final String log;
+        OfferLog(String log) {
             this.log = log;
         }
     }
-    public static class OfferLogs {
-        public final List<String> logs;
-        public OfferLogs(List<String> logs) {
+    private static class OfferLogs {
+        final List<String> logs;
+        OfferLogs(List<String> logs) {
             this.logs = logs;
         }
     }
-    public static class NoMoreLogs {}
-    public static class StopJob {}
-    public static class StartJob{}
+    private static class NoMoreLogs {}
+    private static class StopJob {}
+    private static class StartJob{}
 
     public void preStart() {
         context().system().scheduler().scheduleOnce(
@@ -96,12 +105,25 @@ public class JobPlayer extends AbstractActor {
 
     public void postStop() {
         job.setEndTime(new Timestamp(System.currentTimeMillis()));
+        StringBuilder sb = new StringBuilder();
+        logs.forEach(sb::append);
+        if (operation.getType() != AppOperationType.STATUS) { //为了减少日志占用数据库空间，状态查询日志只记录到文件
+            job.setLog(sb.toString());
+        }
         beans.operationJobDao.save(job);
         OperationToken t = beans.operationTokenDao.findByAppId(job.getAppId());
         if (t != null) {
             t.setReleased(true);
             t.setReleaseTime(new Timestamp(System.currentTimeMillis()));
             beans.operationTokenDao.save(t);
+        }
+        if (jobLogFileWriter != null) {
+            try {
+                jobLogFileWriter.flush();
+                jobLogFileWriter.close();
+            } catch (Exception ex) {
+                logger.warn("关闭操作结果日志文件失败", ex);
+            }
         }
     }
 
@@ -128,7 +150,7 @@ public class JobPlayer extends AbstractActor {
             }
             jobLogFileWriter = new FileWriter(file);
             offerLog("初始化操作任务:\n");
-            JobContextCreator creator = new JobContextCreator(job, hosts, beans, this::offerLog);
+            JobContextCreator creator = new JobContextCreator(getJobPath(), job, operation, hosts, beans, this::offerLog);
             creator.run();
             self().tell(new StartJob(), self());
         } catch (Exception ex) {
@@ -140,22 +162,25 @@ public class JobPlayer extends AbstractActor {
 
     private void handleStartJob(StartJob msg) {
         ActorRef self = self();
-        JobCommandRunner runner = new JobCommandRunner(job, beans,
-                new IJobEventListener() {
-                    @Override
-                    public void log(String str) {
-                        self.tell(new OfferLog(str), ActorRef.noSender());
-                    }
+        IJobEventListener listener = new IJobEventListener() {
+            @Override
+            public void log(String str) {
+                self.tell(new OfferLog(str), ActorRef.noSender());
+            }
 
-                    @Override
-                    public void onFinished() {
-                        delayStopJob();
-                    }
-                }
-        );
-        runner.run().onComplete(new OnComplete<Boolean>() {
+            @Override
+            public void onFinished() {
+                delayStopJob();
+            }
+        };
+        String cmd = getJobPath() + operation.getCommand();
+        Futures.future(() -> {
+            JobCommandRunner.exec(cmd, listener);
+            return true;
+        }, context().dispatcher()).onComplete(new OnComplete<Boolean>() {
             @Override
             public void onComplete(Throwable failure, Boolean success) {
+                delayStopJob();
                 if (failure == null) {
                     offerLog("操作任务完成\n");
                 } else {
@@ -200,14 +225,6 @@ public class JobPlayer extends AbstractActor {
     }
 
     private void handleStopJob(StopJob msg) {
-        if (jobLogFileWriter != null) {
-            try {
-                jobLogFileWriter.flush();
-                jobLogFileWriter.close();
-            } catch (Exception ex) {
-                logger.warn("关闭操作结果日志文件失败", ex);
-            }
-        }
         context().stop(self());
     }
     private void handleOfferLog(OfferLog msg) {
@@ -226,7 +243,9 @@ public class JobPlayer extends AbstractActor {
             logger.warn("记录操作结果失败", ex);
         }
     }
+
     private String getJobPath() {
-        return beans.getJobPath(job);
+        LocalDate localDate = LocalDate.now();
+        return beans.jobWorkRoot + "/" + localDate + "/" + app.getApptag() + "/" + job.getId() + "/";
     }
 }

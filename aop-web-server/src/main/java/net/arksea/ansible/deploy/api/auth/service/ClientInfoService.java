@@ -1,9 +1,8 @@
 package net.arksea.ansible.deploy.api.auth.service;
 
-import net.arksea.ansible.deploy.api.ServiceException;
+import net.arksea.ansible.deploy.api.auth.dao.UserDao;
 import net.arksea.ansible.deploy.api.auth.entity.User;
 import net.arksea.ansible.deploy.api.auth.info.ClientInfo;
-import net.arksea.ansible.deploy.api.auth.dao.UserDao;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.shiro.SecurityUtils;
@@ -15,8 +14,8 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 
 @Component
-public class UserService implements IUserService {
-    private static final Logger logger = LogManager.getLogger(UserService.class.getName());
+public class ClientInfoService implements IUserService {
+    private static final Logger logger = LogManager.getLogger(ClientInfoService.class.getName());
     @Autowired
     UserDao userDao;
 
@@ -26,7 +25,10 @@ public class UserService implements IUserService {
         String userName = (String)subject.getSession().getAttribute("user_name");
         if (userId == null || userName == null) {
             //session失效则根据remberMe记录的用户Id重新设置session
-            userId = (long)subject.getPrincipal();
+            userId = (Long)subject.getPrincipal();
+            if (userId == null) {
+                throw new UnauthenticatedException("令牌失效，请重新登录");
+            }
             logger.debug("session失效，重新加载，userID={}", userId);
             User user = userDao.findOne(userId);
             if (user == null) {
@@ -39,13 +41,5 @@ public class UserService implements IUserService {
         }
         final String remoteIp = httpRequest.getRemoteAddr();
         return new ClientInfo(userId, userName, remoteIp);
-    }
-
-    public User getUserByName(String name) {
-        try {
-            return userDao.findOneByName(name);
-        } catch (Exception ex) {
-            throw new ServiceException("查询用户失败", ex);
-        }
     }
 }

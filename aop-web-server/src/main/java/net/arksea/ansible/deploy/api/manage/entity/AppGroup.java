@@ -1,5 +1,6 @@
 package net.arksea.ansible.deploy.api.manage.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import net.arksea.ansible.deploy.api.auth.entity.User;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -12,14 +13,14 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "dp2_app_group")
-public class AppGroup extends IdEntity {
+public class AppGroup extends IdEntity implements Comparable<AppGroup> {
     private String name;       // 分组名称
     private String description;// 分组描述
     private String avatar;     // 分组头像
-    private Set<App> apps;     // 分组管理的应用
-    private Set<Host> hosts;   // 分组管理的主机
     private Set<User> users;   // 加入分组的用户
-    private boolean enabled;   // 默认为true，删除或锁定将设置为false
+    private long appCount;      // 应用数
+    private long userCount;     // 用户数
+    private long hostCount;     // 主机数
 
     @NotBlank
     @Column(length = 64, nullable = false, unique = true)
@@ -49,28 +50,12 @@ public class AppGroup extends IdEntity {
         this.description = description;
     }
 
-    @OneToMany(mappedBy = "appGroupId",fetch = FetchType.EAGER)
-    public Set<App> getApps() {
-        return apps;
-    }
-
-    public void setApps(Set<App> apps) {
-        this.apps = apps;
-    }
-
-    @OneToMany(mappedBy = "appGroupId",fetch = FetchType.EAGER)
-    public Set<Host> getHosts() {
-        return hosts;
-    }
-
-    public void setHosts(Set<Host> hosts) {
-        this.hosts = hosts;
-    }
-
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "dp2_app_group_users",
             joinColumns = @JoinColumn(name = "app_group_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @OrderBy("name")
+    @JsonIgnore
     public Set<User> getUsers() {
         return users;
     }
@@ -79,12 +64,61 @@ public class AppGroup extends IdEntity {
         this.users = users;
     }
 
-    @Column(nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
-    public boolean isEnabled() {
-        return enabled;
+    @Transient
+    public long getAppCount() {
+        return appCount;
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public void setAppCount(long appCount) {
+        this.appCount = appCount;
+    }
+
+    @Transient
+    public long getUserCount() {
+        return userCount;
+    }
+
+    public void setUserCount(long userCount) {
+        this.userCount = userCount;
+    }
+
+    @Transient
+    public long getHostCount() {
+        return hostCount;
+    }
+
+    public void setHostCount(long hostCount) {
+        this.hostCount = hostCount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        } else if (o instanceof AppGroup) {
+            AppGroup g = (AppGroup)o;
+            if (g.id == null && this.id == null) {
+                return this.name.equals(g.name);
+            } else if (g.id == null || this.id == null) {
+                return false;
+            }
+            return this.id.equals(g.id);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int compareTo(AppGroup o) {
+        return this.id.compareTo(o.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        if (name == null) {
+            return super.hashCode();
+        } else {
+            return name.hashCode();
+        }
     }
 }

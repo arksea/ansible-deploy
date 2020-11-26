@@ -13,11 +13,10 @@ export class PortsService {
     public portTypesMap: Map<number,PortType> = new Map()
 
     public constructor(private httpUtils: HttpUtils) {
-        this.queryPortTypes()
     }
 
     //更新各类型端口使用情况的统计数据
-    private queryPortTypes() {
+    public updatePortTypes() {
         this.getPortTypes().subscribe(ret => {
             if (ret.code == 0) {
                 this.portTypes = ret.result
@@ -30,7 +29,7 @@ export class PortsService {
     public savePortSection(section: PortSection): Observable<ServiceResponse<PortSection>> {
         const url = environment.apiUrl + '/api/ports/sections'
         return this.httpUtils.httpPut('保存端口区间', url, section).pipe(map(ret => {
-            this.queryPortTypes()
+            this.updatePortTypes()
             return ret
         }))
     }
@@ -43,7 +42,7 @@ export class PortsService {
     public deleteSection(section: PortSection): Observable<ServiceResponse<boolean>> {
         const url = environment.apiUrl + '/api/ports/sections/'+section.id
         return this.httpUtils.httpDelete('删除端口区间', url).pipe(map(ret => {
-            this.queryPortTypes()
+            this.updatePortTypes()
             return ret
         }))
     }
@@ -51,5 +50,10 @@ export class PortsService {
     public getPortTypes(): Observable<ServiceResponse<Array<PortType>>> {
         const url = environment.apiUrl + '/api/ports/types'
         return this.httpUtils.httpGet('查询端口类型', url)
+    }
+
+    public savePortTypes(types: Array<PortType>): Observable<ServiceResponse<Array<PortType>>> {
+        const url = environment.apiUrl + '/api/ports/types'
+        return this.httpUtils.httpPost('查询端口类型', url, types)
     }
 }

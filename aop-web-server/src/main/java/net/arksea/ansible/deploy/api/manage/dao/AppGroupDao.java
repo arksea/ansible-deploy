@@ -5,12 +5,13 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-public interface AppGroupDao extends CrudRepository<AppGroup, Long> {
-    @Modifying
-    @Query("update AppGroup g set g.enabled = false where g.id = ?1")
-    void deleteById(long id);
+import java.util.Set;
 
-    Iterable<AppGroup> findAllByEnabled(boolean enabled);
+public interface AppGroupDao extends CrudRepository<AppGroup, Long> {
+
+    @Modifying
+    @Query("update AppGroup g set g.name = ?2, g.description = ?3 where g.id = ?1")
+    int updateInfo(long groupId, String name, String desc);
 
     @Modifying
     @Query(nativeQuery = true, value="insert into dp2_app_group_users set app_group_id=?1, user_id=?2")
@@ -24,5 +25,5 @@ public interface AppGroupDao extends CrudRepository<AppGroup, Long> {
     long userInGroup(long groupId, long userId);
 
     @Query(nativeQuery = true, value="select g.* from dp2_app_group g,dp2_app_group_users r where r.user_id=?1 and r.app_group_id = g.id")
-    Iterable<AppGroup> findByUserId(long userId);
+    Set<AppGroup> findByUserId(long userId);
 }

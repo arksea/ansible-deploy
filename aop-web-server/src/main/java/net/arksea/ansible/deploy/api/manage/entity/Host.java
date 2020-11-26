@@ -11,12 +11,12 @@ import java.util.Map;
  */
 @Entity
 @Table(name="dp2_hosts")
-public class Host extends IdEntity {
+public class Host extends IdEntity implements Comparable<Host> {
 
     private String publicIp;//公网IP
     private String privateIp;//内网IP
     private String description;//主机用途描述
-    private Long appGroupId;
+    private AppGroup appGroup;
     private boolean enabled;
     private Timestamp createTime; //创建时间
     private Map status = new HashMap<>();
@@ -48,13 +48,14 @@ public class Host extends IdEntity {
         this.description = description;
     }
 
-    @Column
-    public Long getAppGroupId() {
-        return appGroupId;
+    @ManyToOne
+    @JoinColumn(name="app_group_id")
+    public AppGroup getAppGroup() {
+        return appGroup;
     }
 
-    public void setAppGroupId(Long appGroupId) {
-        this.appGroupId = appGroupId;
+    public void setAppGroup(AppGroup appGroup) {
+        this.appGroup = appGroup;
     }
 
     @Column(nullable = false, columnDefinition = ("TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"))
@@ -87,5 +88,10 @@ public class Host extends IdEntity {
     @Override
     public String toString() {
         return privateIp;
+    }
+
+    @Override
+    public int compareTo(Host o) {
+        return this.getPrivateIp().compareTo(o.getPrivateIp());
     }
 }

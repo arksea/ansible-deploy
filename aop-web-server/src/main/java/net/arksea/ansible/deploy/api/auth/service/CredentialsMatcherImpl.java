@@ -84,6 +84,24 @@ public class CredentialsMatcherImpl implements CredentialsMatcher {
         return Base64.encodeBase64String(bytes);
     }
 
+    public static final String bytesToHexString(byte[] bArray) {
+        StringBuffer sb = new StringBuffer(bArray.length);
+        for (int i = 0; i < bArray.length; ++i) {
+            String sTemp = Integer.toHexString(255 & bArray[i]);
+            if (sTemp.length() < 2) {
+                sb.append(0);
+            }
+            sb.append(sTemp);
+        }
+        return sb.toString();
+    }
+
+    public static String createRandom(int byteLen) {
+        byte[] bytes = new byte[byteLen];
+        secureRandom.nextBytes(bytes);
+        return bytesToHexString(bytes);
+    }
+
     //生成CookieRememberMeManager.cipherKey
     public static void main(String[] args) {
         byte[] bytes = new byte[16];

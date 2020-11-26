@@ -1,0 +1,32 @@
+
+<div>
+    <div class="modal-header">
+        <h2 class="modal-title">设置 <span class="text-danger">[{{user.name}}]</span> 加入的分组</h2>
+    </div>
+    <div class="modal-body" [formGroup]="form">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-2"><strong>分组名称</strong></div>
+                    <div class="col"><strong>分组描述</strong></div>
+                    <div class="col-sm-2 text-right">值</div>
+                </div>
+            </li>
+            <li class="list-group-item" *ngFor="let g of svc.groups">
+                <div class="row">
+                    <div class="col-sm-2">{{g.name}}</div>
+                    <div class="col">{{g.description}}</div>
+                    <div class="col-sm-2 text-right">
+                        <input type="checkbox" formControlName="group-{{g.id}}">
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')">取消</button>
+        <button type="submit" class="btn btn-danger" 
+            (click)="save()"
+            [disabled]="form.invalid || form.pristine || account.perm('用户管理:修改')">保存</button>
+    </div>
+</div>

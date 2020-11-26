@@ -1,9 +1,11 @@
 <app-navbar></app-navbar>
 
 <div class="container-xl mt-3">
-    <div class="ml-3 mb-5">
-        <h2>主机管理</h2>
-    </div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active">主机管理</li>
+        </ol>
+    </nav>
     <div>
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
@@ -11,39 +13,66 @@
                     <div class="mr-auto">
                         <form (submit)="search($event)" [formGroup]="searchForm">
                             <div class="d-flex">
-                                <div><input type="text" class="form-control" id="searchPrefix"
-                                        formControlName="searchPrefix"></div>
-                                <div><button type="submit" class="btn btn-info form-control ml-2">搜索</button></div>
+                                <div>
+                                    <input type="text" class="form-control" id="searchPrefix" placeholder="请输入要搜索的主机IP"
+                                        formControlName="searchPrefix">
+                                </div>
+                                <div>
+                                    <button type="submit" class="btn btn-info form-control ml-2">搜索</button>
+                                </div>
                             </div>
                         </form>
                     </div>
                     <button type="button" class="btn btn-success" (click)="newHost()"
-                        [disabled]="account.perm('组管理:修改') | async">新增主机
+                        [disabled]="account.perm('主机管理:修改')">新增主机
                     </button>
                 </div>
             </li>
-            <li *ngFor="let h of hostList;index as i;" class="list-group-item">
-                <div class="d-flex mt-2">
-                    <div class="mr-auto">
-                        <strong>{{h.privateIp}}</strong><span [hidden]="h.enabled" class="text-danger"> (已禁用)</span>
-                        <p>{{h.description}}</p>
+            <li *ngFor="let h of hostList.items;index as i;" class="list-group-item">
+                <div class="d-flex">
+                    <div class="w-75 mr-auto">
+                        <p class="d-flex">
+                            <strong class="shadow-sm pr-2">{{h.privateIp}}</strong><span [hidden]="h.enabled" class="text-danger"> (已禁用)</span>
+                        </p>
+                        <div class="row">
+                            <div class="col-2" title="主机所属分组">
+                                <svg width="1em" height="1em" viewBox="0 0 18 18" class="bi bi-house" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M2 13.5V7h1v6.5a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V7h1v6.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5zm11-11V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z"/>
+                                    <path fill-rule="evenodd" d="M7.293 1.5a1 1 0 0 1 1.414 0l6.647 6.646a.5.5 0 0 1-.708.708L8 2.207 1.354 8.854a.5.5 0 1 1-.708-.708L7.293 1.5z"/>
+                                </svg>
+                                {{h.appGroup?h.appGroup.name:'未分组'}}
+                            </div>
+                            <div class="col-8" title="主机描述">
+                                <svg width="1em" height="1em" viewBox="0 0 18 18" class="bi bi-info-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                    <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588z"/>
+                                    <circle cx="8" cy="4.5" r="1"/>
+                                </svg>
+                                {{h.description}}
+                            </div>
+                        </div>
                     </div>
                     <div class="p-1 mt-1">
-                            <button type="button" class="btn btn-sm"
-                                [class.btn-outline-danger]="h.enabled"
-                                [class.btn-outline-info]="!h.enabled"
-                                [disabled]="account.perm('组管理:修改') | async"
-                                (click)="switchStatus(h)">{{h.enabled?'禁用':'启用'}}
-                            </button>
-                        </div>
+                        <button type="button" class="btn btn-sm" [class.btn-outline-warning]="h.enabled"
+                            [class.btn-outline-info]="!h.enabled" [disabled]="account.perm('主机管理:修改')"
+                            (click)="switchStatus(h)">{{h.enabled?'禁用':'启用'}}
+                        </button>
+                    </div>
+                    <div class="p-1 mt-1">
+                        <button type="button" class="btn btn-outline-danger btn-sm" [disabled]="account.perm('主机管理:修改')"
+                            (click)="onDelHostBtnClick(h)">删除
+                        </button>
+                    </div>
                     <div class="p-1 mt-1">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
-                            [disabled]="account.perm('组管理:修改') | async"
-                            (click)="editHost(h)">编辑
+                            [disabled]="account.perm('主机管理:修改')" (click)="editHost(h)">编辑
                         </button>
                     </div>
                 </div>
             </li>
         </ul>
     </div>
+    <mat-paginator [length]="hostList.total" [pageSize]="pageSize" [pageSizeOptions]="[14, 30, 50, 100]"
+        (page)="onPageEvent($event)">
+    </mat-paginator>
 </div>

@@ -1,17 +1,39 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
 import net.arksea.ansible.deploy.api.ServiceException;
+import net.arksea.ansible.deploy.api.auth.dao.UserDao;
+import net.arksea.ansible.deploy.api.auth.entity.User;
 import net.arksea.ansible.deploy.api.manage.dao.*;
 import net.arksea.ansible.deploy.api.manage.entity.*;
+import net.arksea.ansible.deploy.api.manage.msg.GetOperationJobHistory;
+import net.arksea.ansible.deploy.api.manage.msg.GetUserApps;
+import net.arksea.ansible.deploy.api.operator.dao.OperationJobDao;
 import net.arksea.ansible.deploy.api.operator.dao.OperationTokenDao;
+import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import net.arksea.ansible.deploy.api.operator.entity.OperationToken;
 import net.arksea.restapi.RestException;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 /**
  *
@@ -20,6 +42,7 @@ import java.util.List;
 @Component
 public class AppService {
 
+    Logger logger = LogManager.getLogger(AppService.class);
     @Autowired
     private AppDao appDao;
     @Autowired
@@ -31,11 +54,19 @@ public class AppService {
     @Autowired
     PortDao portDao;
     @Autowired
-    PortsStatDao portStatDao;
-    @Autowired
     AppTypeDao appTypeDao;
     @Autowired
     OperationTokenDao operationTokenDao;
+    @Autowired
+    PortTypeDao portTypeDao;
+    @Autowired
+    OperationJobDao operationJobDao;
+    @Autowired
+    AppOperationDao appOperationDao;
+    @Autowired
+    UserDao userDao;
+
+    ZoneId zoneId = ZoneId.of("+8");
 
     @Transactional
     public boolean deleteApp(long appId) {
@@ -53,9 +84,10 @@ public class AppService {
         app.getVersions().clear();
         List<Port> ports = portDao.findByAppId(app.getId());
         for (Port p: ports) {
-            portStatDao.incRestCount(1, p.getTypeId());
+            portTypeDao.incRestCount(1, p.getTypeId());
         }
         portDao.releaseByAppId(appId);
+        operationTokenDao.deleteByAppId(appId);
         appDao.delete(appId);
         return true;
     }
@@ -114,8 +146,8 @@ public class AppService {
                     v.setAppId(id);
                     versionDao.save(v);
                 }
+                createOperationToken(saved.getId());
             }
-            createOperationToken(saved.getId());
             return saved;
         } catch (ServiceException ex) {
             throw ex;
@@ -164,7 +196,7 @@ public class AppService {
                 if (n == 0) {
                     throw new ServiceException("'"+portType.getName()+"'端口可用数不够，请联系管理员");
                 }
-                portStatDao.incRestCount(-1, portType.getId());
+                portTypeDao.incRestCount(-1, portType.getId());
             }
         }
         List<Port> ports = portDao.findByAppId(app.getId());
@@ -200,7 +232,7 @@ public class AppService {
     }
 
     public App findOne(final Long id) {
-        return appDao.findOne(id);  //不能使用findOne方法，结果不正确
+        return appDao.findOne(id);
     }
 
     @Transactional
@@ -208,12 +240,96 @@ public class AppService {
         deleteApp(id);
     }
 
-    public List<App> findByUserId(long userId) {
-        return appDao.findByUserId(userId);
+    public GetUserApps.Response findUserApps(GetUserApps.Request msg) {
+        int offset = (msg.page < 1 ? 0 : msg.page - 1) * msg.pageSize;
+        List<App> apps;
+        long total;
+        if (StringUtils.isBlank(msg.nameSearch)) {
+            apps = appDao.findPageByUserId(msg.userId, offset, msg.pageSize);
+            total = appDao.getUserAppsCount(msg.userId);
+        } else {
+            String like = "%" + msg.nameSearch + "%";
+            apps = appDao.findPageByUserId(msg.userId, like, offset, msg.pageSize);
+            total = appDao.getUserAppsCount(msg.userId, like);
+        }
+        long totalPages = total/msg.pageSize;
+        if (total % msg.pageSize > 0) {
+            totalPages++;
+        }
+        return new GetUserApps.Response(total, totalPages, apps);
     }
 
     public List<App> findNotInGroup() {
         return appDao.findAllGroupIsNull();
     }
 
+    public GetOperationJobHistory.Response findOperationJobInfos(GetOperationJobHistory.Request msg) {
+        int page = msg.page < 1 ? 0 : msg.page - 1;
+        Pageable pageable = new PageRequest(page, msg.pageSize, Sort.Direction.DESC, "id");
+        App app = appDao.findOne(msg.appId);
+        List<Long> statusOperationIds = new LinkedList<>();
+        if (app != null) {
+            Iterable<AppOperation> ops = appOperationDao.findByAppTypeId(app.getAppType().getId());
+            for (AppOperation op : ops) {
+                if (op.getType() == AppOperationType.STATUS) {
+                    statusOperationIds.add(op.getId());
+                }
+            }
+        }
+        Specification<OperationJob> specification = new Specification<OperationJob>() {
+            @Override
+            public Predicate toPredicate(Root<OperationJob> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                List<Predicate> predicateList = new ArrayList<>();
+                predicateList.add(cb.equal(root.get("appId").as(Long.class), msg.appId));
+                if (StringUtils.isNotBlank(msg.startTime)) {
+                    ZonedDateTime z = ZonedDateTime.parse(msg.startTime, DateTimeFormatter.ISO_DATE_TIME);
+                    LocalDateTime l = z.withZoneSameInstant(zoneId).toLocalDateTime();
+                    Timestamp t = Timestamp.valueOf(l);
+                    predicateList.add(cb.greaterThanOrEqualTo(root.get("startTime").as(Timestamp.class), t));
+                }
+                if (StringUtils.isNotBlank(msg.endTime)) {
+                    ZonedDateTime z = ZonedDateTime.parse(msg.endTime, DateTimeFormatter.ISO_DATE_TIME);
+                    LocalDateTime l = z.withZoneSameInstant(zoneId).toLocalDateTime().plusDays(1);
+                    Timestamp t = Timestamp.valueOf(l);
+                    predicateList.add(cb.lessThan(root.get("startTime").as(Timestamp.class), t));
+                }
+                if (StringUtils.isNotBlank(msg.operator)) {
+                    User user = userDao.findOneByName(msg.operator);
+                    if (user == null) {
+                        throw new ServiceException("未找到用户["+msg.operator+"]");
+                    }
+                    predicateList.add(cb.equal(root.get("operatorId").as(Long.class), user.getId()));
+                }
+                for (Long opId: statusOperationIds) { //过滤状态查询操作
+                    predicateList.add(cb.notEqual(root.get("operationId").as(Long.class), opId));
+                }
+                return cb.and(predicateList.toArray(new Predicate[0]));
+            }
+        };
+        Page<OperationJob> jobs = operationJobDao.findAll(specification, pageable);
+        return new GetOperationJobHistory.Response(jobs.getTotalElements(),jobs.getTotalPages(), jobsToInfos(jobs));
+    }
+
+    private List<GetOperationJobHistory.OperationJobInfo> jobsToInfos(Iterable<OperationJob> jobs) {
+        List<GetOperationJobHistory.OperationJobInfo> infos = new LinkedList<>();
+        Map<Long, AppOperation> opMap = new HashMap<>();
+        Map<Long, User> userMap = new HashMap<>();
+        Map<Long, Version> verMap = new HashMap<>();
+        for (OperationJob j : jobs) {
+            AppOperation op = opMap.computeIfAbsent(j.getOperationId(), id -> appOperationDao.findOne(id));
+            User user = userMap.computeIfAbsent(j.getOperatorId(), id -> userDao.findOne(id));
+            String version;
+            if (j.getVersionId() == null) {
+                version = "/";
+            } else {
+                Version ver = verMap.computeIfAbsent(j.getVersionId(), id -> versionDao.findOne(id));
+                version = ver.getName();
+            }
+            String operation = op.getName();
+            String operator = user.getName();
+
+            infos.add(new GetOperationJobHistory.OperationJobInfo(j.getId(), operation, operator, version, j.getStartTime(), j.getEndTime()));
+        }
+        return infos;
+    }
 }

@@ -9,5 +9,5 @@ import java.util.List;
  * Create by xiaohaixing on 2020/9/17
  */
 public interface PortSectionDao extends CrudRepository<PortSection, Long> {
-    List<PortSection> findByTypeId(int typeId);
+    List<PortSection> findByTypeId(Long typeId);
 }

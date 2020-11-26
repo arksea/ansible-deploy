@@ -6,6 +6,8 @@
   <p>{{detail}}</p>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')">{{cancel}}</button>
+  <button type="button" class="btn btn-outline-secondary" 
+    *ngIf="cancel != ''"
+    (click)="modal.dismiss('cancel')">{{cancel}}</button>
   <button type="button" class="btn btn-danger" (click)="modal.close('ok')">{{ok}}</button>
 </div>

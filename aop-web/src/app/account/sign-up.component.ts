@@ -3,7 +3,7 @@ import { SignupInfo } from './account.entity';
 import { AccountService } from './account.service';
 import { MessageNotify } from "../utils/message-notify";
 import { FormDataEvent } from "@angular/forms/esm2015";
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, AbstractControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-sign-up',
@@ -17,9 +17,9 @@ export class SignUpComponent implements OnInit {
   ngOnInit(): void { }
   signUpForm: FormGroup = new FormGroup({
     username: new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(24)]),
-    email:    new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(32)]),
+    email: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(32)]),
     password: new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(32)]),
-    password2:new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(32)])
+    password2: new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(32)])
   });
 
   signup(event: FormDataEvent) {
@@ -33,5 +33,20 @@ export class SignUpComponent implements OnInit {
     } else {
       this.alert.warning('两次输入的密码不同');
     }
+  }
+  get name(): AbstractControl {
+    return this.signUpForm.get('username')
+  }
+
+  get email(): AbstractControl {
+    return this.signUpForm.get('email')
+  }
+
+  get pwd(): AbstractControl {
+    return this.signUpForm.get('password')
+  }
+
+  get pwd2(): AbstractControl {
+    return this.signUpForm.get('password2')
   }
 }

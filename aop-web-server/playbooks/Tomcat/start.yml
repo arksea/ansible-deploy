@@ -1,0 +1,31 @@
+- hosts: deploy_target 
+  remote_user: op
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: 启动Tomcat服务
+      service: name=tomcat-{{apptag}} state=started
+      become: yes
+
+    - name: 等待服务启动
+      wait_for: 'port={{http_port}} state=started timeout=30'
+
+    - debug:
+        msg: "@@SET_HOST_STATUS {{inventory_hostname}},运行中,running,状态,"
+
+    - name: 状态测试
+      uri: 
+          url: http://localhost:{{http_port}}/heartbeat
+          return_content: true
+      become: yes
+      register: status
+
+    - name: 设置离线状态
+      debug:
+        msg: "@@SET_HOST_STATUS {{inventory_hostname}},离线,offline,状态,"
+      when: "'OFFLINE' in status.content"
+
+    - name: 设置在线状态
+      debug:
+        msg: "@@SET_HOST_STATUS {{inventory_hostname}},在线,online,状态,"
+      when: "'ONLINE' in status.content"

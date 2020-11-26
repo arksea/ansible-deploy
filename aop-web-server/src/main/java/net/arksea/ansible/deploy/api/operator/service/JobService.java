@@ -21,6 +21,8 @@ import scala.concurrent.Future;
 import javax.annotation.Resource;
 import java.net.InetAddress;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Set;
 
 import static akka.japi.Util.classTag;
@@ -44,7 +46,7 @@ public class JobService {
     JobResources jobResources;
 
     @Transactional
-    public OperationJob create(long userId, long appId, long operationId) {
+    public OperationJob create(long userId, long appId, Long versionId, long operationId) {
         OperationToken t = operationTokenDao.findByAppId(appId);
         if (t == null) {
             t = new OperationToken();
@@ -54,6 +56,7 @@ public class JobService {
         }
         OperationJob job = new OperationJob();
         job.setAppId(appId);
+        job.setVersionId(versionId);
         job.setOperatorId(userId);
         job.setOperationId(operationId);
         job.setExecHost(getLocalHost());
@@ -103,14 +106,11 @@ public class JobService {
         }
     }
 
-    public static void main(String[] args) {
-        System.out.println(System.currentTimeMillis()/1000);
-        OperationJob job = new OperationJob();
-        job.setId(12345L);
-        job.setStartTime(new Timestamp(System.currentTimeMillis()));
-        job.setExecHost("127.0.0.1");
-        job.setAppId(111L);
-        job.setOperatorId(222L);
-        job.setOperationId(333L);
+    @Transactional
+    public void clearJobRecords(long logExpireDays) {
+        LocalDate localDate = LocalDate.now().minusDays(logExpireDays);
+        long epochSecond = localDate.atStartOfDay().toEpochSecond(ZoneOffset.of("+8"));
+        int n = operationJobDao.deleteExpireJobs(new Timestamp(epochSecond*1000));
+        logger.info("删除 {} 前的操作记录 {} 条", localDate, n);
     }
 }

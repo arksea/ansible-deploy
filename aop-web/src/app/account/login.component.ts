@@ -10,15 +10,21 @@ import { FormGroup,FormControl,Validators } from '@angular/forms';
 })
 export class LoginComponent implements OnInit {
 
+  public openRegister: boolean = true;
   constructor(private accountService: AccountService) {
   }
 
   loginForm: FormGroup = new FormGroup({
-    username: new FormControl('',[Validators.required, Validators.minLength(4), Validators.maxLength(24)]),
+    username: new FormControl('',[Validators.required]),
     password: new FormControl('',[Validators.required])
   });
 
   ngOnInit(): void {
+    this.accountService.getOpenRegister().subscribe(ret => {
+        if (ret.code == 0) {
+          this.openRegister = ret.result
+        }
+    })
   }
 
   login(event: FormDataEvent) {

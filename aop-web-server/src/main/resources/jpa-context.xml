@@ -26,7 +26,7 @@
                 <prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
             </props>
         </property>
-        <property name="persistenceUnitName" value="weather"/>
+        <property name="persistenceUnitName" value="deploy"/>
     </bean>
     
     <!-- 指定JPA的具体实现为Hibernate提供的适配器 -->

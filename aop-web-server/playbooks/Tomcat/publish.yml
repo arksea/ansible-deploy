@@ -1,0 +1,90 @@
+- hosts: deploy_target 
+  remote_user: op
+  vars_files:
+    - vars.yml
+  tasks:
+
+    - name: 测试服务是否运行
+      shell: ps ax | grep /home/{{apptag}}/tomcat | grep java | grep -v grep | awk '{print $1}'
+      become: yes
+      register: running
+
+    - name: 将服务置为离线状态
+      uri:
+        url: http://localhost:{{http_port}}/heartbeat
+        method: PUT
+        body: "OFFLINE;c701e78243404508a08f021a4ac8966d"
+      when: running.stdout!=''
+
+    - name: 确认服务已在离线状态
+      uri: 
+          url: http://localhost:{{http_port}}/heartbeat
+          return_content: true
+      become: yes
+      register: heartbeat
+      failed_when: "'OFFLINE' not in heartbeat.content"
+      when: running.stdout!=''
+
+    - debug:
+        msg: "@@SET_HOST_STATUS {{inventory_hostname}},离线,offline,状态,"
+      when: running.stdout!='' and "'OFFLINE' in heartbeat.content"
+
+    - name: 延迟10秒
+      wait_for: 'timeout=10'
+      delegate_to: localhost
+      when: running.stdout!=''
+
+    - name: 停止Tomcat服务
+      service: name=tomcat-{{apptag}} state=stopped
+      become: yes
+
+    - name: 确认服务端口已关闭
+      wait_for: 'port={{http_port}} state=stopped timeout=30'
+
+    - debug:
+        msg: "@@SET_HOST_STATUS {{inventory_hostname}},已停止,stopped,状态,"
+
+    - name: 等待10秒
+      wait_for: 'timeout=10'
+      delegate_to: localhost
+      when: running.stdout!=''
+
+    - name: 删除旧部署文件
+      file: path=/home/{{apptag}}/tomcat/webapps/{{apptag}} state=absent
+      become: yes
+
+    - name: 从资源库下载部署文件
+      subversion: repo=svn://10.79.186.29:8000/{{apptag}}/{{repository}} dest=/home/{{apptag}}/tomcat/webapps/{{apptag}} force=no username=deploy password=unicorn4Felink revision={{revision}}
+      become: yes
+      become_user: "{{apptag}}"
+
+    - name: 启动Tomcat服务
+      service: name=tomcat-{{apptag}} state=started
+      become: yes
+
+    - name: 等待服务启动
+      wait_for: 'port={{http_port}} state=started timeout=30'
+
+    - debug:
+        msg: "@@SET_HOST_STATUS {{inventory_hostname}},运行中,running,状态,"
+
+    - name: 等待10秒
+      wait_for: 'timeout=10'
+      delegate_to: localhost
+
+    - name: 状态测试
+      uri: 
+          url: http://localhost:{{http_port}}/heartbeat
+          return_content: true
+      become: yes
+      register: status
+
+    - name: 设置离线状态
+      debug:
+        msg: "@@SET_HOST_STATUS {{inventory_hostname}},离线,offline,状态,"
+      when: "'OFFLINE' in status.content"
+
+    - name: 设置在线状态
+      debug:
+        msg: "@@SET_HOST_STATUS {{inventory_hostname}},在线,online,状态,"
+      when: "'ONLINE' in status.content"

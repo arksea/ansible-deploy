@@ -22,24 +22,23 @@
     <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
         <property name="realm" ref="authRealm"/>
         <property name="cacheManager" ref="cacheManager"/>
-        <property name="sessionManager" ref="sessionManager"/>
+<!--  没有使用Session，仅用rememberMe记录简单的用户信息  <property name="sessionManager" ref="sessionManager"/>-->
         <property name="rememberMeManager" ref="rememberMeManager"/>
     </bean>
 
-    <bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
-        <property name="sessionIdUrlRewritingEnabled" value="false" />
-    </bean>
+<!--    <bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">-->
+<!--        <property name="sessionIdUrlRewritingEnabled" value="false" />-->
+<!--    </bean>-->
+    <!--    <bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">-->
+    <!--        <constructor-arg value="sid"/>-->
+    <!--        <property name="httpOnly" value="true"/>-->
+    <!--        <property name="maxAge" value="-1"/>-->
+    <!--    </bean>-->
 
     <bean id="rememberMeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager">
-        <property name="cipherKey" value="#{T(org.apache.shiro.codec.Base64).decode('79svzccaeo8nX93KIwilXA==')}"/>
+        <property name="cipherKey" value="#{T(org.apache.shiro.codec.Base64).decode('${shiro.cipherKey}')}"/>
         <property name="cookie" ref="rememberMeCookie"/>
     </bean>
-
-<!--    <bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">-->
-<!--        <constructor-arg value="sid"/>-->
-<!--        <property name="httpOnly" value="true"/>-->
-<!--        <property name="maxAge" value="-1"/>-->
-<!--    </bean>-->
     <bean id="rememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
         <constructor-arg value="rememberMe"/>
         <property name="httpOnly" value="true"/>

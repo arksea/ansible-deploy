@@ -1,18 +1,16 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
+import net.arksea.ansible.deploy.api.ServiceException;
 import net.arksea.ansible.deploy.api.manage.dao.PortSectionDao;
-import net.arksea.ansible.deploy.api.manage.dao.PortTypeDao;
-import net.arksea.ansible.deploy.api.manage.dao.PortsStatDao;
 import net.arksea.ansible.deploy.api.manage.entity.Port;
 import net.arksea.ansible.deploy.api.manage.entity.PortSection;
 import net.arksea.ansible.deploy.api.manage.entity.PortType;
-import net.arksea.ansible.deploy.api.manage.entity.PortsStat;
-import net.arksea.restapi.RestException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -29,9 +27,6 @@ public class PortsService {
 
     @Autowired
     PortTypeDao portTypeDao;
-
-    @Autowired
-    PortsStatDao portsStatDao;
 
     @Transactional
     public PortSection addPortSection(PortSection s) {
@@ -51,16 +46,10 @@ public class PortsService {
         }
         //修改统计
         int count = s.getMaxValue() - s.getMinValue() + 1;
-        int typeId = s.getType().getId();
-        PortsStat stat = portsStatDao.findByTypeId(typeId);
-        if (stat == null) {
-            stat = new PortsStat();
-            stat.setTypeId(typeId);
-            stat.setAllCount(count);
-            stat.setRestCount(count);
-            portsStatDao.save(stat);
-        } else {
-            portsStatDao.incAllCount(count, typeId);
+        Long typeId = s.getType().getId();
+        PortType stat = portTypeDao.findOne(typeId);
+        if (stat != null) {
+            portTypeDao.incAllCount(count, typeId);
         }
         //判断是否合并连续区间
         List<PortSection> sections = portSectionDao.findByTypeId(typeId);
@@ -155,9 +144,9 @@ public class PortsService {
             portDao.deleteByRange(l,r);
         }
         //修改统计
-        int typeId = s.getType().getId();
+        Long typeId = s.getType().getId();
         int count = s.getMaxValue() - s.getMinValue() - (old.getMaxValue() - old.getMinValue());
-        portsStatDao.incAllCount(count, typeId);
+        portTypeDao.incAllCount(count, typeId);
         //判断是否合并连续区间
         List<PortSection> sections = portSectionDao.findByTypeId(typeId);
         PortSection left = null;
@@ -209,9 +198,9 @@ public class PortsService {
         portSectionDao.delete(id);
 
         //修改统计
-        int typeId = s.getType().getId();
+        Long typeId = s.getType().getId();
         int all = s.getMaxValue() - s.getMinValue() + 1;
-        portsStatDao.incAllCount(-all, typeId);
+        portTypeDao.incAllCount(-all, typeId);
     }
 
     public List<Port> searchByPrefix(String prefix,int limit) {
@@ -220,5 +209,27 @@ public class PortsService {
 
     public List<Port> getByValue(int value) {
         return portDao.findByValue(value);
+    }
+
+    @Transactional
+    public List<PortType> savePortTypes(List<PortType> ports) {
+        try {
+            Iterable<PortType> old = portTypeDao.findAll();
+            old.forEach(o -> {
+                for (PortType t : ports) {
+                    if (o.getId().equals(t.getId())) {
+                        return;
+                    }
+                }
+                portTypeDao.delete(o.getId());
+            });
+            List<PortType> saved = new LinkedList<>();
+            for (PortType t : ports) {
+                saved.add(portTypeDao.save(t));
+            }
+            return saved;
+        } catch (Exception ex) {
+            throw new ServiceException("保存类型配置失败", ex);
+        }
     }
 }

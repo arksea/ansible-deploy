@@ -1,9 +1,11 @@
 <app-navbar></app-navbar>
 
 <div class="container-xl mt-3">
-    <div class="ml-3 mb-5">
-        <h2>端口管理</h2>
-    </div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active">端口管理</li>
+        </ol>
+    </nav>
 
     <div>
         <ul class="list-group list-group-flush">
@@ -11,12 +13,15 @@
                 <div class="d-flex">
                     <div class="mr-auto mt-2">
                         <span *ngFor="let t of svc.portTypes" class="badge badge-secondary mr-2 p-2"
-                              title="总数：{{t.stat?t.stat.allCount:0}} 个，剩余：{{t.stat?t.stat.restCount:0}} 个">
-                            {{t.name}} {{t.stat?t.stat.restCount:0}}
+                              title="总数：{{t.allCount}} 个，剩余：{{t.restCount}} 个">
+                            {{t.name}} {{t.restCount}}
                         </span>
                     </div>
-                    <button type="button" class="btn btn-success" (click)="newSection()"
-                        [disabled]="account.perm('端口管理:修改') | async">分配区间
+                    <button type="button" class="btn btn-success" (click)="editPortType()"
+                        [disabled]="account.perm('端口管理:修改')">配置类型
+                    </button>
+                    <button type="button" class="btn btn-success ml-2" (click)="newSection()"
+                        [disabled]="account.perm('端口管理:修改')">分配区间
                     </button>
                 </div>
             </li>
@@ -28,13 +33,13 @@
                     </div>
                     <div class="p-1 mt-1">
                             <button type="button" class="btn btn-outline-danger btn-sm"
-                                [disabled]="account.perm('端口管理:修改') | async"
+                                [disabled]="account.perm('端口管理:修改')"
                                 (click)="deleteSection(s)">删除
                             </button>
                         </div>
                     <div class="p-1 mt-1">
                         <button type="button" class="btn btn-outline-secondary btn-sm"
-                            [disabled]="account.perm('端口管理:修改') | async"
+                            [disabled]="account.perm('端口管理:修改')"
                             (click)="editSection(s)">修改
                         </button>
                     </div>

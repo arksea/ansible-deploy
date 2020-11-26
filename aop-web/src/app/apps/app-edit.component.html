@@ -1,7 +1,11 @@
 <div class="container-xl mt-3">
-    <div class="mb-5 ml-3">
-        <h2>我的应用 / 编辑</h2>
-    </div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a [routerLink]="['/apps']">我的应用</a></li>
+            <li class="breadcrumb-item"><a [routerLink]="['/apps',app.id]">{{apptag.value}}</a></li>
+            <li class="breadcrumb-item active">编辑</li>
+        </ol>
+    </nav>
     <div>
         <form (ngSubmit)="save()" [formGroup]="appForm">
             <div class="row">
@@ -16,30 +20,12 @@
                             *ngIf="apptag.errors?.minlength || apptag.errors?.maxlength">(长度4至30)</span>
                     </label>
                     <input type="text" id="apptag" formControlName="apptag" class="form-control"
+                        [readonly]="app.id"
                         placeholder="以字母开头，由字母与下划线组成">
-                </div>
-                <div class="col-lg-6 col-md-6 form-group mb-4">
-                    <label for="deployPath">应用发布目标路径
-                        <ng-template #deployPathPopContent>
-                            发布时系统自动将文件更新到这个目录下，如果你到服务器上手工修改了其中的文件，请记得提交，或在发布前revert回原来的版本，SVN在检测到目标目录中有改动将会停止操作，以防止与SVN库中的版本发生意外的合并或冲突
-                        </ng-template>
-                        <span class="mx-1" [ngbPopover]="deployPathPopContent">
-                            <ng-container *ngTemplateOutlet="formInfoIcon"></ng-container>
-                        </span>
-                        <span class="text-danger" *ngIf="deployPath.invalid">(长度4至128)</span>
-                    </label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">$HOME/</span>
-                        </div>
-                        <input type="text" id="deployPath" formControlName="deployPath" class="form-control"
-                            placeholder="建议设置为应用短名">
-                    </div>
                 </div>
                 <div class="col-lg-6 col-md-6 form-group mb-4">
                     <label for="appGroup">所属分组
                         <span class="text-danger" *ngIf="appGroupId.errors?.required">*</span>
-                        <span class="text-danger" *ngIf="appGroupId.errors?.minlength">(长度大于1)</span>
                     </label>
                     <select id="appGroup" name="appGroup" class="form-control" formControlName="appGroupId">
                         <option *ngFor="let g of userGroups" [value]="g.id">{{g.name}}</option>
@@ -67,11 +53,11 @@
 
             <div class="mb-5">
                 <div class="form-group">
-                    <label for="description">应用描述
+                    <label for="app-description">应用描述
                         <span class="text-danger" *ngIf="desc.errors?.required">*</span>
                         <span class="text-danger" *ngIf="desc.errors?.minlength || desc?.errors?.maxlength">(长度5至256)</span>
                     </label>
-                    <textarea id="description" class="form-control" rows="3" formControlName="description"></textarea>
+                    <textarea id="app-description" class="form-control" rows="3" formControlName="description"></textarea>
                 </div>
             </div>
 
@@ -80,7 +66,7 @@
                     <div class="mr-auto">
                         <h1>版本配置</h1>
                     </div>
-                    <button type="button" class="btn btn-success mr-2 mb-3" [disabled]="account.perm('应用:修改') | async"
+                    <button type="button" class="btn btn-success mr-2 mb-3" [disabled]="account.perm('应用:修改')"
                         (click)="onNewVersionBtnClick()">新增版本
                     </button>
                 </div>
@@ -94,16 +80,16 @@
                             </div>
                             <div class="pl-1">
                                 <button type="button" class="btn btn-outline-secondary btn-sm"
-                                    [disabled]="account.perm('应用:修改') | async" (click)="onAddHostBtnClick(v)">添加主机</button>
+                                    [disabled]="account.perm('应用:修改')" (click)="onAddHostBtnClick(v)">添加主机</button>
                             </div>
                             <div class="pl-1" [title] = "v.targetHosts.length > 0 ? '请先删除此版本的所有目标主机' : ''">
                                 <button type="button" class="btn btn-outline-danger btn-sm"
-                                    [disabled]="(account.perm('应用:修改') | async) || v.targetHosts.length > 0" 
+                                    [disabled]="account.perm('应用:修改') || v.targetHosts.length > 0" 
                                     (click)="onDeleteVersionBtnClick(v)">删除</button>
                             </div>
                             <div class="pl-1">
                                 <button type="button" class="btn btn-outline-secondary btn-sm"
-                                    [disabled]="account.perm('应用:修改') | async" (click)="onEditBtnClick(v)">修改</button>
+                                    [disabled]="account.perm('应用:修改')" (click)="onEditBtnClick(v)">修改</button>
                             </div>
                         </div>
                     </div>
@@ -126,7 +112,7 @@
                                 <div class="col-sm-2">{{h.privateIp}}</div>
                                 <div class="col">{{h.description}}</div>
                                 <div class="col-sm-2 text-right" title="删除">
-                                    <a class="link text-danger" (click)="onDeleteHostBtnClick(h, v)">
+                                    <a class="icon-btn text-danger" (click)="onDeleteHostBtnClick(h, v)">
                                         <ng-container *ngTemplateOutlet="deleteIcon"></ng-container>
                                     </a>
                                 </div>
@@ -140,7 +126,7 @@
                 <div class="col-lg-12 text-right">
                     <button type="button" class="btn btn-outline-secondary mr-2" (click)="cancel()">取消</button>
                     <button type="submit" class="btn btn-danger mr-2"
-                        [disabled]="appForm.invalid || appForm.pristine && !portModifyed || (account.perm('应用:修改') | async)">保存</button>
+                        [disabled]="appForm.invalid || appForm.pristine && !portModifyed || account.perm('应用:修改')">保存</button>
                 </div>
             </div>
         </form>

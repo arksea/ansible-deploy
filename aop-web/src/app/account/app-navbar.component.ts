@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
-import { Subject, Observable } from 'rxjs';
-import { AccountService } from './account.service';
-import { map } from 'rxjs/operators';
+import { Component } from '@angular/core'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { AccountService } from './account.service'
+import { ModifyPwdDialog } from './modify-pwd.dialog'
 
 @Component({
   selector: 'app-navbar',
@@ -9,26 +9,30 @@ import { map } from 'rxjs/operators';
 })
 export class AppNavbarComponent {
 
-  loginUser: Subject<string>;
+  loginUser: string
 
-  constructor(private accountService: AccountService) {
-    this.loginUser = accountService.loginUser;
+  constructor(private accountService: AccountService, private modal: NgbModal) {
+    this.loginUser = accountService.loginUser
   }
 
-  hiddenLogoutMenu(): Observable<boolean> {
-    return this.loginUser.pipe(map(u => u === ''))
+  hiddenLogoutMenu(): boolean {
+    return this.loginUser === ''
   }
 
   logout() {
-    this.accountService.logout();
+    this.accountService.logout()
   }
 
-  perm(name: string): Observable<boolean> {
-    return this.accountService.hasPerm(name).pipe(map(b => !b));
+  perm(name: string): boolean {
+    return this.accountService.perm(name)
   }
 
-  perms(name: string): Observable<boolean> {
-    return this.accountService.hasPermOrChild(name).pipe(map(b => !b));
+  perms(name: string): boolean {
+    return this.accountService.perms(name)
+  }
+
+  modifyPwd() {
+    this.modal.open(ModifyPwdDialog)
   }
 
 }

@@ -30,7 +30,7 @@ export class EditSectionDialog {
         this.title = this.isEditAction ? '修改端口区间' : '分配端口区间'
         this.min.setValue(section.minValue)
         this.max.setValue(section.maxValue)
-        this.form.setControl('type', new FormControl({value:section.type.id, disabled:this.isEditAction}, [Validators.required]))
+        this.type.setValue(section.type.id)
     }
 
     portRangeValidator: ValidatorFn = (form: FormGroup): ValidationErrors | null => {

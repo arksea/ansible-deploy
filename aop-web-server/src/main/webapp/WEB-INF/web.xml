@@ -83,6 +83,15 @@ http://www.springmodules.org/schema/cache/springmodules-ehcache.xsd"
     </filter-mapping>
 
     <servlet>
+        <servlet-name>heartbeat</servlet-name>
+        <servlet-class>net.arksea.ansible.deploy.api.filter.HeartBeat</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>heartbeat</servlet-name>
+        <url-pattern>/heartbeat</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>springServlet</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <init-param>

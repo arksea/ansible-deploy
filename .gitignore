@@ -9,3 +9,5 @@
 /aop-web-server/out
 /aop-web/dist
 /aop-web-server/publish
+/aop-web/node_modules.bak
+/aop-web.bak

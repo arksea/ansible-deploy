@@ -52,11 +52,12 @@ export class OperationListComponent implements OnInit {
             if (result == "ok") {
                 this.svc.deleteOperation(operation).subscribe(ret => {
                     if (ret.code == 0) {
-                        this.alert.success('删除成功');
+                        this.operationList = this.operationList.filter(it => it.id != operation.id)
+                        this.alert.success('删除成功')
                     }
                 });
             }
-        }, resaon => { });
+        }, resaon => { })
     }
 
 }

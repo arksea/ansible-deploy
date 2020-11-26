@@ -1,29 +1,23 @@
 package net.arksea.ansible.deploy.api.manage.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+import java.util.Set;
 
 /**
  * Create by xiaohaixing on 2020/9/17
  */
 @Entity
 @Table(name = "dp2_port_type")
-public class PortType {
-    private int id;
+public class PortType extends IdEntity{
     private String name;
     private String description;
-    private PortsStat stat;
+    private Set<Port> ports;
+    private int allCount;
+    private int restCount;
 
-    @Id
-    @Column(nullable = false, columnDefinition = "TINYINT UNSIGNED")
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    @Column(length = 32, nullable = false)
+    @Column(length = 32, nullable = false, unique = true)
     public String getName() {
         return name;
     }
@@ -41,13 +35,31 @@ public class PortType {
         this.description = description;
     }
 
-    @OneToOne
-    @PrimaryKeyJoinColumn
-    public PortsStat getStat() {
-        return stat;
+    @JsonIgnore
+    @OneToMany(mappedBy = "typeId",fetch = FetchType.LAZY)
+    public Set<Port> getPorts() {
+        return ports;
     }
 
-    public void setStat(PortsStat stat) {
-        this.stat = stat;
+    public void setPorts(Set<Port> ports) {
+        this.ports = ports;
+    }
+
+    @Column(nullable = false, columnDefinition = "INT UNSIGNED")
+    public int getAllCount() {
+        return allCount;
+    }
+
+    public void setAllCount(int allCount) {
+        this.allCount = allCount;
+    }
+
+    @Column(nullable = false, columnDefinition = "INT UNSIGNED")
+    public int getRestCount() {
+        return restCount;
+    }
+
+    public void setRestCount(int restCount) {
+        this.restCount = restCount;
     }
 }

@@ -10,19 +10,19 @@
     <form (ngSubmit)="save()" [formGroup]="typeForm">
         <div class="row mb-4">
             <div class="col-lg-4 form-group mb-4">
-                <label for="name">类型名称
+                <label for="app-type-name">类型名称
                     <span class="text-danger" *ngIf="name.errors?.required">*</span>
                     <span class="text-danger"
                         *ngIf="name.errors?.maxlength">(长度小于32)</span>
                 </label>
-                <input type="text" id="name" formControlName="name" class="form-control">
+                <input type="text" id="app-type-name" formControlName="name" class="form-control" [readonly]="readonly">
             </div>
             <div class="col-lg-8 form-group mb-4">
-                <label for="description">类型描述
+                <label for="app-type-description">类型描述
                     <span class="text-danger" *ngIf="description.errors?.required">*</span>
                     <span class="text-danger" *ngIf="description.errors?.maxlength">(长度小于128)</span>
                 </label>
-                <input type="text" id="description" formControlName="description" class="form-control">
+                <input type="text" id="app-type-description" formControlName="description" class="form-control" [readonly]="readonly">
             </div>
         </div>
 
@@ -35,7 +35,7 @@
                         </div>
                         <div class="pl-1">
                             <button type="button" class="btn btn-outline-secondary btn-sm"
-                                [disabled]="account.perm('操作管理:修改') | async"
+                                [disabled]="readonly"
                                 (click)="newVarDefine()">添加</button>
                         </div>
                     </div>
@@ -54,10 +54,10 @@
                             <div class="col-sm-2">{{d.defaultValue}}</div>
                             <div class="col">{{d.formLabel}}</div>
                             <div class="col-sm-2 text-right">
-                                <a class="link text-danger" title="删除" (click)="delVarDefine(d)">
+                                <a class="link" title="删除" (click)="delVarDefine(d)" [class]="readonly?'icon-btn-disabled':'icon-btn text-danger'">
                                     <ng-container *ngTemplateOutlet="deleteIcon"></ng-container>
                                 </a>
-                                <a class="link text-dark ml-3" title="修改" (click)="editVarDefine(d)">
+                                <a class="link ml-3" title="修改" (click)="editVarDefine(d)" [class]="readonly?'icon-btn-disabled':'icon-btn text-dark'">
                                     <ng-container *ngTemplateOutlet="editIcon"></ng-container>
                                 </a>
                             </div>
@@ -71,7 +71,7 @@
             <div class="col-lg-12 text-right">
                 <button type="button" class="btn btn-outline-secondary mr-2" [routerLink]="['/app-types']">取消</button>
                 <button type="submit" class="btn btn-danger mr-2"
-                    [disabled]="typeForm.invalid || typeForm.pristine && !defineModified || (account.perm('操作管理:修改') | async)">
+                    [disabled]="typeForm.invalid || typeForm.pristine && !defineModified || readonly">
                     保存
                 </button>
             </div>

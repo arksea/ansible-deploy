@@ -1,0 +1,21 @@
+- hosts: deploy_target 
+  remote_user: op
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: 将服务置为在线状态
+      uri:
+        url: http://localhost:{{http_port}}/heartbeat
+        method: PUT
+        body: "ONLINE;c701e78243404508a08f021a4ac8966d"
+
+    - name: 确认服务已在线
+      uri: 
+          url: http://localhost:{{http_port}}/heartbeat
+          return_content: true
+      become: yes
+      register: heartbeat
+
+    - debug:
+        msg: "@@SET_HOST_STATUS {{inventory_hostname}},在线,online,状态,"
+      when: "'ONLINE' in heartbeat.content"

@@ -1,0 +1,43 @@
+- hosts: deploy_target 
+  remote_user: op
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: 测试服务是否运行
+      wait_for: 'port={{http_port}} state=started timeout=10'
+      register: running
+
+    - name: 将服务置为离线状态
+      uri:
+        url: http://localhost:{{http_port}}/heartbeat
+        method: PUT
+        body: "OFFLINE;c701e78243404508a08f021a4ac8966d"
+      when: running.state=='started'
+
+    - name: 确认服务已在离线状态
+      uri: 
+          url: http://localhost:{{http_port}}/heartbeat
+          return_content: true
+      become: yes
+      register: heartbeat
+      failed_when: "'OFFLINE' not in heartbeat.content"
+      when: running.state=='started'
+
+    - debug:
+        msg: "@@SET_HOST_STATUS {{inventory_hostname}},离线,offline,状态,"
+      when: "'OFFLINE' in heartbeat.content"
+
+    - name: 延迟10秒
+      wait_for: 'timeout=10'
+      delegate_to: localhost
+      when: running.state=='started'
+
+    - name: 停止Tomcat服务
+      service: name=tomcat-{{apptag}} state=stopped
+      become: yes
+
+    - name: 等待服务停止
+      wait_for: 'port={{http_port}} state=stopped timeout=30'
+
+    - debug:
+        msg: "@@SET_HOST_STATUS {{inventory_hostname}},已停止,stopped,状态,"

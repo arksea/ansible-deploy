@@ -1,0 +1,90 @@
+- hosts: deploy_target
+  remote_user: op
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: 添加用户组"tomcat"
+      group: name=tomcat
+      become: yes
+
+    - name: 添加应用运行用户"{{ apptag }}"
+      user: name={{apptag}} group=tomcat createhome=yes
+      become: yes
+
+    - name: 判断JDK目录是否已存在
+      stat: path=/opt/jdk1.8.0_66
+      register: jdkDir
+
+    - name: 下载JDK
+      subversion: repo=svn://10.79.186.29:8000/download/jdk/jdk-8u66-linux-x64.tar.gz dest=/opt/jdk-8u66-linux-x64.tar.gz force=yes export=yes username=deploy password=unicorn4Felink
+      become: yes
+      when: jdkDir.stat.exists == false
+
+    - name: 解压JDK安装包
+      unarchive: src=/opt/jdk-8u66-linux-x64.tar.gz dest=/opt copy=no
+      become: yes
+      when: jdkDir.stat.exists == false
+
+    - name: 修改JDK目录owner与group
+      file: path=/opt//opt/jdk1.8.0_66 owner=root group=root state=directory recurse=yes
+      become: yes
+      when: jdkDir.stat.exists == false
+
+    - name: 判断Tomcat目录是否已存在
+      stat: path=/home/{{apptag}}/tomcat-8.0.30
+      register: tomcatDir
+      become: yes
+      become_user: "{{apptag}}"
+
+    - name: 从SVN下载Tomcat8
+      subversion: repo=svn://10.79.186.29:8000/download/tomcat/tomcat8 dest=/home/{{apptag}}/tomcat-8.0.30 force=no export=yes username=deploy password=unicorn4Felink
+      notify: restart tomcat
+      become: yes
+      become_user: "{{apptag}}"
+      when: tomcatDir.stat.exists == false
+
+    - name: 为Tomcat目录创建软连接
+      file: src=/home/{{apptag}}/tomcat-8.0.30 path=/home/{{apptag}}/tomcat state=link
+      become: yes
+      become_user: "{{apptag}}"
+      when: tomcatDir.stat.exists == false
+
+    - name: 使用模版配置Tomcat服务器
+      template: src=server.xml dest=/home/{{apptag}}/tomcat/conf/
+      become: yes
+      become_user: "{{apptag}}"
+
+    - name: 配置Tomcat环境变量
+      template: src=setenv.sh dest=/home/{{apptag}}/tomcat/bin/setenv.sh mode=0644 owner={{apptag}} group=tomcat
+      become: yes
+
+    - name: 配置 jmx 访问权限
+      template: src=jmx.access dest=/home/{{apptag}}/tomcat/bin/ mode=0400 owner={{apptag}} group=tomcat
+      become: yes
+
+    - name: 配置 jmx 账号密码
+      template: src=jmx.password dest=/home/{{apptag}}/tomcat/bin/ mode=0400 owner={{apptag}} group=tomcat
+      become: yes
+
+    - name: 安装系统服务
+      template: src=tomcat-initscript.sh dest=/etc/init.d/tomcat-{{apptag}} mode=0755
+      become: yes
+
+- hosts: svnhost
+  remote_user: op
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: 确认SVN库是否已创建
+      stat: path=/data/javasvn/{{apptag}}
+      register: rep
+      become: true
+
+    - name: 初始化SVN库目录 
+      command: chdir=/data/javasvn svnadmin create {{apptag}}
+      when: rep.stat.exists == False
+      become: true
+
+    - name: 配置SVN库
+      copy: src=svnserve.conf dest=/data/javasvn/{{apptag}}/conf mode=644
+      become: true

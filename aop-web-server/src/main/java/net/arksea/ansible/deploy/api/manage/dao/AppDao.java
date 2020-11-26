@@ -1,7 +1,6 @@
 package net.arksea.ansible.deploy.api.manage.dao;
 
 import net.arksea.ansible.deploy.api.manage.entity.App;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -13,15 +12,30 @@ import java.util.List;
  */
 public interface AppDao extends CrudRepository<App, Long> {
    App findByApptag(String tag);
-   @Query(nativeQuery = true,
-          value ="select app.* from dp2_app_group_users gu, dp2_app app " +
-                 " where gu.user_id = ? and app.app_group_id = gu.app_group_id")
-   List<App> findByUserId(long userId);
 
-   @Query("select a from App a where a.appGroupId is null")
+   @Query(nativeQuery = true,
+           value ="select app.* from dp2_app_group_users gu, dp2_app app " +
+                   " where gu.user_id = ?1 and app.app_group_id = gu.app_group_id order by app.apptag limit ?2, ?3")
+   List<App> findPageByUserId(long userId, int offset, int count);
+
+   @Query(nativeQuery = true,
+           value ="select app.* from dp2_app_group_users gu, dp2_app app " +
+                   " where gu.user_id = ?1 and app.app_group_id = gu.app_group_id and app.apptag like ?2 order by app.apptag limit ?3, ?4")
+   List<App> findPageByUserId(long userId, String nameSearch, int offset, int count);
+
+   @Query(nativeQuery = true,
+           value ="select count(*) from dp2_app_group_users gu, dp2_app app " +
+                   " where gu.user_id = ?1 and app.app_group_id = gu.app_group_id")
+   long getUserAppsCount(long userId);
+
+   @Query(nativeQuery = true,
+           value ="select count(*) from dp2_app_group_users gu, dp2_app app " +
+                   " where gu.user_id = ?1 and app.app_group_id = gu.app_group_id and app.apptag like ?2")
+   long getUserAppsCount(long userId, String nameSearch);
+
+   @Query("select a from App a where a.appGroup is null")
    List<App> findAllGroupIsNull();
 
-   @Modifying
-   @Query("update App a set a.deleted=?2 where a.id =?1")
-   void updateDeletedById(long id, boolean deleted);
+   @Query("select count(*) from App a where a.appGroup.id = ?1")
+   long countInAppGroup(long appGroupId);
 }

@@ -23,6 +23,13 @@ export class GroupsService {
         return this.httpUtils.httpPost('新建组', url, '')
     }
 
+    public modifyGroup(groupId: number, name: string, description: string): Observable<ServiceResponse<number>> {
+        let n = encodeURI(name)
+        let d = encodeURI(description)
+        const url = environment.apiUrl + '/api/groups/'+groupId+'?name=' + n + '&desc=' + d
+        return this.httpUtils.httpPut('新建组', url, '')
+    }
+
     public getAppsNotInGroup(): Observable<ServiceResponse<Array<App>>> {
         let url = environment.apiUrl + '/api/apps/notInGroup'
         return this.httpUtils.httpGet('查询未分组应用', url)
@@ -30,6 +37,11 @@ export class GroupsService {
 
     public getGroups(): Observable<ServiceResponse<Array<AppGroup>>> {
         const url = environment.apiUrl + '/api/groups'
+        return this.httpUtils.httpGet('查询组信息', url)
+    }
+
+    public getGroupsAndStat(): Observable<ServiceResponse<Array<AppGroup>>> {
+        const url = environment.apiUrl + '/api/groups?countStat=true'
         return this.httpUtils.httpGet('查询组信息', url)
     }
 

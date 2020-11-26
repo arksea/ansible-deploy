@@ -2,6 +2,7 @@ package net.arksea.ansible.deploy.api.manage.rest;
 
 import static net.arksea.ansible.deploy.api.ResultCode.*;
 import net.arksea.ansible.deploy.api.manage.entity.Host;
+import net.arksea.ansible.deploy.api.manage.msg.GetHosts;
 import net.arksea.ansible.deploy.api.manage.service.HostsService;
 import net.arksea.restapi.RestResult;
 import net.arksea.restapi.RestUtils;
@@ -23,26 +24,37 @@ public class HostsController {
     @Autowired
     HostsService hostsService;
 
-    @RequiresPermissions("组管理:修改")
+    @RequiresPermissions("主机管理:修改")
     @RequestMapping(method = RequestMethod.POST, produces = MEDIA_TYPE)
     public String saveHost(@RequestBody final Host host,
                               final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         Host saved = hostsService.saveHost(host);
-        return RestUtils.createResult(SUCCEED, saved.getId(), reqid);
+        return RestUtils.createResult(SUCCEED, saved, reqid);
     }
 
-    @RequiresPermissions("组管理:查询")
+    @RequiresPermissions("主机管理:修改")
+    @RequestMapping(path="batch", method = RequestMethod.POST, produces = MEDIA_TYPE)
+    public RestResult<Iterable<Host>> saveHosts(
+                           @RequestParam String ipRange,
+                           @RequestParam String descPrefix,
+                           @RequestParam long groupId,
+                           final HttpServletRequest httpRequest) {
+        return new RestResult<>(SUCCEED, hostsService.batchAddHosts(ipRange,descPrefix, groupId), httpRequest);
+    }
+
+    @RequiresPermissions("主机管理:查询")
     @RequestMapping(method = RequestMethod.GET, produces = MEDIA_TYPE)
-    public RestResult<Iterable<Host>> getHosts(
-            @RequestParam(value="groupId",required = false) final Long groupId,
+    public RestResult<GetHosts.Response> getHosts(
+            @RequestParam int page, @RequestParam int pageSize,
+            @RequestParam(required = false) Long groupId,
+            @RequestParam(required = false) String ipSearch,
             final HttpServletRequest httpRequest) {
-        Iterable<Host> hosts = groupId==null ? hostsService.getHosts() : hostsService.getInGroup(groupId);
-        String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        return new RestResult<>(SUCCEED, hosts, reqid);
+        GetHosts.Request msg = new GetHosts.Request(groupId, ipSearch, page, pageSize);
+        return new RestResult<>(SUCCEED, hostsService.findHosts(msg), httpRequest);
     }
 
-    @RequiresPermissions("组管理:查询")
+    @RequiresPermissions("主机管理:查询")
     @RequestMapping(path="notInGroup", method = RequestMethod.GET, produces = MEDIA_TYPE)
     public RestResult<Iterable<Host>> getHostsNotInGroup(final HttpServletRequest httpRequest) {
         Iterable<Host> hosts = hostsService.getNotInGroup();
@@ -50,7 +62,7 @@ public class HostsController {
         return new RestResult<>(SUCCEED, hosts, reqid);
     }
 
-    @RequiresPermissions("组管理:修改")
+    @RequiresPermissions("主机管理:修改")
     @RequestMapping(path="{hostId}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
     public String deleteHost(@PathVariable(name="hostId") long hostId,
                               final HttpServletRequest httpRequest) {

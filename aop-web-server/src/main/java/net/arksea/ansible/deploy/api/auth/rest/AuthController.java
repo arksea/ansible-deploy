@@ -1,6 +1,8 @@
 package net.arksea.ansible.deploy.api.auth.rest;
 
 import net.arksea.ansible.deploy.api.ResultCode;
+import net.arksea.ansible.deploy.api.auth.info.ClientInfo;
+import net.arksea.ansible.deploy.api.auth.service.ClientInfoService;
 import net.arksea.ansible.deploy.api.auth.service.IAuthService;
 import net.arksea.restapi.RestUtils;
 import org.apache.logging.log4j.LogManager;
@@ -8,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,17 +28,22 @@ public class AuthController {
     @Autowired
     IAuthService authService;
 
+    @Autowired
+    ClientInfoService clientInfoService;
+
     @RequestMapping(path="permissions", method = RequestMethod.GET, produces = MEDIA_TYPE)
-    public String getUserPermissions(@RequestParam String name, final HttpServletRequest httpRequest) {
+    public String getUserPermissions(final HttpServletRequest httpRequest) {
+        ClientInfo info = clientInfoService.getClientInfo(httpRequest);
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        Set<String> perms = authService.getPermissionsByUserName(name);
+        Set<String> perms = authService.getPermissionsByUserName(info.username);
         return RestUtils.createResult(ResultCode.SUCCEED, perms, reqid);
     }
 
     @RequestMapping(path="roles", method = RequestMethod.GET, produces = MEDIA_TYPE)
-    public String getUserRoles(@RequestParam String name, final HttpServletRequest httpRequest) {
+    public String getUserRoles(final HttpServletRequest httpRequest) {
+        ClientInfo info = clientInfoService.getClientInfo(httpRequest);
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
-        Set<String> roles = authService.getRolesByUserName(name);
+        Set<String> roles = authService.getRolesByUserName(info.username);
         return RestUtils.createResult(ResultCode.SUCCEED, roles, reqid);
     }
 

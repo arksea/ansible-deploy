@@ -6,10 +6,12 @@ import net.arksea.ansible.deploy.api.auth.dao.UserDao;
 import net.arksea.ansible.deploy.api.auth.entity.Permission;
 import net.arksea.ansible.deploy.api.auth.entity.Role;
 import net.arksea.ansible.deploy.api.auth.entity.User;
+import net.arksea.restapi.RestException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -76,6 +78,9 @@ public class AuthService implements IAuthService {
 
     public Set<String> getPermissionsByUserId(long id) {
         User user = userDao.findOne(id);
+        if (user == null) {
+            throw new RestException(HttpStatus.UNAUTHORIZED);
+        }
         Set<Role> roleSet = user.getRoles();
         return getPermissionsByRoles(roleSet);
     }

@@ -15,17 +15,15 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "dp2_app")
-public class App extends IdEntity {
+public class App extends IdEntity implements Comparable<App> {
     private String apptag = "";     //应用标签，通常用来部署时建立应用目录名
     private AppType appType;
-    private String deployPath = ""; //应用部署目标路径
     private String description = "";  //应用描述
-    private Long appGroupId;
+    private AppGroup appGroup;
     private Set<AppVariable> vars;// 变量
     private Set<Port> ports;
     private Set<Version> versions;
     private Timestamp createTime; //创建时间
-    private boolean deleted; //是否标记为删除状态，系统将定时删除标记为删除状态的记录
 
     @NotBlank
     @Column(length = 20, nullable = false, unique = true)
@@ -47,15 +45,6 @@ public class App extends IdEntity {
         this.appType = appType;
     }
 
-    @Column(nullable = false, length = 128)
-    public String getDeployPath() {
-        return deployPath;
-    }
-
-    public void setDeployPath(final String deployPath) {
-        this.deployPath = deployPath;
-    }
-
     @NotNull
     @Column(length = 128, nullable = false)
     public String getDescription() {
@@ -66,13 +55,14 @@ public class App extends IdEntity {
         this.description = description;
     }
 
-    @Column
-    public Long getAppGroupId() {
-        return appGroupId;
+    @ManyToOne
+    @JoinColumn(name = "app_group_id")
+    public AppGroup getAppGroup() {
+        return appGroup;
     }
 
-    public void setAppGroupId(Long appGroupId) {
-        this.appGroupId = appGroupId;
+    public void setAppGroup(AppGroup appGroup) {
+        this.appGroup = appGroup;
     }
 
     @OneToMany(mappedBy = "appId", fetch = FetchType.EAGER, orphanRemoval = true)
@@ -120,12 +110,8 @@ public class App extends IdEntity {
         this.createTime = createTime;
     }
 
-    @Column(nullable = false, columnDefinition = "TINYINT(1) NOT NULL DEFAULT 0")
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
+    @Override
+    public int compareTo(App o) {
+        return this.apptag.compareTo(o.apptag);
     }
 }

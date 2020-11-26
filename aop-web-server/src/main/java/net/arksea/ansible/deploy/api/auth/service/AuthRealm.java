@@ -1,6 +1,7 @@
 package net.arksea.ansible.deploy.api.auth.service;
 
 import net.arksea.ansible.deploy.api.auth.entity.User;
+import net.arksea.restapi.RestException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,6 +10,7 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.springframework.http.HttpStatus;
 
 import java.util.Set;
 
@@ -35,6 +37,9 @@ public class AuthRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         Long userId = (Long)principals.fromRealm(getName()).iterator().next();
+        if (userId == null) {
+            throw new RestException(HttpStatus.UNAUTHORIZED);
+        }
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
         Set<String> perms = authService.getPermissionsByUserId(userId);
         info.addStringPermissions(perms);

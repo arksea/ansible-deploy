@@ -1,0 +1,31 @@
+<form (submit)="save($event)" [formGroup]="form">
+    <div class="modal-header">
+        <h3 class="modal-title" id="modal-title"><strong>修改密码</strong></h3>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="password">旧密码
+                <span class="text-danger" *ngIf="oldpwd.errors?.required">*</span>
+            </label>
+            <input type="password" class="form-control" id="oldpwd" formControlName="oldpwd">
+        </div>
+        <div class="form-group">
+            <label for="password">新密码
+                <span class="text-danger" *ngIf="pwd.errors?.required">*</span>
+                <span class="text-danger" *ngIf="pwd.errors?.minlength || pwd.errors?.maxlength">(长度4至32)</span>
+            </label>
+            <input type="password" class="form-control" id="password" formControlName="password">
+        </div>
+        <div class="form-group">
+            <label for="password2">新密码确认
+                <span class="text-danger" *ngIf="pwd2.errors?.required">*</span>
+                <span class="text-danger" *ngIf="pwd2.errors?.minlength || pwd2.errors?.maxlength">(长度4至32)</span>
+            </label>
+            <input type="password" class="form-control" id="password2" formControlName="password2">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')">取消</button>
+        <button type="submit" class="btn btn-danger" [disabled]="!form.valid">确认</button>
+    </div>
+</form>

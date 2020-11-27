@@ -10,7 +10,7 @@
 开发语言与框架：前端为Angular11/Bootstrap4，后端为Java+Spring+Akka，数据库为MySQL。
 
 其实这个项目开始就是为了比较系统的学一遍Angular，部署功能部分做得比较简单，大部分开发都是在写界面，
-写着写着干脆就把功能都圆了。对于一个老后端，之前用Angular写前端，因为没有系统学习过，一直感觉很笨拙，
+写着写着干脆就把功能都写完整了。对于一个老后端，之前用Angular写前端，因为没有系统学习过，一直感觉很笨拙，
 不能随心所欲，所以就起了个项目过一遍Angular文档，目前的学习效果还是比较满意的，能比较顺利的做出简单的后台应用了。
 
 ### 二、功能与界面预览
@@ -102,7 +102,43 @@ $HOME/tomcat/webapps/aop-web-server/
 </Server>
 ```
 
-##### 6、系统运行后需要先注册admin用户，系统会默认为admin用户分配系统管理角色，注册后可能需要刷新页面。
+##### 6、修改系统配置，主要是数据库连接配置
+
+配置文件位置：$HOME/tomcat/webapps/aop-web-server/WEB-INF/classes/application.properties
+```properties
+
+jdbc.driver=com.mysql.jdbc.Driver
+jdbc.url=jdbc:mysql://127.0.0.1:3306/deployserver?autoReconnect=true&failOverReadOnly=false&useUnicode=true&characterEncoding=utf-8
+jdbc.username=deploy
+jdbc.password=123456
+
+shiro.cipherKey=4AvVhmFLUs0KTA3Kprsdag==
+heartBeat.setStatusKey=123456
+
+```
+除了需要配置MySQL数据库连接的用户名密码，需要说明的做是两个
+
+###### 1)、shiro.cipherKey 系统登录的秘钥
+
+秘钥为16字节128位随机数的Base64编码，以下是生成代码：
+
+```groovy
+  SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
+  byte[] bytes = new byte[16];
+  secureRandom.nextBytes(bytes);
+  System.out.println((org.apache.shiro.codec.Base64.encodeToString(bytes)));
+```
+
+###### 2)、heartBeat.setStatusKey
+
+用于调用HTTP心跳API接口设置系统上下线的秘钥，没有格式要求，调用方法如下
+
+    url: http://localhost:{{http_port}}/heartbeat
+    method: PUT
+    body: "OFFLINE;123456"
+
+
+##### 7、系统运行后需要先注册admin用户，系统会默认为admin用户分配系统管理角色，注册后可能需要刷新页面。
 
 
 ### 四、附带的部署脚本例子
@@ -365,7 +401,7 @@ deploy = 123456
       uri:
         url: http://localhost:{{http_port}}/heartbeat
         method: PUT
-        body: "OFFLINE;c701e78243404508a08f021a4ac8966d"
+        body: "OFFLINE;123456"
       when: running.stdout!=''
 
     - name: 确认服务已在离线状态

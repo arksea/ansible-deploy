@@ -9,6 +9,10 @@
 
 开发语言与框架：前端为Angular11/Bootstrap4，后端为Java+Spring+Akka，数据库为MySQL。
 
+其实这个项目开始就是为了比较系统的学一遍Angular，部署功能部分做得比较简单，大部分开发都是在写界面，
+写着写着干脆就把功能都圆了。对于一个老后端，之前用Angular写前端，因为没有系统学习过，一直感觉很笨拙，
+不能随心所欲，所以就起了个项目过一遍Angular文档，目前的学习效果还是比较满意的，能比较顺利的做出简单的后台应用了。
+
 ### 二、功能与界面预览
 
   - 发布脚本执行界面
@@ -54,19 +58,19 @@
 
 Ansible Deploy的安装很简单，因为是Java开发所以基本就是配置JDK与Tomcat就好了。
 
-1、创建deploy用户用于系统运行
+##### 1、创建deploy用户用于系统运行
 
-2、安装JDK1.8.xxx，配置PATH与JAVA_HOME
+##### 2、安装JDK1.8.xxx，配置PATH与JAVA_HOME
 
-3、安装Tomcat8到$HOME/tomcat
+##### 3、安装Tomcat8到$HOME/tomcat
 
-4、将Ansible安装包解压到以下目录
+##### 4、将Ansible安装包解压到以下目录
 
 ```text
 $HOME/tomcat/webapps/aop-web-server/
 ```
 
-5、配置$HOME/tomcat/conf/server.xml，如果是更新的版本需要自己调整以下
+##### 5、配置$HOME/tomcat/conf/server.xml，如果是更新的版本需要自己调整以下
 
 ```xml
 <?xml version='1.0' encoding='utf-8'?>
@@ -97,6 +101,9 @@ $HOME/tomcat/webapps/aop-web-server/
   </Service>
 </Server>
 ```
+
+##### 6、系统运行后需要先注册admin用户，系统会默认为admin用户分配系统管理角色，注册后可能需要刷新页面。
+
 
 ### 四、附带的部署脚本例子
 

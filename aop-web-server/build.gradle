@@ -18,8 +18,12 @@ repositories {
 
 dependencies {
     compile 'net.arksea:restapi-base:1.1.2-SNAPSHOT'
-    compile 'net.arksea:restapi-influx:1.1.2-SNAPSHOT'
-    compile 'net.arksea:httpclient-asker:1.1.0-SNAPSHOT'
+
+    compile 'com.typesafe.akka:akka-actor_2.12:2.5.11'
+    compile 'com.typesafe.akka:akka-remote_2.12:2.5.11'
+    compile 'com.typesafe.akka:akka-cluster_2.12:2.5.11'
+    compile 'com.typesafe.akka:akka-slf4j_2.12:2.5.11'
+    compile 'org.scala-lang:scala-library:2.12.4'
 
     compile 'org.springframework:spring-core:4.3.27.RELEASE'
     compile 'org.springframework:spring-context:4.3.27.RELEASE'

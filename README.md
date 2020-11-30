@@ -64,13 +64,17 @@ Ansible Deploy的安装很简单，因为是Java开发所以基本就是配置JD
 
 ##### 3、安装Tomcat8到$HOME/tomcat
 
-##### 4、将Ansible安装包解压到以下目录
+##### 4、将![ansible-deploy-0.9.zip](https://download.csdn.net/download/arksea/13206097)安装包解压到以下目录
 
 ```text
 $HOME/tomcat/webapps/aop-web-server/
 ```
 
-##### 5、配置$HOME/tomcat/conf/server.xml，如果是更新的版本需要自己调整以下
+如需自己编译需要注意一下，依赖的另一个工具项目要先配置到本地或代码库里：
+
+    ![restapi-utils](https://github.com/arksea/restapi-utils)
+
+##### 5、配置$HOME/tomcat/conf/server.xml，如果是新的版本需要自己调整一下
 
 ```xml
 <?xml version='1.0' encoding='utf-8'?>

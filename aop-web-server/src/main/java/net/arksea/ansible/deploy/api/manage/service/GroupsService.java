@@ -13,9 +13,11 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
+
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**
@@ -159,17 +161,16 @@ public class GroupsService {
 
     @Transactional
     public void updateUserGroups(long userId, List<Long> groupIdList) {
-        Set<AppGroup> old = appGroupDao.findByUserId(userId);
+        Set<AppGroup> oldGroups = appGroupDao.findByUserId(userId);
+        List<Long> old = oldGroups.stream().map(AppGroup::getId).collect(Collectors.toList());
         for (Long id : groupIdList) {
-            AppGroup g = new AppGroup();
-            g.setId(id);
-            if (!old.contains(g)) {
+            if (!old.contains(id)) {
                 appGroupDao.addUserToGroup(id, userId);
             }
         }
-        for (AppGroup g: old) {
-            if (!groupIdList.contains(g.getId())) {
-                appGroupDao.removeUserFromGroup(g.getId(), userId);
+        for (Long gid: old) {
+            if (!groupIdList.contains(gid)) {
+                appGroupDao.removeUserFromGroup(gid, userId);
             }
         }
     }

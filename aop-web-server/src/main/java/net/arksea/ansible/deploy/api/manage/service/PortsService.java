@@ -49,7 +49,7 @@ public class PortsService {
         Long typeId = s.getType().getId();
         PortType stat = portTypeDao.findOne(typeId);
         if (stat != null) {
-            portTypeDao.incAllCount(count, typeId);
+            portTypeDao.incUnusedPorts(count, typeId);
         }
         //判断是否合并连续区间
         List<PortSection> sections = portSectionDao.findByTypeId(typeId);
@@ -84,8 +84,26 @@ public class PortsService {
         }
         PortSection old = portSectionDao.findOne(s.getId());
         if (!old.getType().getId().equals(s.getType().getId())) {
-            throw new RuntimeException("不能修改区间类型");
+            if (s.getMinValue() != old.getMinValue() || s.getMaxValue() != old.getMaxValue()) {
+                throw new RuntimeException("修改区间类型时不能修改区间范围");
+            }
+            return modifyPortSectionType(old, s);
+        } else {
+            return modifyPortSectionRange(old, s);
         }
+    }
+
+    public PortSection modifyPortSectionType(PortSection old, PortSection s) {
+        //修改统计
+        int count = old.getMaxValue() - old.getMinValue() + 1;
+        int rest = portDao.getSectionRestCount(old.getMinValue(), old.getMaxValue());
+        portTypeDao.incSectionPorts(rest, count, s.getType().getId());
+        portTypeDao.incSectionPorts(-rest, -count, old.getType().getId());
+        portDao.updatePortsType(s.getType().getId(), old.getMinValue(), old.getMaxValue());
+        return portSectionDao.save(s);
+    }
+
+    public PortSection modifyPortSectionRange(PortSection old, PortSection s) {
         //判断是否冲突
         if (s.getMinValue() < old.getMinValue()) { //向左扩展
             int l = s.getMinValue();
@@ -155,7 +173,7 @@ public class PortsService {
         //修改统计
         Long typeId = s.getType().getId();
         int count = s.getMaxValue() - s.getMinValue() - (old.getMaxValue() - old.getMinValue());
-        portTypeDao.incAllCount(count, typeId);
+        portTypeDao.incUnusedPorts(count, typeId);
         //判断是否合并连续区间
         List<PortSection> sections = portSectionDao.findByTypeId(typeId);
         PortSection left = null;
@@ -209,7 +227,7 @@ public class PortsService {
         //修改统计
         Long typeId = s.getType().getId();
         int all = s.getMaxValue() - s.getMinValue() + 1;
-        portTypeDao.incAllCount(-all, typeId);
+        portTypeDao.incUnusedPorts(-all, typeId);
     }
 
     public List<Port> searchByPrefix(String prefix,int limit) {

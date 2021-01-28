@@ -14,6 +14,10 @@ interface PortTypeDao extends CrudRepository<PortType, Long> {
     int incRestCount(int count, Long typeId);
 
     @Modifying
+    @Query(value="update PortType p set p.restCount=p.restCount+?1, p.allCount=p.allCount+?2 where p.id=?3")
+    int incSectionPorts(int restCount, int allCount, Long typeId);
+
+    @Modifying
     @Query(value="update PortType p set p.restCount=p.restCount+?1, p.allCount=p.allCount+?1 where p.id=?2")
-    int incAllCount(int count, Long typeId);
+    int incUnusedPorts(int count, Long typeId);
 }

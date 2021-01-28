@@ -17,17 +17,20 @@ export class EditSectionDialog {
     isEditAction: boolean
 
     constructor(public modal: NgbActiveModal, public svc: PortsService, private alert: MessageNotify) {
+        this.form = new FormGroup({
+            min: new FormControl(8000,[Validators.required,Validators.max(65535),Validators.min(1000)]),
+            max: new FormControl(8100,[Validators.required,Validators.max(65535),Validators.min(1000)]),
+            type: new FormControl(1, [Validators.required])
+        }, { validators: this.portRangeValidator })
     }
 
     public init(section: PortSection) {
         this.section = section
         this.isEditAction = section.id ? true : false
         this.title = this.isEditAction ? '修改端口区间' : '分配端口区间'
-        this.form = new FormGroup({
-            min: new FormControl(section.minValue,[Validators.required,Validators.max(65535),Validators.min(1000)]),
-            max: new FormControl(section.maxValue,[Validators.required,Validators.max(65535),Validators.min(1000)]),
-            type: new FormControl({value:section.type.id, disabled:this.isEditAction}, [Validators.required])
-        }, { validators: this.portRangeValidator })
+        this.min.setValue(section.minValue)
+        this.max.setValue(section.maxValue)
+        this.type.setValue(section.type.id)
     }
 
     portRangeValidator: ValidatorFn = (form: FormGroup): ValidationErrors | null => {
@@ -47,11 +50,20 @@ export class EditSectionDialog {
         this.svc.savePortSection(s).subscribe(ret => {
             if (ret.code == 0) {
                 this.modal.close('ok')
+                this.section.type = ret.result.type
                 this.section.minValue = s.minValue
                 this.section.maxValue = s.maxValue
                 this.alert.success('保存成功')
             }
         })
+    }
+
+    rangeChanged(): boolean {
+        return this.min.value != this.section.minValue || this.max.value != this.section.maxValue
+    }
+
+    typeChanged(): boolean {
+        return this.type.value != this.section.type.id
     }
 
     get min() {

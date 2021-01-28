@@ -33,3 +33,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     color: gray;
     pointer-events:none
 }
+
+.bg-gray {
+    background-color: #e9ecef !important;
+}

@@ -83,6 +83,9 @@ public class PortsService {
             throw new RuntimeException("添加端口区间有专用的方法，不能调用修改方法");
         }
         PortSection old = portSectionDao.findOne(s.getId());
+        if (!old.getType().getId().equals(s.getType().getId())) {
+            throw new RuntimeException("不能修改区间类型");
+        }
         //判断是否冲突
         if (s.getMinValue() < old.getMinValue()) { //向左扩展
             int l = s.getMinValue();

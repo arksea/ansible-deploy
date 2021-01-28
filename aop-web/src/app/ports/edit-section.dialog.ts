@@ -17,20 +17,17 @@ export class EditSectionDialog {
     isEditAction: boolean
 
     constructor(public modal: NgbActiveModal, public svc: PortsService, private alert: MessageNotify) {
-        this.form = new FormGroup({
-            min: new FormControl(8000,[Validators.required,Validators.max(65535),Validators.min(1000)]),
-            max: new FormControl(8100,[Validators.required,Validators.max(65535),Validators.min(1000)]),
-            type: new FormControl({value:1, disabled:this.isEditAction}, [Validators.required])
-        }, { validators: this.portRangeValidator })
     }
 
     public init(section: PortSection) {
         this.section = section
         this.isEditAction = section.id ? true : false
         this.title = this.isEditAction ? '修改端口区间' : '分配端口区间'
-        this.min.setValue(section.minValue)
-        this.max.setValue(section.maxValue)
-        this.type.setValue(section.type.id)
+        this.form = new FormGroup({
+            min: new FormControl(section.minValue,[Validators.required,Validators.max(65535),Validators.min(1000)]),
+            max: new FormControl(section.maxValue,[Validators.required,Validators.max(65535),Validators.min(1000)]),
+            type: new FormControl({value:section.type.id, disabled:this.isEditAction}, [Validators.required])
+        }, { validators: this.portRangeValidator })
     }
 
     portRangeValidator: ValidatorFn = (form: FormGroup): ValidationErrors | null => {

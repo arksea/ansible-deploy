@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 /**
  * @todo bug：端口管理修改端口类型后，列表显示未更新
  * @todo bug：用户在群组中时，无法删除，应提示原因或者直接从组中移除此用户
- * @todo 改进：端口管理列表默认根据起始端口排序
+ *
  * Created by xiaohaixing on 2017/07/22.
  */
 @Component

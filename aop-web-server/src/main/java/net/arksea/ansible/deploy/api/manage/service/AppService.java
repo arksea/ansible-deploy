@@ -161,7 +161,7 @@ public class AppService {
             for (AppVariable o : old.getVars()) {
                 if (u.getId().equals(o.getId()) && !u.getValue().equals(o.getValue())) {
                     if (!u.getIsPort()) {
-                        throw new ServiceException("变量非端口类型:"+u.getName());
+                        continue;
                     }
                     int updateValue = Integer.parseInt(u.getValue());
                     List<Port> l = portDao.findByValue(updateValue);
@@ -174,12 +174,17 @@ public class AppService {
                             throw new ServiceException("目标端口已被禁用:"+updateValue);
                         }
                         int oldValue = Integer.parseInt(o.getValue());
+                        List<Port> oldPorts = portDao.findByValue(oldValue);
+                        if (oldPorts.size() == 0) {
+                            throw new ServiceException("获取端口记录失败:"+oldValue);
+                        }
                         portDao.releasePortByValue(oldValue);
+                        portTypeDao.incRestCount(1,  oldPorts.get(0).getTypeId());
                         portDao.holdPortByValue(updateValue, updated.getId());
+                        portTypeDao.incRestCount(-1, updatePort.getTypeId());
                     } else {
                         throw new ServiceException("目标端口不存在:"+updateValue);
                     }
-
                 }
             }
         }

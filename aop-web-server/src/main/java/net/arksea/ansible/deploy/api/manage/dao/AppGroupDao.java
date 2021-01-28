@@ -22,7 +22,7 @@ public interface AppGroupDao extends CrudRepository<AppGroup, Long> {
     void removeUserFromGroup(long groupId, long userId);
 
     @Modifying
-    @Query(nativeQuery = true, value="delete from dp2_app_group_users where user_id=?2")
+    @Query(nativeQuery = true, value="delete from dp2_app_group_users where user_id=?1")
     void removeUserFromAllGroup(long userId);
 
     @Query(nativeQuery = true, value="select count(1) from dp2_app_group_users r where r.app_group_id=?1 and r.user_id=?2")

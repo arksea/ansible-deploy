@@ -91,6 +91,9 @@ public class PortsService {
                 throw new RuntimeException("要扩展的区间与其他区间重叠");
             }
         } else if (s.getMinValue() > old.getMinValue()) {//左边收缩
+            if (s.getMinValue() >= old.getMaxValue()) {
+                throw new RuntimeException("最小端口号不能大于旧区间最大端口号");
+            }
             int l = old.getMinValue();
             int r = s.getMinValue()-1;
             long count = portDao.countHasUsedByRange(l,r);
@@ -105,6 +108,9 @@ public class PortsService {
                 throw new RuntimeException("要扩展的区间与其他区间重叠");
             }
         } else if (s.getMaxValue() < old.getMaxValue()) {//右边收缩
+            if(s.getMaxValue() <= old.getMinValue()) {
+                throw new RuntimeException("最大端口号不能小于旧区间最小端口号");
+            }
             int l = s.getMaxValue() + 1;
             int r = old.getMaxValue();
             long count = portDao.countHasUsedByRange(l,r);
@@ -184,7 +190,7 @@ public class PortsService {
         return portTypeDao.findAll();
     }
     public Iterable<PortSection> getPortSections() {
-        return portSectionDao.findAll();
+        return portSectionDao.findAllOrderByMinValue();
     }
 
     @Transactional

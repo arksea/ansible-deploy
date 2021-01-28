@@ -6,6 +6,7 @@ import net.arksea.ansible.deploy.api.auth.dao.UserDao;
 import net.arksea.ansible.deploy.api.auth.entity.Role;
 import net.arksea.ansible.deploy.api.auth.entity.User;
 import net.arksea.ansible.deploy.api.auth.service.CredentialsMatcherImpl;
+import net.arksea.ansible.deploy.api.manage.dao.AppGroupDao;
 import net.arksea.ansible.deploy.api.manage.dao.SystemPropertyDao;
 import net.arksea.ansible.deploy.api.manage.entity.SystemProperty;
 import net.arksea.ansible.deploy.api.manage.msg.GetUsers;
@@ -36,6 +37,9 @@ public class UsersService {
 
     @Autowired
     RoleDao roleDao;
+
+    @Autowired
+    AppGroupDao appGroupDao;
 
     @Autowired
     SystemPropertyDao systemPropertyDao;
@@ -80,6 +84,7 @@ public class UsersService {
 
     @Transactional
     public void deleteUser(long id) {
+        appGroupDao.removeUserFromAllGroup(id);
         userDao.delete(id);
     }
 

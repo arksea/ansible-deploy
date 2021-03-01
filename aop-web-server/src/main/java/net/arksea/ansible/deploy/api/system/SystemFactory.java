@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 
 /**
- *
  * Created by xiaohaixing on 2017/07/22.
  */
 @Component

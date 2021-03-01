@@ -20,7 +20,7 @@ export class EditSectionDialog {
         this.form = new FormGroup({
             min: new FormControl(8000,[Validators.required,Validators.max(65535),Validators.min(1000)]),
             max: new FormControl(8100,[Validators.required,Validators.max(65535),Validators.min(1000)]),
-            type: new FormControl({value:1, disabled:this.isEditAction}, [Validators.required])
+            type: new FormControl(1, [Validators.required])
         }, { validators: this.portRangeValidator })
     }
 
@@ -50,11 +50,20 @@ export class EditSectionDialog {
         this.svc.savePortSection(s).subscribe(ret => {
             if (ret.code == 0) {
                 this.modal.close('ok')
+                this.section.type = ret.result.type
                 this.section.minValue = s.minValue
                 this.section.maxValue = s.maxValue
                 this.alert.success('保存成功')
             }
         })
+    }
+
+    rangeChanged(): boolean {
+        return this.min.value != this.section.minValue || this.max.value != this.section.maxValue
+    }
+
+    typeChanged(): boolean {
+        return this.type.value != this.section.type.id
     }
 
     get min() {

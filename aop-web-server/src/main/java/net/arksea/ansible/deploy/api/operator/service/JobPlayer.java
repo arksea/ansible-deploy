@@ -53,6 +53,7 @@ public class JobPlayer extends AbstractActor {
 
     static Props props(OperationJob job, Set<Long>hosts, JobResources state) {
         return Props.create(new Creator<Actor>() {
+            private static final long serialVersionUID = -4530785006800458792L;
             @Override
             public Actor create() {
                 return new JobPlayer(job, hosts, state);
@@ -239,6 +240,7 @@ public class JobPlayer extends AbstractActor {
         try {
             this.logs.offer(log);
             jobLogFileWriter.append(log);
+            jobLogFileWriter.flush();
         } catch (Exception ex) {
             logger.warn("记录操作结果失败", ex);
         }

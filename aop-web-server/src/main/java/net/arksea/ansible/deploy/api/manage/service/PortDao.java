@@ -48,4 +48,11 @@ interface PortDao extends CrudRepository<Port, Long> {
     @Query(nativeQuery = true,
            value = "update dp2_port p set p.app_id = ?2 where p.value = ?1")
     void holdPortByValue(int value, long appId);
+
+    @Modifying
+    @Query(nativeQuery = true, value = "update dp2_port p set p.type_id = ?1 where p.value>=?2 and p.value<=?3")
+    void updatePortsType( long typeId, int min, int max);
+
+    @Query(nativeQuery = true, value = "select count(*) from dp2_port p where p.value>=?1 and p.value<=?2 and p.app_id is null")
+    int getSectionRestCount(int min, int max);
 }

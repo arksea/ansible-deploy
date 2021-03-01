@@ -26,7 +26,7 @@ public class App extends IdEntity implements Comparable<App> {
     private Timestamp createTime; //创建时间
 
     @NotBlank
-    @Column(length = 20, nullable = false, unique = true)
+    @Column(length = 32, nullable = false, unique = true)
     public String getApptag() {
         return apptag;
     }

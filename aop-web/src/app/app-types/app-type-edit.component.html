@@ -36,7 +36,7 @@
                         <div class="pl-1">
                             <button type="button" class="btn btn-outline-secondary btn-sm"
                                 [disabled]="readonly"
-                                (click)="newVarDefine()">添加</button>
+                                (click)="newAppVarDefine()">添加</button>
                         </div>
                     </div>
                 </div>
@@ -54,10 +54,51 @@
                             <div class="col-sm-2">{{d.defaultValue}}</div>
                             <div class="col">{{d.formLabel}}</div>
                             <div class="col-sm-2 text-right">
-                                <a class="link" title="删除" (click)="delVarDefine(d)" [class]="readonly?'icon-btn-disabled':'icon-btn text-danger'">
+                                <a class="link" title="删除" (click)="delAppVarDefine(d)" [class]="readonly?'icon-btn-disabled':'icon-btn text-danger'">
                                     <ng-container *ngTemplateOutlet="deleteIcon"></ng-container>
                                 </a>
-                                <a class="link ml-3" title="修改" (click)="editVarDefine(d)" [class]="readonly?'icon-btn-disabled':'icon-btn text-dark'">
+                                <a class="link ml-3" title="修改" (click)="editAppVarDefine(d)" [class]="readonly?'icon-btn-disabled':'icon-btn text-dark'">
+                                    <ng-container *ngTemplateOutlet="editIcon"></ng-container>
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex">
+                        <div class="mr-auto pt-1">
+                            版本变量定义
+                        </div>
+                        <div class="pl-1">
+                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                                [disabled]="readonly"
+                                (click)="newVersionVarDefine()">添加</button>
+                        </div>
+                    </div>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-sm-2">变量名</div>
+                            <div class="col-sm-2">默认值</div>
+                            <div class="col">表单输入框标签</div>
+                        </div>
+                    </li>
+                    <li class="list-group-item" *ngFor="let d of appType.versionVarDefines">
+                        <div class="row">
+                            <div class="col-sm-2">{{d.name}}</div>
+                            <div class="col-sm-2">{{d.defaultValue}}</div>
+                            <div class="col">{{d.formLabel}}</div>
+                            <div class="col-sm-2 text-right">
+                                <a class="link" title="删除" (click)="delVersionVarDefine(d)" [class]="readonly?'icon-btn-disabled':'icon-btn text-danger'">
+                                    <ng-container *ngTemplateOutlet="deleteIcon"></ng-container>
+                                </a>
+                                <a class="link ml-3" title="修改" (click)="editVersionVarDefine(d)" [class]="readonly?'icon-btn-disabled':'icon-btn text-dark'">
                                     <ng-container *ngTemplateOutlet="editIcon"></ng-container>
                                 </a>
                             </div>

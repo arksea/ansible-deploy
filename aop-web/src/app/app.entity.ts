@@ -18,14 +18,32 @@ export class AppVarDefine {
     portType: PortType|null = null
 }
 
+export class VersionVarDefine {
+    id: number|null = null
+    appTypeId: number|null = null
+    name: string = ''// 变量名
+    formLabel: string = ''  //表单输入框标签
+    inputAddon: string = '' //表单输入框提示前缀
+    defaultValue: string = ''
+    portType: PortType|null = null
+}
+
 export class AppType {
     id: number|null = null
     name: string = ''
     description: string = ''
     appVarDefines: Array<AppVarDefine> = []
+    versionVarDefines: Array<VersionVarDefine> = []
 }
 
 export class AppVariable {
+    id: number|null = null
+    name: string = ''// 变量名
+    value: string = ''// 变量值
+    isPort: boolean = false// 是否端口值，用于主机范围的唯一性判断
+}
+
+export class VersionVariable {
     id: number|null = null
     name: string = ''// 变量名
     value: string = ''// 变量值

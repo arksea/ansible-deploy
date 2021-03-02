@@ -12,6 +12,7 @@ public class AppType extends IdEntity {
     private String name;
     private String description;
     private Set<AppVarDefine> appVarDefines;
+    private Set<VersionVarDefine> versionVarDefines;
 
     @Column(nullable = false, length = 64, unique = true)
     public String getName() {
@@ -38,5 +39,14 @@ public class AppType extends IdEntity {
 
     public void setAppVarDefines(Set<AppVarDefine> appVarDefines) {
         this.appVarDefines = appVarDefines;
+    }
+
+    @OneToMany(mappedBy = "appTypeId", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    public Set<VersionVarDefine> getVersionVarDefines() {
+        return versionVarDefines;
+    }
+
+    public void setVersionVarDefines(Set<VersionVarDefine> versionVarDefines) {
+        this.versionVarDefines = versionVarDefines;
     }
 }

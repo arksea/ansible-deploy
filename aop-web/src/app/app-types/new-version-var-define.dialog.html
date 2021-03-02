@@ -1,0 +1,34 @@
+<form (ngSubmit)="save()" [formGroup]="form">
+    <div class="modal-header">
+    <h3 class="modal-title" id="modal-title">新增变量</h3>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="var-name">变量名</label>
+            <input type="text" class="form-control" id="var-name" formControlName="name">
+        </div>
+        <div class="form-group">
+            <label for="var-form-label">表单输入框标签</label>
+            <input type="text" class="form-control" id="var-form-label" formControlName="formLabel">
+        </div>
+        <div class="form-group">
+            <label for="var-input-addon">表单输入框前缀</label>
+            <input type="text" class="form-control" id="var-input-addon" formControlName="inputAddon">
+        </div>
+        <div class="form-group">
+            <label for="var-default-value">变量默认值</label>
+            <input type="text" class="form-control" id="var-default-value" formControlName="defaultValue">
+        </div>
+        <div class="form-group">
+            <label for="portType">端口类型</label>
+            <select id="portType" name="portType" class="form-control" formControlName="portType">
+                <option [value]="-1">非端口变量</option>
+                <option *ngFor="let t of portTypes" [value]="t.id">{{t.name}} - {{t.description}}</option>
+            </select>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')">取消</button>
+        <button type="submit" class="btn btn-danger" [disabled]="!form.valid" (click)="save()">确认</button>
+    </div>
+</form>

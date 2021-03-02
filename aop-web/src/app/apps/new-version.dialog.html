@@ -8,13 +8,10 @@
             <input type="text" class="form-control" id="ver-name" formControlName="name">
         </div>
         <div class="form-group">
-            <label for="ver-repository">部署文件存储地址</label>
+            <label for="ver-repository">部署分支</label>
             <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">仓库协议://仓库主机/{{app.apptag}}/</span>
-                </div>
                 <input type="text" class="form-control" id="ver-repository" formControlName="repository"
-                    placeholder="分支相对路径">
+                    placeholder="部署包所在分支相对路径">
             </div>
         </div>
         <div class="form-group">
@@ -22,7 +19,7 @@
             <input type="text" class="form-control" id="ver-revision" formControlName="revision">
         </div>
         <div class="form-group">
-            <label for="execOpt">应用运行参数</label>
+            <label for="execOpt">运行参数</label>
             <input type="text" class="form-control" id="execOpt" formControlName="execOpt">
         </div>
     </div>

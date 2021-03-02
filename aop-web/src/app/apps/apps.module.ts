@@ -12,6 +12,7 @@ import { AccountModule } from '../account/account.module'
 import { AppsService } from './apps.service'
 import { AppListComponent } from './app-list.component'
 import { AppEditComponent } from './app-edit.component'
+import { VersionListComponent } from './version-list.component'
 import { AppComponent } from './app.component'
 import { NewVersionDialog } from './new-version.dialog'
 import { AddHostDialog } from './add-host.dialog'
@@ -28,7 +29,7 @@ import { AppOperationHistoryComponent } from './app-operation-history.component'
     AccountModule, AppsRoutingModule],
   declarations: [
     AppsComponent, AppListComponent, AppEditComponent, AppComponent, 
-    NewVersionDialog, AddHostDialog,
+    VersionListComponent, NewVersionDialog, AddHostDialog,
     JobPlayDialog,StatusJobPlayDialog,DeleteJobPlayDialog,
     PortSelectDialog, AppOperationHistoryComponent
   ],

@@ -74,6 +74,10 @@
                         <button type="button" class="btn btn-outline-secondary btn-sm"
                             [disabled]="account.perm('应用:修改')" (click)="onEditBtnClick(a)">编辑</button>
                     </div>
+                    <div class="p-1 mt-3">
+                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                            [disabled]="account.perm('应用:修改')" (click)="onVersionBtnClick(a)">版本</button>
+                    </div>
                 </div>
             </li>
         </ul>

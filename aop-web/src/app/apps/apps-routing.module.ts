@@ -7,6 +7,7 @@ import { AppEditComponent } from './app-edit.component'
 import { AppComponent } from './app.component'
 import { AppOperationHistoryComponent } from './app-operation-history.component'
 import { VersionListComponent } from './version-list.component'
+import { VersionEditComponent } from './version-edit.component'
 
 const routes: Routes = [
   {
@@ -14,8 +15,10 @@ const routes: Routes = [
     children: [
       { path: '', component: AppListComponent, canActivate: [AuthGuard] },
       { path: ':id/edit', component: AppEditComponent, canActivate: [AuthGuard] },
-      { path: ':id/versions', component: VersionListComponent, canActivate: [AuthGuard]},
       { path: ':id/edit/:appType', component: AppEditComponent, canActivate: [AuthGuard] },
+      { path: ':id/versions', component: VersionListComponent, canActivate: [AuthGuard]},
+      { path: ':id/versions/:versionId/edit', component: VersionEditComponent, canActivate: [AuthGuard] },
+      { path: ':id/versions/:versionId/edit/:appType', component: VersionEditComponent, canActivate: [AuthGuard] },
       { path: ':id', component: AppComponent, canActivate: [AuthGuard] },
       { path: ':id/operations', component: AppOperationHistoryComponent, canActivate: [AuthGuard] },
     ]

@@ -2,8 +2,8 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a [routerLink]="['/apps']">我的应用</a></li>
-            <li class="breadcrumb-item"><a [routerLink]="['/apps',app.id]">{{apptag.value}}</a></li>
-            <li class="breadcrumb-item active">版本配置</li>
+            <li class="breadcrumb-item"><a [routerLink]="['/apps',app.id]">{{app.apptag}}</a></li>
+            <li class="breadcrumb-item active">版本</li>
         </ol>
     </nav>
     <div>
@@ -11,7 +11,7 @@
             <div class="mb-4">
                 <div class="d-flex">
                     <div class="mr-auto">
-                        <h1>版本配置</h1>
+                        <h1>版本列表</h1>
                     </div>
                     <button type="button" class="btn btn-success mr-2 mb-3" [disabled]="account.perm('应用:修改')"
                         (click)="onNewVersionBtnClick()">新增版本
@@ -45,6 +45,7 @@
                             <li>部署分支：{{v.repository}}</li>
                             <li>Revistion：{{v.revision}}</li>
                             <li>运行参数: {{v.execOpt}}</li>
+                            <li *ngFor="let vv of v.vars">{{getVarDesc(app, vv)}}: {{vv.value}}</li>
                         </ul>
                     </div>
                     <ul class="list-group list-group-flush">

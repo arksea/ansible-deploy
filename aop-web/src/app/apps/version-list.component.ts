@@ -6,7 +6,6 @@ import { MessageNotify } from '../utils/message-notify'
 import { App, Host, AppVariable } from '../app.entity'
 import { AccountService } from '../account/account.service'
 import { Router, ActivatedRoute, ParamMap } from '@angular/router'
-import { NewVersionDialog } from './new-version.dialog'
 import { AddHostDialog } from './add-host.dialog'
 import { Version } from '../app.entity'
 import { ConfirmDialog } from '../utils/confirm.dialog'
@@ -31,8 +30,6 @@ export class VersionListComponent implements OnInit {
                 private route: ActivatedRoute) {
         this.app = this.svc.createDefAppTemplate()
         this.appForm = new FormGroup({
-            'appGroupId': new FormControl(0, [Validators.required]),
-            'apptag': new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(30)])
         })
         let params: ParamMap =  this.route.snapshot.paramMap
         let idStr = params.get('id')
@@ -44,10 +41,6 @@ export class VersionListComponent implements OnInit {
         this.svc.getAppById(appId).subscribe(ret => {
             if (ret.code == 0) {
                 this.app = ret.result
-                this.apptag.setValue(this.app.apptag)
-                if (this.app.appGroup != null) {
-                    this.appGroupId.setValue(this.app.appGroup.id)
-                }
             } else {
                 this.router.navigate(["/apps"])
             }
@@ -58,24 +51,20 @@ export class VersionListComponent implements OnInit {
     }
 
     onNewVersionBtnClick() {
-        let ref = this.modal.open(NewVersionDialog)
-        this.app.apptag = this.apptag.value
-        ref.componentInstance.app = this.app
+        this.router.navigate(['/apps',this.app.id,'versions', 'new', 'edit', this.app.appType.name])
     }
 
     onAddHostBtnClick(version: Version) {
-        if (this.appGroupId.value) {
+        if (this.app.appGroup.id) {
             let ref = this.modal.open(AddHostDialog)
-            ref.componentInstance.setParams(this.app, version, this.appGroupId.value)
+            ref.componentInstance.setParams(this.app, version, this.app.appGroup.id)
         } else {
             this.alert.warning("应用还未加入分组，不能配置部署主机")
         }
     }
 
     onEditBtnClick(version: Version) {
-        let ref = this.modal.open(NewVersionDialog)
-        ref.componentInstance.app = this.app
-        ref.componentInstance.version = version
+        this.router.navigate(['/apps',this.app.id,'versions', version.id, 'edit'])
     }
 
     onDeleteVersionBtnClick(version: Version) {
@@ -158,31 +147,11 @@ export class VersionListComponent implements OnInit {
     }
 
     getVarDesc(app: App, variable: AppVariable): string {
-        let def = this.svc.getAppVarDefine(app.appType.id, variable.name)
+        let def = this.svc.getVersionVarDefine(app.appType.id, variable.name)
         return def ? def.formLabel : ''
-    }
-
-    getInputAddon(app: App, variable: AppVariable): string {
-        let def = this.svc.getAppVarDefine(app.appType.id, variable.name)
-        return def ? def.inputAddon : ''
-    }
-
-    getInputType(variable: AppVariable): string {
-        switch(variable.name) {
-            default:
-                return 'text'
-        }
     }
 
     public cancel() {
         this.router.navigate(['/apps'])
-    }
-
-    public get apptag(): AbstractControl {
-        return this.appForm.get('apptag')
-    }
-
-    public get appGroupId(): AbstractControl {
-        return this.appForm.get('appGroupId')
     }
 }

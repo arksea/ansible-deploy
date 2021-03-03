@@ -56,6 +56,8 @@ export class AppEditComponent implements OnInit {
                     if (ret.code == 0) {
                         this.app = ret.result
                         this.setFormValue(this.app)
+                    } else {
+                        this.router.navigate(["/apps"])
                     }
                 }
             )

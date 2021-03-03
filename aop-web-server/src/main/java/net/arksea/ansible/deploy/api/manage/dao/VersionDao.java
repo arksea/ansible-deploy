@@ -10,6 +10,7 @@ import org.springframework.data.repository.CrudRepository;
  * @author xiaohaixing
  */
 public interface VersionDao extends CrudRepository<Version, Long> {
+    Version findByAppIdAndName(long appId, String name);
     @Modifying
     @Query(nativeQuery = true, value="insert into dp2_version_hosts set version_id=?1, host_id=?2")
     void addHost(long versionId, long hostId);

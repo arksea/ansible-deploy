@@ -50,7 +50,7 @@ public class AppService {
     @Autowired
     private AppVarDefineDao appVarDefineDao;
     @Autowired
-    GroupVarDao groupVarDao;
+    AppVarDao appVarDao;
     @Autowired
     PortDao portDao;
     @Autowired
@@ -65,6 +65,8 @@ public class AppService {
     AppOperationDao appOperationDao;
     @Autowired
     UserDao userDao;
+    @Autowired
+    VersionService versionService;
 
     ZoneId zoneId = ZoneId.of("+8");
 
@@ -96,12 +98,8 @@ public class AppService {
         AppType type = appTypeDao.findByName(appTypeName);
         App app = new App();
         app.setAppType(type);
-        Version ver = new Version();
+        Version ver = versionService.createVersionTemplate(appTypeName);
         ver.setName("Online");
-        ver.setRepository("trunk");
-        ver.setRevision("HEAD");
-        ver.setExecOpt("");
-        ver.setTargetHosts(new HashSet<>());
         app.setVersions(new HashSet<>());
         app.getVersions().add(ver);
         app.setVars(new HashSet<>());
@@ -139,12 +137,12 @@ public class AppService {
             long id = saved.getId();
             for (final AppVariable v : app.getVars()) {
                 v.setAppId(id);
-                groupVarDao.save(v);
+                appVarDao.save(v);
             }
             if (isNewAction) {
                 for (final Version v : app.getVersions()) {
                     v.setAppId(id);
-                    versionDao.save(v);
+                    versionService.saveVersion(v);
                 }
                 createOperationToken(saved.getId());
             }
@@ -156,6 +154,7 @@ public class AppService {
         }
     }
 
+    @Transactional
     private void updateAppPort(App old, App updated) {
         for (AppVariable u : updated.getVars()) {
             for (AppVariable o : old.getVars()) {
@@ -190,6 +189,7 @@ public class AppService {
         }
     }
 
+    @Transactional
     private void setPortsAndVars(App app) {
         List<AppVarDefine> defines = appVarDefineDao.findByAppTypeId(app.getAppType().getId());
         int portCount = 0;
@@ -214,7 +214,7 @@ public class AppService {
             if (def.getPortType() != null) {
                 PortType portType = def.getPortType();
                 for (Port p : ports) {
-                    if (portType.getId() == p.getTypeId()) {
+                    if (portType.getId().equals(p.getTypeId())) {
                         AppVariable var = new AppVariable();
                         var.setAppId(app.getId());
                         var.setIsPort(true);
@@ -229,6 +229,7 @@ public class AppService {
         }
     }
 
+    @Transactional
     private void createOperationToken(long appId) {
         OperationToken token = new OperationToken();
         token.setAppId(appId);

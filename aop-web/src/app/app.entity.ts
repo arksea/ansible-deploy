@@ -81,10 +81,11 @@ export class Version {
     id: number|null = null
     appId: number|null = null
     name: string = ''
-    repository: string = ''
-    execOpt: string = ''
+    repository: string = 'trunk' //部署包仓库分支路径
+    execOpt: string = ''         //运行参数
     revision: string = 'HEAD'
-    targetHosts: Array<Host> = []
+    vars: Array<VersionVariable> = []// 变量
+    targetHosts: Array<Host> = []    // 部署目标主机
 }
 
 export class HostStatus {
@@ -111,6 +112,12 @@ export class App {
     vars: Array<AppVariable> = []// 变量
     versions: Array<Version> = []
     createTime: string|null = null //创建时间
+}
+
+export class AppInfo {
+    id: number|null = null
+    apptag: string = '' //应用标签，通常用来部署时建立应用目录名
+    appTypeId: number|null = null
 }
 
 export class AppGroup {

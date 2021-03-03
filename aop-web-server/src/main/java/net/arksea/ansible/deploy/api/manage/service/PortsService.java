@@ -5,6 +5,7 @@ import net.arksea.ansible.deploy.api.manage.dao.PortSectionDao;
 import net.arksea.ansible.deploy.api.manage.entity.Port;
 import net.arksea.ansible.deploy.api.manage.entity.PortSection;
 import net.arksea.ansible.deploy.api.manage.entity.PortType;
+import net.arksea.ansible.deploy.api.manage.entity.Variable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Create by xiaohaixing on 2020/9/17
@@ -257,6 +259,41 @@ public class PortsService {
             return saved;
         } catch (Exception ex) {
             throw new ServiceException("保存类型配置失败", ex);
+        }
+    }
+
+    @Transactional
+    public <T extends Variable> void updatePortVariables(long appId, Set<T> old, Set<T> updated) {
+        for (T u : updated) {
+            for (T o : old) {
+                if (u.getId().equals(o.getId()) && !u.getValue().equals(o.getValue())) {
+                    if (!u.getIsPort()) {
+                        continue;
+                    }
+                    int updateValue = Integer.parseInt(u.getValue());
+                    List<Port> l = portDao.findByValue(updateValue);
+                    if (l.size() == 1) {
+                        Port updatePort = l.get(0);
+                        if (updatePort.getAppId() != null) {
+                            throw new ServiceException("目标端口已被占用:"+updateValue);
+                        }
+                        if (!updatePort.getEnabled()) {
+                            throw new ServiceException("目标端口已被禁用:"+updateValue);
+                        }
+                        int oldValue = Integer.parseInt(o.getValue());
+                        List<Port> oldPorts = portDao.findByValue(oldValue);
+                        if (oldPorts.size() == 0) {
+                            throw new ServiceException("获取端口记录失败:"+oldValue);
+                        }
+                        portDao.releasePortByValue(oldValue);
+                        portTypeDao.incRestCount(1,  oldPorts.get(0).getTypeId());
+                        portDao.holdPortByValue(updateValue, appId);
+                        portTypeDao.incRestCount(-1, updatePort.getTypeId());
+                    } else {
+                        throw new ServiceException("目标端口不存在:"+updateValue);
+                    }
+                }
+            }
         }
     }
 }

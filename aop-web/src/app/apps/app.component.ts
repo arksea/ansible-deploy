@@ -68,6 +68,14 @@ export class AppComponent implements OnInit {
         return 'select-all-' + v.id
     }
 
+    onEditBtnClick(app: App) {
+        this.router.navigate(['/apps/' + app.id + '/edit'])
+    }
+
+    onVersionBtnClick(app: App) {
+        this.router.navigate(['/apps/' + app.id + '/versions'])
+    }
+
     hasHostChecked(ver: Version): boolean {
         for (let h of ver.targetHosts) {
             let name = this.checkName(ver, h)
@@ -140,6 +148,15 @@ export class AppComponent implements OnInit {
         } else {
             return s.value
         } 
+    }
+
+    appHasTargetHosts(app: App): boolean {
+        for (let v of app.versions) {
+            if (v.targetHosts.length > 0) {
+                return true
+            }
+        }
+        return false
     }
 
     get status(): AppOperation[] {

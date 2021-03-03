@@ -11,6 +11,18 @@
                 <div class="d-flex">
                     <div class="mr-auto">
                     </div>
+                    <div class="p-1">
+                        <button type="button" class="btn btn-success"
+                            [disabled]="account.perm('应用:查询')" [routerLink]="['/apps',app.id,'operations']">操作记录</button>
+                    </div>
+                    <div class="p-1">
+                        <button type="button" class="btn btn-success"
+                            [disabled]="account.perm('应用:修改')" (click)="onEditBtnClick(app)">编辑</button>
+                    </div>
+                    <div class="p-1">
+                        <button type="button" class="btn btn-success"
+                            [disabled]="account.perm('应用:修改')" (click)="onVersionBtnClick(app)">版本</button>
+                    </div>
                 </div>
             </li>
             <li *ngFor="let v of app?.versions" class="list-group-item py-4">

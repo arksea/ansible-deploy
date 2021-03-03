@@ -137,7 +137,11 @@ export class AppEditComponent implements OnInit {
     }
 
     public cancel() {
-        this.router.navigate(['/apps'])
+        if (this.isNewAction) {
+            this.router.navigate(['/apps'])
+        } else {
+            this.router.navigate(['/apps', this.app.id])
+        }
     }
 
     public get apptag(): AbstractControl {

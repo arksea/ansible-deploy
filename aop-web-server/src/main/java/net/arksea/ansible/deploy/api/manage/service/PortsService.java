@@ -2,10 +2,7 @@ package net.arksea.ansible.deploy.api.manage.service;
 
 import net.arksea.ansible.deploy.api.ServiceException;
 import net.arksea.ansible.deploy.api.manage.dao.PortSectionDao;
-import net.arksea.ansible.deploy.api.manage.entity.Port;
-import net.arksea.ansible.deploy.api.manage.entity.PortSection;
-import net.arksea.ansible.deploy.api.manage.entity.PortType;
-import net.arksea.ansible.deploy.api.manage.entity.Variable;
+import net.arksea.ansible.deploy.api.manage.entity.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +11,7 @@ import javax.transaction.Transactional;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Create by xiaohaixing on 2020/9/17
@@ -292,6 +290,32 @@ public class PortsService {
                     } else {
                         throw new ServiceException("目标端口不存在:"+updateValue);
                     }
+                }
+            }
+        }
+    }
+
+    @Transactional
+    public <T extends Variable, U extends VarDefine>
+    void initPortVariables(long appId, Set<T> vars,List<U> defines,Supplier<T> varCreator) {
+        for (VarDefine def: defines) {
+            if (def.getPortType() != null) {
+                PortType portType = def.getPortType();
+                List<Port> free = portDao.getOneFreeByTypeId(portType.getId());
+                if (free.size() == 0) {
+                    throw new ServiceException("'"+portType.getName()+"'端口可用数不够，请联系管理员");
+                }
+                Port p = free.get(0);
+                int n = portDao.holdPortByValue(p.getValue(), appId);
+                if (n == 0) {
+                    throw new ServiceException("端口 "+p.getValue()+" 已被占用，请稍后重试");
+                } else {
+                    T var = varCreator.get();
+                    var.setIsPort(true);
+                    var.setName(def.getName());
+                    var.setValue(Integer.toString(p.getValue()));
+                    vars.add(var);
+                    portTypeDao.incRestCount(-1, portType.getId());
                 }
             }
         }

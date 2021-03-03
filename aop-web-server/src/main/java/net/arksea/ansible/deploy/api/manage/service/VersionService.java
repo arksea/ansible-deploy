@@ -89,7 +89,8 @@ public class VersionService {
             }
             Version saved = versionDao.save(ver);
             if (isNewAction) {//分配端口
-                initPortVariables(app.getId(), app.getAppType().getId(), saved.getVars(), VersionVariable::new);
+                List<VersionVarDefine> defines = versionVarDefineDao.findByAppTypeId( app.getAppType().getId());
+                portsService.initPortVariables(app.getId(), saved.getVars(), defines, VersionVariable::new);
             }
             long id = saved.getId();
             for (final VersionVariable v : ver.getVars()) {
@@ -101,32 +102,6 @@ public class VersionService {
             throw ex;
         } catch (Exception ex) {
             throw new ServiceException("保存版本失败", ex);
-        }
-    }
-
-    @Transactional
-    private <T extends Variable> void initPortVariables(long appId, long appTypeId, Set<T> vars, Supplier<T> varCreator) {
-        List<VersionVarDefine> defines = versionVarDefineDao.findByAppTypeId(appTypeId);
-        for (VersionVarDefine def: defines) {
-            if (def.getPortType() != null) {
-                PortType portType = def.getPortType();
-                List<Port> free = portDao.getOneFreeByTypeId(portType.getId());
-                if (free.size() == 0) {
-                    throw new ServiceException("'"+portType.getName()+"'端口可用数不够，请联系管理员");
-                }
-                Port p = free.get(0);
-                int n = portDao.holdPortByValue(p.getValue(), appId);
-                if (n == 0) {
-                    throw new ServiceException("端口 "+p.getValue()+" 已被占用，请稍后重试");
-                } else {
-                    T var = varCreator.get();
-                    var.setIsPort(true);
-                    var.setName(def.getName());
-                    var.setValue(Integer.toString(p.getValue()));
-                    vars.add(var);
-                    portTypeDao.incRestCount(-1, portType.getId());
-                }
-            }
         }
     }
 

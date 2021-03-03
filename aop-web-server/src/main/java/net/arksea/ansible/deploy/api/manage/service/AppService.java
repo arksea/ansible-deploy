@@ -67,6 +67,8 @@ public class AppService {
     UserDao userDao;
     @Autowired
     VersionService versionService;
+    @Autowired
+    PortsService portsService;
 
     ZoneId zoneId = ZoneId.of("+8");
 
@@ -128,11 +130,12 @@ public class AppService {
         try {
             if (!isNewAction) {
                 App old = appDao.findOne(app.getId());
-                updateAppPort(old, app);
+                portsService.updatePortVariables(app.getId(), old.getVars(), app.getVars());
             }
             App saved = appDao.save(app);
             if (isNewAction) {//分配端口
-                setPortsAndVars(saved);
+                List<AppVarDefine> defines = appVarDefineDao.findByAppTypeId(app.getAppType().getId());
+                portsService.initPortVariables(app.getId(), saved.getVars(), defines, AppVariable::new);
             }
             long id = saved.getId();
             for (final AppVariable v : app.getVars()) {
@@ -151,81 +154,6 @@ public class AppService {
             throw ex;
         } catch (Exception ex) {
             throw new ServiceException("保存应用失败", ex);
-        }
-    }
-
-    @Transactional
-    private void updateAppPort(App old, App updated) {
-        for (AppVariable u : updated.getVars()) {
-            for (AppVariable o : old.getVars()) {
-                if (u.getId().equals(o.getId()) && !u.getValue().equals(o.getValue())) {
-                    if (!u.getIsPort()) {
-                        continue;
-                    }
-                    int updateValue = Integer.parseInt(u.getValue());
-                    List<Port> l = portDao.findByValue(updateValue);
-                    if (l.size() == 1) {
-                        Port updatePort = l.get(0);
-                        if (updatePort.getAppId() != null) {
-                            throw new ServiceException("目标端口已被占用:"+updateValue);
-                        }
-                        if (!updatePort.getEnabled()) {
-                            throw new ServiceException("目标端口已被禁用:"+updateValue);
-                        }
-                        int oldValue = Integer.parseInt(o.getValue());
-                        List<Port> oldPorts = portDao.findByValue(oldValue);
-                        if (oldPorts.size() == 0) {
-                            throw new ServiceException("获取端口记录失败:"+oldValue);
-                        }
-                        portDao.releasePortByValue(oldValue);
-                        portTypeDao.incRestCount(1,  oldPorts.get(0).getTypeId());
-                        portDao.holdPortByValue(updateValue, updated.getId());
-                        portTypeDao.incRestCount(-1, updatePort.getTypeId());
-                    } else {
-                        throw new ServiceException("目标端口不存在:"+updateValue);
-                    }
-                }
-            }
-        }
-    }
-
-    @Transactional
-    private void setPortsAndVars(App app) {
-        List<AppVarDefine> defines = appVarDefineDao.findByAppTypeId(app.getAppType().getId());
-        int portCount = 0;
-        for (AppVarDefine def: defines) {
-            if (def.getPortType() != null) {
-                portCount++;
-                PortType portType = def.getPortType();
-                int n = portDao.assignForAppByTypeId(app.getId(), portType.getId());
-                if (n == 0) {
-                    throw new ServiceException("'"+portType.getName()+"'端口可用数不够，请联系管理员");
-                }
-                portTypeDao.incRestCount(-1, portType.getId());
-            }
-        }
-        List<Port> ports = portDao.findByAppId(app.getId());
-        if (ports.size() < portCount) {
-            throw new ServiceException("没有足够端口可供分配，请联系管理员");
-        } else if (ports.size() > portCount) {
-            throw new ServiceException("断言失败：分配端口逻辑错误");
-        }
-        for (AppVarDefine def: defines) {
-            if (def.getPortType() != null) {
-                PortType portType = def.getPortType();
-                for (Port p : ports) {
-                    if (portType.getId().equals(p.getTypeId())) {
-                        AppVariable var = new AppVariable();
-                        var.setAppId(app.getId());
-                        var.setIsPort(true);
-                        var.setName(def.getName());
-                        var.setValue(Integer.toString(p.getValue()));
-                        app.getVars().add(var);
-                        ports.remove(p);
-                        break;
-                    }
-                }
-            }
         }
     }
 

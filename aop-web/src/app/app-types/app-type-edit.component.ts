@@ -3,10 +3,11 @@ import { FormGroup, FormControl, Validators } from '@angular/forms'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { AppTypesService } from './app-types.service'
 import { MessageNotify } from '../utils/message-notify'
-import { AppType, AppVarDefine } from '../app.entity'
+import { AppType, AppVarDefine, VersionVarDefine } from '../app.entity'
 import { AccountService } from '../account/account.service'
 import { Router, ActivatedRoute, ParamMap } from '@angular/router'
-import { NewAppVarDefineDialog } from './new-var-define.dialog'
+import { NewAppVarDefineDialog } from './new-app-var-define.dialog'
+import { NewVersionVarDefineDialog } from './new-version-var-define.dialog'
 
 
 @Component({
@@ -64,7 +65,7 @@ export class AppTypeEditComponent implements OnInit {
         })
     }
 
-    newVarDefine() {
+    newAppVarDefine() {
         let ref = this.modal.open(NewAppVarDefineDialog)
         let def = new AppVarDefine()
         def.appTypeId = this.appType.id
@@ -77,7 +78,7 @@ export class AppTypeEditComponent implements OnInit {
         }, reason => {})
     }
 
-    editVarDefine(def: AppVarDefine) {
+    editAppVarDefine(def: AppVarDefine) {
         let ref = this.modal.open(NewAppVarDefineDialog)
         ref.componentInstance.appVarDefine = def
         ref.result.then(ret => {
@@ -87,7 +88,7 @@ export class AppTypeEditComponent implements OnInit {
         }, reason => {})
     }
 
-    delVarDefine(def: AppVarDefine) {
+    delAppVarDefine(def: AppVarDefine) {
         let list = []
         for (let d of this.appType.appVarDefines) {
             if (d.name != def.name) {
@@ -95,6 +96,40 @@ export class AppTypeEditComponent implements OnInit {
             }
         }
         this.appType.appVarDefines = list
+        this.defineModified = true
+    }
+
+    newVersionVarDefine() {
+        let ref = this.modal.open(NewVersionVarDefineDialog)
+        let def = new VersionVarDefine()
+        def.appTypeId = this.appType.id
+        ref.componentInstance.versionVarDefine = def
+        ref.result.then(ret => {
+            if (ret == 'ok') {
+                this.appType.versionVarDefines.push(def)
+                this.defineModified = true
+            }
+        }, reason => {})
+    }
+
+    editVersionVarDefine(def: VersionVarDefine) {
+        let ref = this.modal.open(NewVersionVarDefineDialog)
+        ref.componentInstance.versionVarDefine = def
+        ref.result.then(ret => {
+            if (ret == 'ok') {
+                this.defineModified = true
+            }
+        }, reason => {})
+    }
+
+    delVersionVarDefine(def: VersionVarDefine) {
+        let list = []
+        for (let d of this.appType.versionVarDefines) {
+            if (d.name != def.name) {
+                list.push(d)
+            }
+        }
+        this.appType.versionVarDefines = list
         this.defineModified = true
     }
 

@@ -3,15 +3,10 @@ import { FormGroup, FormControl, AbstractControl, Validators } from '@angular/fo
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { AppsService } from './apps.service'
 import { MessageNotify } from '../utils/message-notify'
-import { App,AppGroup, Host, AppVariable } from '../app.entity'
+import { App,AppGroup, AppVariable } from '../app.entity'
 import { AccountService } from '../account/account.service'
 import { Router, ActivatedRoute, ParamMap } from '@angular/router'
-import { NewVersionDialog } from './new-version.dialog'
 import { HostsService } from '../hosts/hosts.service'
-import { AddHostDialog } from './add-host.dialog'
-import { Version } from '../app.entity'
-import { ConfirmDialog } from '../utils/confirm.dialog'
-import { DeleteJobPlayDialog } from './job-play.dialog'
 import { PortSelectDialog } from './port-select.dialog'
 
 @Component({
@@ -61,6 +56,8 @@ export class AppEditComponent implements OnInit {
                     if (ret.code == 0) {
                         this.app = ret.result
                         this.setFormValue(this.app)
+                    } else {
+                        this.router.navigate(["/apps"])
                     }
                 }
             )
@@ -111,103 +108,6 @@ export class AppEditComponent implements OnInit {
         )
     }
 
-    onNewVersionBtnClick() {
-        let ref = this.modal.open(NewVersionDialog)
-        this.app.apptag = this.apptag.value
-        ref.componentInstance.app = this.app
-    }
-
-    onAddHostBtnClick(version: Version) {
-        if (this.appGroupId.value) {
-            let ref = this.modal.open(AddHostDialog)
-            ref.componentInstance.setParams(this.app, version, this.appGroupId.value)
-        } else {
-            this.alert.warning("应用还未加入分组，不能配置部署主机")
-        }
-    }
-
-    onEditBtnClick(version: Version) {
-        let ref = this.modal.open(NewVersionDialog)
-        ref.componentInstance.app = this.app
-        ref.componentInstance.version = version
-    }
-
-    onDeleteVersionBtnClick(version: Version) {
-        if (this.isNewAction) { //未保存的新建应用
-            this.app.versions = this.app.versions.filter((v,i,a) => v.name != version.name)
-        } else {
-            let ref = this.modal.open(ConfirmDialog)
-            ref.componentInstance.title = "删除版本: "+version.name
-            ref.componentInstance.message = "确认要删除吗?"
-            ref.result.then(result => {
-                if (result == "ok") {
-                    this.svc.deleteVersionById(version.id).subscribe(success => {
-                        if (success) {
-                            this.app.versions = this.app.versions.filter((v,i,a) => v.id != version.id)
-                            this.alert.success("已删除")
-                        }
-                    })
-                }
-            }, resaon => {})
-        }
-    }
-
-    private confirmDeleteHost(host: Host, version: Version) {
-        let ref = this.modal.open(ConfirmDialog)
-        ref.componentInstance.title = "确认要移除吗?"
-        ref.componentInstance.message = "从版本中移除主机: "+host.privateIp
-        ref.result.then(result => {
-            if (result == "ok") {
-                this.doDeleteHostFromVersion(host, version)
-            }
-        }, resaon => {})
-    }
-
-    onDeleteHostBtnClick(host: Host, ver: Version) {
-        if (this.isNewAction) { //未保存的新建应用
-            ver.targetHosts = ver.targetHosts.filter((h,i,a) => h.id != host.id)
-        } else {
-            this.svc.getOperationsByAppTypeId(this.app.appType.id).subscribe(ret => {
-                if (ret.code == 0) {
-                    let operations = ret.result
-                    let hasDelScript = false
-                    for (let op of operations) {
-                        if (op.type == 'DELETE') {
-                            hasDelScript = true
-                            let ref = this.modal.open(DeleteJobPlayDialog, {size: 'lg', scrollable: true})
-                            ref.componentInstance.operation = op
-                            ref.componentInstance.app = this.app
-                            ref.componentInstance.hosts = [host]
-                            ref.componentInstance.ver = ver
-                            ref.result.then(result => {
-                                    if (result == 'skip') {
-                                        this.confirmDeleteHost(host, ver)
-                                    } else if (result == "ok") {
-                                        this.doDeleteHostFromVersion(host, ver)
-                                    }
-                                }, reason => {
-                                    this.alert.error("删除失败: " + reason)
-                                })
-                            break
-                        }
-                    }
-                    if (!hasDelScript)  {
-                        this.confirmDeleteHost(host, ver)
-                    }
-                }
-            })
-        }
-    }
-
-    private doDeleteHostFromVersion (host: Host, version: Version) {
-        this.svc.removeHostFromVersion(version.id, host.id).subscribe(success => {
-            if (success) {
-                version.targetHosts = version.targetHosts.filter((h,i,a) => h.id != host.id)
-                this.alert.success("成功移除")
-            }
-        })
-    }
- 
     public onSelectPortBtnClick(variable: AppVariable) {
         let ref = this.modal.open(PortSelectDialog)
         ref.componentInstance.variable = variable
@@ -237,15 +137,15 @@ export class AppEditComponent implements OnInit {
     }
 
     public cancel() {
-        this.router.navigate(['/apps'])
+        if (this.isNewAction) {
+            this.router.navigate(['/apps'])
+        } else {
+            this.router.navigate(['/apps', this.app.id])
+        }
     }
 
     public get apptag(): AbstractControl {
         return this.appForm.get('apptag')
-    }
-
-    public get deployPath(): AbstractControl {
-        return this.appForm.get('deployPath')
     }
 
     public get desc(): AbstractControl {

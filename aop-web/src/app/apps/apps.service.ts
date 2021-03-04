@@ -4,7 +4,7 @@ import { ServiceResponse } from '../utils/http-utils'
 import { HttpUtils } from '../utils/http-utils'
 import { environment } from '../../environments/environment'
 import { map } from 'rxjs/operators'
-import { App, AppGroup, AppType, OperationJob, OperationJobInfo, Version, AppVarDefine } from '../app.entity'
+import { App, AppGroup, AppType, OperationJob, OperationJobInfo, Version, AppVarDefine, VersionVarDefine, AppInfo } from '../app.entity'
 import { AppOperation, Host, Port, Page } from '../app.entity'
 
 class StartOpeartionJob {
@@ -22,7 +22,8 @@ export class PollLogsResult {
 
 @Injectable()
 export class AppsService {
-    private varDefineMap: Map<string,AppVarDefine> = new Map()
+    private appVarDefineMap: Map<string,AppVarDefine> = new Map()
+    private versionVarDefineMap: Map<string,VersionVarDefine> = new Map()
 
     public constructor(private httpUtils: HttpUtils) {
     }
@@ -48,13 +49,25 @@ export class AppsService {
         )
     }
 
-    public queryVarDefine() {
-        let url = environment.apiUrl + '/api/varDefines'
-        this.httpUtils.httpGet('查询变量定义',url).subscribe(ret => {
+    public queryAppVarDefine() {
+        let url = environment.apiUrl + '/api/varDefines/app'
+        this.httpUtils.httpGet('查询应用变量定义',url).subscribe(ret => {
             if (ret.code == 0) {
                 for (let def of ret.result) {
                     let key = '' + def.appTypeId + ':' + def.name
-                    this.varDefineMap[key] = def
+                    this.appVarDefineMap[key] = def
+                }
+            }
+        })
+    }
+
+    public queryVersionVarDefine() {
+        let url = environment.apiUrl + '/api/varDefines/version'
+        this.httpUtils.httpGet('查询版本变量定义',url).subscribe(ret => {
+            if (ret.code == 0) {
+                for (let def of ret.result) {
+                    let key = '' + def.appTypeId + ':' + def.name
+                    this.versionVarDefineMap[key] = def
                 }
             }
         })
@@ -73,9 +86,19 @@ export class AppsService {
         return this.httpUtils.httpGet('获取应用创建模版', url)
     }
 
+    public createVersionTemplate(appType: string): Observable<ServiceResponse<Version>> {
+        let url = environment.apiUrl + '/api/versions/template/'+appType
+        return this.httpUtils.httpGet('获取版本创建模版', url)
+    }
+
     public getAppVarDefine(appTypeId: number, name: string): AppVarDefine {
         let key = '' + appTypeId + ':' + name
-        return this.varDefineMap[key]
+        return this.appVarDefineMap[key]
+    }
+
+    public getVersionVarDefine(appTypeId: number, name: string): VersionVarDefine {
+        let key = '' + appTypeId + ':' + name
+        return this.versionVarDefineMap[key]
     }
 
     public createDefAppTemplate(): App {
@@ -145,6 +168,16 @@ export class AppsService {
     public getAppById(appId: number): Observable<ServiceResponse<App>> {
         const url = environment.apiUrl + '/api/apps/' + appId
         return this.httpUtils.httpGet('查询应用', url)
+    }
+
+    public getAppInfoById(appId: number): Observable<ServiceResponse<AppInfo>> {
+        const url = environment.apiUrl + '/api/apps/' + appId + '/info'
+        return this.httpUtils.httpGet('查询应用信息', url)
+    }
+
+    public getVersionById(versionId: number): Observable<ServiceResponse<Version>> {
+        const url = environment.apiUrl + '/api/versions/' + versionId
+        return this.httpUtils.httpGet('查询应用版本', url)
     }
 
     public getUserGroups(): Observable<ServiceResponse<Array<AppGroup>>> {

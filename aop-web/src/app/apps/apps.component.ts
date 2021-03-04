@@ -8,7 +8,8 @@ import { AppsService } from './apps.service';
 export class AppsComponent implements OnInit {
 
     constructor(private svc: AppsService) {
-        this.svc.queryVarDefine();
+        this.svc.queryAppVarDefine();
+        this.svc.queryVersionVarDefine();
     }
 
     ngOnInit(): void {

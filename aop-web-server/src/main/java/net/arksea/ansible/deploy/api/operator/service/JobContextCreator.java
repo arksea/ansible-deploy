@@ -143,6 +143,12 @@ public class JobContextCreator {
                     writer.append("revision: ");
                     writer.append(ver.getRevision());
                     writer.append("\n");
+                    for (final VersionVariable var : ver.getVars()) {
+                        writer.append(var.getName());
+                        writer.append(": ");
+                        writer.append(var.getValue());
+                        writer.append("\n");
+                    }
                 }
             }
             writer.flush();

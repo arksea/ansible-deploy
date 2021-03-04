@@ -7,5 +7,5 @@ import org.springframework.data.repository.CrudRepository;
  *
  * @author xiaohaixing
  */
-public interface GroupVarDao extends CrudRepository<AppVariable, Long> {
+public interface AppVarDao extends CrudRepository<AppVariable, Long> {
 }

@@ -5,8 +5,8 @@ import { AppTypesService } from './app-types.service'
 import { AppVarDefine, PortType } from '../app.entity'
 
 @Component({
-    selector: 'new-var-define-dialog',
-    templateUrl: './new-var-define.dialog.html'
+    selector: 'new-app-var-define-dialog',
+    templateUrl: './new-app-var-define.dialog.html'
 })
 export class NewAppVarDefineDialog {
 

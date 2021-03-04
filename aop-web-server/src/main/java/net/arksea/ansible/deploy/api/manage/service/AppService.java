@@ -13,8 +13,6 @@ import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import net.arksea.ansible.deploy.api.operator.entity.OperationToken;
 import net.arksea.restapi.RestException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -42,7 +40,6 @@ import java.util.*;
 @Component
 public class AppService {
 
-    Logger logger = LogManager.getLogger(AppService.class);
     @Autowired
     private AppDao appDao;
     @Autowired

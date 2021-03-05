@@ -13,8 +13,6 @@ import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Supplier;
 
 /**
  * Create by xiaohaixing on 2020/9/14
@@ -125,5 +123,10 @@ public class VersionService {
             }
         }
         return ver;
+    }
+
+    @Transactional
+    public void setVersionBuildNo(long versionId, String token, long buildNo) {
+        versionDao.updateBuildNo(versionId, buildNo);
     }
 }

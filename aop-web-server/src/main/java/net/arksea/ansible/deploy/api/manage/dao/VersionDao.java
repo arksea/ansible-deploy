@@ -18,4 +18,8 @@ public interface VersionDao extends CrudRepository<Version, Long> {
     @Modifying
     @Query(nativeQuery = true, value="delete from dp2_version_hosts where version_id=?1 and host_id=?2")
     void removeHost(long versionId, long hostId);
+
+    @Modifying
+    @Query("update Version v set v.buildNo = ?2 where v.id = ?1")
+    int updateBuildNo(long versionId, long buildNo);
 }

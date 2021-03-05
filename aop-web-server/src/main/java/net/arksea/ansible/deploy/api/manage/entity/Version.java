@@ -18,6 +18,8 @@ public class Version extends IdEntity {
 
     private String revision;
 
+    private long buildNo;
+
     private Set<Host> targetHosts;
 
     private long appId;
@@ -51,6 +53,15 @@ public class Version extends IdEntity {
 
     public void setRevision(final String revision) {
         this.revision = revision;
+    }
+
+    @Column(nullable = false)
+    public long getBuildNo() {
+        return buildNo;
+    }
+
+    public void setBuildNo(long buildNo) {
+        this.buildNo = buildNo;
     }
 
     @Column(nullable = false)

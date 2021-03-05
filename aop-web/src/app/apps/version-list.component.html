@@ -42,8 +42,8 @@
                     </div>
                     <div class="card-bordy">
                         <ul class="mt-3">
-                            <li>部署分支：{{v.repository}}</li>
-                            <li>Revistion：{{v.revision}}</li>
+                            <li>部署包地址：{{v.repository}}</li>
+                            <li>部署包标签：{{v.revision}}</li>
                             <li>运行参数: {{v.execOpt}}</li>
                             <li *ngFor="let vv of v.vars">{{getVarDesc(app, vv)}}: {{vv.value}}</li>
                         </ul>

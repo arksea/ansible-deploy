@@ -98,7 +98,7 @@ public class AppService {
         App app = new App();
         app.setAppType(type);
         Version ver = versionService.createVersionTemplate(appTypeName);
-        ver.setName("Online");
+        ver.setName("online");
         app.setVersions(new HashSet<>());
         app.getVersions().add(ver);
         app.setVars(new HashSet<>());

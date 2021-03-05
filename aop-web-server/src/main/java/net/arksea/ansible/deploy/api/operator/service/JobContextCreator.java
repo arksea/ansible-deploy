@@ -134,6 +134,12 @@ public class JobContextCreator {
             if (job.getVersionId() != null) {
                 final Version ver = resources.versionDao.findOne(job.getVersionId());
                 if (ver != null) {
+                    writer.append("version: ");
+                    writer.append(ver.getName());
+                    writer.append("\n");
+                    writer.append("version_id: ");
+                    writer.append(Long.toString(ver.getId()));
+                    writer.append("\n");
                     writer.append("exec_opt: ");
                     writer.append(ver.getExecOpt());
                     writer.append("\n");
@@ -143,6 +149,13 @@ public class JobContextCreator {
                     writer.append("revision: ");
                     writer.append(ver.getRevision());
                     writer.append("\n");
+                    writer.append("build_no: ");
+                    long buildNo = ver.getBuildNo();
+                    if (operation.getType() == AppOperationType.BUILD) {
+                        buildNo++;
+                    }
+                    writer.append(Long.toString(buildNo));
+                    writer.append("\n");
                     for (final VersionVariable var : ver.getVars()) {
                         writer.append(var.getName());
                         writer.append(": ");
@@ -151,6 +164,9 @@ public class JobContextCreator {
                     }
                 }
             }
+            writer.append("job_id: ");
+            writer.append(job.getId().toString());
+            writer.append("\n");
             writer.flush();
         }
         log("成功\n");

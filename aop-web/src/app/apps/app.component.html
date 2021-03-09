@@ -30,12 +30,12 @@
                     <div class="card-header">
                         <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
                             <div class="pt-2">
-                                <strong>版本: {{v.name}}</strong>
+                                <strong>版本: {{v.name}}</strong> ( b{{v.buildNo}} {{v.buildNoUpdate|date:'yyyy-MM-dd HH:mm'}} )
                             </div>
                             <div class="btn-group btn-group-sm" role="group" [title] = "hasHostChecked(v)?'':'请选择要操作的目标主机'">
                                 <button type="button" class="btn btn-outline-dark"
                                     *ngFor="let op of operations"
-                                    [hidden]="op.type != 'COMMON'"
+                                    [hidden]="op.type != 'COMMON' && op.type != 'BUILD'"
                                     [disabled]="account.perm('应用:操作')  || !hasHostChecked(v)"
                                     (click)="onOperationClick(v, op)">
                                     {{op.name}}

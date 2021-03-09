@@ -83,6 +83,8 @@ export class Version {
     name: string = ''
     repository: string = 'trunk' //部署包仓库分支路径
     execOpt: string = ''         //运行参数
+    buildNo: number = 0          //构建号
+    buildNoUpdate: number = 0    //更新构建号的时间
     revision: string = 'HEAD'
     vars: Array<VersionVariable> = []// 变量
     targetHosts: Array<Host> = []    // 部署目标主机

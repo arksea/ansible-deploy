@@ -5,6 +5,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Set;
 
 @Entity
@@ -19,6 +20,8 @@ public class Version extends IdEntity {
     private String revision;
 
     private long buildNo;
+
+    private Timestamp buildNoUpdate;
 
     private Set<Host> targetHosts;
 
@@ -62,6 +65,15 @@ public class Version extends IdEntity {
 
     public void setBuildNo(long buildNo) {
         this.buildNo = buildNo;
+    }
+
+    @Column
+    public Timestamp getBuildNoUpdate() {
+        return buildNoUpdate;
+    }
+
+    public void setBuildNoUpdate(Timestamp buildNoUpdate) {
+        this.buildNoUpdate = buildNoUpdate;
     }
 
     @Column(nullable = false)

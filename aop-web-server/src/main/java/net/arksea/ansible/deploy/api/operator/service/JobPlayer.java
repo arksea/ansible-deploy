@@ -176,7 +176,12 @@ public class JobPlayer extends AbstractActor {
         };
         String cmd = getJobPath() + operation.getCommand();
         Futures.future(() -> {
-            JobCommandRunner.exec(cmd, listener);
+            List<String> envList = new LinkedList<>();
+            System.getenv().forEach((k,v) -> {
+                envList.add(k+"="+v);
+            });
+            envList.add("APPTAG=" + app.getApptag());
+            JobCommandRunner.exec(cmd, listener, envList.toArray(new String[0]));
             return true;
         }, context().dispatcher()).onComplete(new OnComplete<Boolean>() {
             @Override

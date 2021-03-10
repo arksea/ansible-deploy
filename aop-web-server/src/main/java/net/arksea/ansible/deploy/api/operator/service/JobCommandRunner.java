@@ -8,7 +8,11 @@ import java.io.*;
 public class JobCommandRunner {
 
     protected static void exec(final String cmd, IJobEventListener jobLogger) throws Exception {
-        final Process process = Runtime.getRuntime().exec(cmd);
+        exec(cmd, jobLogger, null);
+    }
+
+    protected static void exec(final String cmd, IJobEventListener jobLogger, String[] envp) throws Exception {
+        final Process process = Runtime.getRuntime().exec(cmd, envp);
         try (BufferedReader inReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
              BufferedReader errReader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
             jobLogger.log(cmd+"\n");

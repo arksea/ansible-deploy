@@ -254,11 +254,10 @@ public class AppService {
                 version = "/";
             } else {
                 Version ver = verMap.computeIfAbsent(j.getVersionId(), id -> versionDao.findOne(id));
-                version = ver.getName();
+                version = ver==null? "/" : ver.getName();
             }
-            String operation = op.getName();
-            String operator = user.getName();
-
+            String operation = op == null ? "/" : op.getName();
+            String operator = user == null ? "/" : user.getName();
             infos.add(new GetOperationJobHistory.OperationJobInfo(j.getId(), operation, operator, version, j.getStartTime(), j.getEndTime()));
         }
         return infos;

@@ -1,0 +1,9 @@
+<div class="modal-header d-flex">
+    <h2 class="modal-title m-2 mr-auto">操作日志</h2>
+    <button type="button" class="btn btn-outline-secondary m-2" 
+    (click)="modal.close('cancel')">关闭</button>
+</div>
+<div class="modal-body">
+    <pre id="job-logs" class="p-1 border border-secondary text-light bg-dark text-monospace">{{log}}</pre>
+</div>
+

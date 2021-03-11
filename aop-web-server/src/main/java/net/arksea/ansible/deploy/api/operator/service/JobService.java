@@ -113,4 +113,13 @@ public class JobService {
         int n = operationJobDao.deleteExpireJobs(new Timestamp(epochSecond*1000));
         logger.info("删除 {} 前的操作记录 {} 条", localDate, n);
     }
+
+    public String getJobHistoryLog(long jobId) {
+        OperationJob job = operationJobDao.findOne(jobId);
+        if (job == null) {
+            return "";
+        } else {
+            return job.getLog();
+        }
+    }
 }

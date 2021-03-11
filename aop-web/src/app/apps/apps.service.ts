@@ -241,4 +241,9 @@ export class AppsService {
         }
         return this.httpUtils.httpGet('查询应用操作记录', url)
     }
+
+    public getJobHistoryLogs(jobId: number): Observable<ServiceResponse<string>> {
+        let url = environment.apiUrl + '/api/jobs/' + jobId + '/historyLogs'
+        return this.httpUtils.httpGet('查询操作任务日志', url)
+    }
 }

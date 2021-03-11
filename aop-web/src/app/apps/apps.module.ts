@@ -17,6 +17,7 @@ import { VersionListComponent } from './version-list.component'
 import { AppComponent } from './app.component'
 import { AddHostDialog } from './add-host.dialog'
 import { JobPlayDialog, StatusJobPlayDialog, DeleteJobPlayDialog } from './job-play.dialog'
+import { JobLogDialog } from './job-log.dialog'
 import { PortSelectDialog } from './port-select.dialog'
 import { AppOperationHistoryComponent } from './app-operation-history.component'
 
@@ -30,11 +31,11 @@ import { AppOperationHistoryComponent } from './app-operation-history.component'
   declarations: [
     AppsComponent, AppListComponent, AppEditComponent, AppComponent, 
     VersionEditComponent, VersionListComponent, AddHostDialog,
-    JobPlayDialog,StatusJobPlayDialog,DeleteJobPlayDialog,
+    JobPlayDialog,StatusJobPlayDialog,DeleteJobPlayDialog, JobLogDialog,
     PortSelectDialog, AppOperationHistoryComponent
   ],
   entryComponents: [
-    AddHostDialog,JobPlayDialog,StatusJobPlayDialog,PortSelectDialog,DeleteJobPlayDialog
+    AddHostDialog,JobPlayDialog,StatusJobPlayDialog,PortSelectDialog,DeleteJobPlayDialog, JobLogDialog
   ],
   providers: [AppsService],
   exports: []

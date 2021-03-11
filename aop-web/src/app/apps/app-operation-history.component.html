@@ -42,7 +42,7 @@
                     <div class="col">操作者</div>
                 </div>
             </li>
-            <li *ngFor="let h of history.items" class="list-group-item list-group-item-action">
+            <li *ngFor="let h of history.items" class="list-group-item list-group-item-action" (click)="onJobClick(h)">
                 <div class="row">
                     <div class="col-1">{{h.jobId}}</div>
                     <div class="col">{{h.startTime}}</div>

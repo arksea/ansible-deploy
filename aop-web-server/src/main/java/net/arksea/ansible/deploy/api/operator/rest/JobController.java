@@ -3,7 +3,7 @@ package net.arksea.ansible.deploy.api.operator.rest;
 import akka.actor.ActorSystem;
 import akka.dispatch.OnComplete;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import static net.arksea.ansible.deploy.api.ResultCode.*;
 import net.arksea.ansible.deploy.api.auth.info.ClientInfo;
 import net.arksea.ansible.deploy.api.auth.service.ClientInfoService;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
@@ -78,5 +78,9 @@ public class JobController {
         return result;
     }
 
-
+    @RequiresPermissions("应用:查询")
+    @RequestMapping(path="{jobId}/historyLogs", method = RequestMethod.GET, produces = MEDIA_TYPE)
+    public RestResult<String> getHistoryJobLog(@PathVariable(name="jobId") final long jobId, final HttpServletRequest httpRequest) {
+        return new RestResult<>(SUCCEED, jobService.getJobHistoryLog(jobId), httpRequest);
+    }
 }

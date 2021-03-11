@@ -8,9 +8,7 @@ import akka.dispatch.Futures;
 import akka.dispatch.OnComplete;
 import akka.japi.Creator;
 import akka.japi.pf.ReceiveBuilder;
-import net.arksea.ansible.deploy.api.manage.entity.App;
-import net.arksea.ansible.deploy.api.manage.entity.AppOperation;
-import net.arksea.ansible.deploy.api.manage.entity.AppOperationType;
+import net.arksea.ansible.deploy.api.manage.entity.*;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import net.arksea.ansible.deploy.api.operator.entity.OperationToken;
 import org.apache.logging.log4j.LogManager;
@@ -176,12 +174,7 @@ public class JobPlayer extends AbstractActor {
         };
         String cmd = getJobPath() + operation.getCommand();
         Futures.future(() -> {
-            List<String> envList = new LinkedList<>();
-            System.getenv().forEach((k,v) -> {
-                envList.add(k+"="+v);
-            });
-            envList.add("APPTAG=" + app.getApptag());
-            JobCommandRunner.exec(cmd, listener, envList.toArray(new String[0]));
+            JobCommandRunner.exec(cmd, listener);
             return true;
         }, context().dispatcher()).onComplete(new OnComplete<Boolean>() {
             @Override

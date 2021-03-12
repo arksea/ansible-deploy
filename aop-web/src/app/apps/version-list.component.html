@@ -45,8 +45,10 @@
                             <li>部署包地址：{{v.repository}}</li>
                             <li>部署包标签：{{v.revision}}</li>
                             <li>运行参数: {{v.execOpt}}</li>
-                            <li>当前构建号: {{v.buildNo}}</li>
-                            <li>构建号更新时间: '{{v.buildNoUpdate | date: 'yyyy-MM-dd HH:mm:ss'}}'</li>
+                            <li>最新构建号: {{v.buildNo}}</li>
+                            <li>构建时间: '{{v.buildNoUpdate | date: 'yyyy-MM-dd HH:mm:ss'}}'</li>
+                            <li>最近用于部署的构建号: {{v.deployNo}}</li>
+                            <li>部署时间: '{{v.deployNoUpdate | date: 'yyyy-MM-dd HH:mm:ss'}}'</li>
                             <li *ngFor="let vv of v.vars">{{getVarDesc(app, vv)}}: {{vv.value}}</li>
                         </ul>
                     </div>

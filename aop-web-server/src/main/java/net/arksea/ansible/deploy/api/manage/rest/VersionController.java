@@ -88,7 +88,21 @@ public class VersionController {
                                 final HttpServletRequest httpRequest) {
         DecodedJWT jwt = tokenService.verify(token);
         if (jwt.getClaim("verId").asLong() == versionId && jwt.getClaim("buildNo").asLong() == buildNo) {
-            versionService.setVersionBuildNo(versionId, token, buildNo);
+            versionService.setVersionBuildNo(versionId, buildNo);
+            return new BaseResult(SUCCEED, httpRequest);
+        } else {
+            return new BaseResult(FAILED, httpRequest);
+        }
+    }
+    //-------------------------------------------------------------------------
+    @RequestMapping(path="{verId}/deploy", method = RequestMethod.PUT, produces = MEDIA_TYPE)
+    public BaseResult setVersionDeployedNo(@PathVariable("verId") long versionId,
+                                        @RequestParam("token") String token,
+                                        @RequestParam("buildno") long buildNo,
+                                        final HttpServletRequest httpRequest) {
+        DecodedJWT jwt = tokenService.verify(token);
+        if (jwt.getClaim("verId").asLong() == versionId && jwt.getClaim("buildNo").asLong() == buildNo) {
+            versionService.setVersionDeployedNo(versionId, buildNo);
             return new BaseResult(SUCCEED, httpRequest);
         } else {
             return new BaseResult(FAILED, httpRequest);

@@ -13,21 +13,25 @@ import java.util.Set;
 public class Version extends IdEntity {
     private String name;
 
-    private String repository;
+    private String repository; //安装包仓库（路径）
 
-    private String execOpt;
+    private String execOpt; //版本运行参数
 
-    private String revision;
+    private String revision; //安装包仓库Revision
 
-    private long buildNo;
+    private long buildNo; //最近的构建号
 
-    private Timestamp buildNoUpdate;
+    private Timestamp buildNoUpdate; //构建号更新时间
 
-    private Set<Host> targetHosts;
+    private Long deployNo; //最近用于部署的构建号
+
+    private Timestamp deployNoUpdate; //部署时间
+
+    private Set<Host> targetHosts; //部署操作主机
 
     private long appId;
 
-    private Set<VersionVariable> vars;// 变量
+    private Set<VersionVariable> vars;// 版本变量
 
     @NotBlank
     @Column(name = "repo_path", length = 1024, nullable = false)
@@ -74,6 +78,24 @@ public class Version extends IdEntity {
 
     public void setBuildNoUpdate(Timestamp buildNoUpdate) {
         this.buildNoUpdate = buildNoUpdate;
+    }
+
+    @Column
+    public Long getDeployNo() {
+        return deployNo;
+    }
+
+    public void setDeployNo(Long deployNo) {
+        this.deployNo = deployNo;
+    }
+
+    @Column
+    public Timestamp getDeployNoUpdate() {
+        return deployNoUpdate;
+    }
+
+    public void setDeployNoUpdate(Timestamp deployNoUpdate) {
+        this.deployNoUpdate = deployNoUpdate;
     }
 
     @Column(nullable = false)

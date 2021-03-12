@@ -88,7 +88,7 @@ export class AppComponent implements OnInit {
     }
 
     onOperationClick(ver: Version, op: AppOperation) {
-        let ref = this.modal.open(JobPlayDialog, {size: 'lg', scrollable: true})
+        let ref = this.modal.open(JobPlayDialog, {size: 'lg', scrollable: true, backdrop: 'static', keyboard: false})
         ref.componentInstance.operation = op
         ref.componentInstance.app = this.app
         ref.componentInstance.ver = ver
@@ -157,6 +157,15 @@ export class AppComponent implements OnInit {
             }
         }
         return false
+    }
+
+    getBuildNoAndDeployNo(v: Version): string {
+        if (v.buildNo == 0) {
+            return ''
+        } else {
+            return '(b'+  v.buildNo +'/b' + (v.deployNo?v.deployNo:'') +   ')'
+        }
+
     }
 
     get status(): AppOperation[] {

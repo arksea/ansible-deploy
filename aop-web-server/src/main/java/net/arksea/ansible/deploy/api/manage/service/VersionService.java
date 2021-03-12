@@ -126,7 +126,12 @@ public class VersionService {
     }
 
     @Transactional
-    public void setVersionBuildNo(long versionId, String token, long buildNo) {
+    public void setVersionBuildNo(long versionId, long buildNo) {
         versionDao.updateBuildNo(versionId, buildNo);
+    }
+
+    @Transactional
+    public void setVersionDeployedNo(long versionId, long buildNo) {
+        versionDao.updateDeployNo(versionId, buildNo);
     }
 }

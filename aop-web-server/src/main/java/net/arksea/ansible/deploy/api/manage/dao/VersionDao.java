@@ -22,4 +22,8 @@ public interface VersionDao extends CrudRepository<Version, Long> {
     @Modifying
     @Query("update Version v set v.buildNo = ?2, v.buildNoUpdate = now() where v.id = ?1")
     int updateBuildNo(long versionId, long buildNo);
+
+    @Modifying
+    @Query("update Version v set v.deployNo = ?2, v.deployNoUpdate = now() where v.id = ?1")
+    int updateDeployNo(long versionId, long buildNo);
 }

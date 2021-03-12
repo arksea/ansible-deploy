@@ -4,6 +4,8 @@ import net.arksea.ansible.deploy.api.manage.entity.*;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -154,6 +156,13 @@ public class JobContextCreator {
                         w1.append(var.getName()).append(": ").append(var.getValue()).append("\n");
                         w2.append("export ").append(var.getName()).append("=\"").append(var.getValue()).append("\"\n");
                     }
+
+                    Map<String,Object> claimMap = new HashMap<>();
+                    claimMap.put("verId", ver.getId());
+                    claimMap.put("buildNo", buildNo);
+                    String userToken = resources.tokenService.create(claimMap);
+                    w1.append("user_token: ").append(userToken).append("\n");
+                    w2.append("export user_token=\"").append(userToken).append("\"\n");
                 }
             }
             w1.append("job_id: ").append(job.getId().toString()).append("\n");

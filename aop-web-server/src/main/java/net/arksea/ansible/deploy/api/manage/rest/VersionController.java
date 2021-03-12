@@ -1,6 +1,9 @@
 package net.arksea.ansible.deploy.api.manage.rest;
 
 import static net.arksea.ansible.deploy.api.ResultCode.*;
+
+import com.auth0.jwt.interfaces.DecodedJWT;
+import net.arksea.ansible.deploy.api.auth.service.TokenService;
 import net.arksea.ansible.deploy.api.manage.entity.Version;
 import net.arksea.ansible.deploy.api.manage.service.VersionService;
 import net.arksea.restapi.BaseResult;
@@ -24,6 +27,8 @@ public class VersionController {
 
     @Autowired
     VersionService versionService;
+    @Autowired
+    TokenService tokenService;
     //-------------------------------------------------------------------------
     @RequiresPermissions("应用:修改")
     @RequestMapping(path="{verId}/hosts/{hostId}", method = RequestMethod.DELETE, produces = MEDIA_TYPE)
@@ -81,7 +86,12 @@ public class VersionController {
                                 @RequestParam("token") String token,
                                 @RequestParam("buildno") long buildNo,
                                 final HttpServletRequest httpRequest) {
-        versionService.setVersionBuildNo(versionId, token, buildNo);
-        return new BaseResult(SUCCEED, httpRequest);
+        DecodedJWT jwt = tokenService.verify(token);
+        if (jwt.getClaim("verId").asLong() == versionId && jwt.getClaim("buildNo").asLong() == buildNo) {
+            versionService.setVersionBuildNo(versionId, token, buildNo);
+            return new BaseResult(SUCCEED, httpRequest);
+        } else {
+            return new BaseResult(FAILED, httpRequest);
+        }
     }
 }

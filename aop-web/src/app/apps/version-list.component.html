@@ -25,10 +25,6 @@
                             <div class="mr-auto pt-2">
                                 <strong>版本: {{v.name}}</strong>
                             </div>
-                            <div class="pl-1">
-                                <button type="button" class="btn btn-outline-secondary btn-sm"
-                                    [disabled]="account.perm('应用:修改')" (click)="onAddHostBtnClick(v)">添加主机</button>
-                            </div>
                             <div class="pl-1" [title] = "v.targetHosts.length > 0 ? '请先删除此版本的所有目标主机' : ''">
                                 <button type="button" class="btn btn-outline-danger btn-sm"
                                     [disabled]="account.perm('应用:修改') || v.targetHosts.length > 0" 
@@ -53,20 +49,48 @@
                         </ul>
                     </div>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
+                        <li class="list-group-item table-header">
                             <div class="row">
-                                <div class="col-sm-2">部署主机IP</div>
-                                <div class="col">描述</div>
+                                <div class="col-sm-2"><strong>部署主机IP</strong></div>
+                                <div class="col"><strong>描述</strong></div>
+                                <div class="col-sm-2 text-right">
+                                    <button type="button" class="btn btn-outline-secondary btn-xs"
+                                        [disabled]="account.perm('应用:修改')" (click)="onAddHostBtnClick(v)">添加</button>
+                                </div>
                             </div>
                         </li>
                         <li *ngFor="let h of v.targetHosts" class="list-group-item">
                             <div class="row">
                                 <div class="col-sm-2">{{h.privateIp}}</div>
                                 <div class="col">{{h.description}}</div>
-                                <div class="col-sm-2 text-right" title="删除">
-                                    <a class="icon-btn text-danger" (click)="onDeleteHostBtnClick(h, v)">
-                                        <ng-container *ngTemplateOutlet="deleteIcon"></ng-container>
-                                    </a>
+                                <div class="col-sm-2 text-right">
+                                    <button type="button" class="btn btn-outline-danger btn-xs"
+                                        [disabled]="account.perm('应用:修改')" (click)="onDeleteHostBtnClick(h, v)">删除</button>
+
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item table-header">
+                            <div class="row">
+                                <div class="col-sm-2"><strong>触发器ID</strong></div>
+                                <div class="col-sm-2"><strong>过期时间</strong></div>
+                                <div class="col"><strong>描述</strong></div>
+                                <div class="col-sm-2 text-right">
+                                    <button type="button" class="btn btn-outline-secondary btn-xs"
+                                            [disabled]="account.perm('应用:修改')" (click)="onAddTriggerBtnClick(v)">添加</button>
+                                </div>
+                            </div>
+                        </li>
+                        <li *ngFor="let t of v.triggers" class="list-group-item">
+                            <div class="row">
+                                <div class="col-sm-2">{{t.id}}</div>
+                                <div class="col-sm-2">{{t.expiredTime | date: 'yyyy-MM-dd'}}</div>
+                                <div class="col">{{t.description}}</div>
+                                <div class="col-sm-2 text-right">
+                                    <button type="button" class="btn btn-outline-danger btn-xs mr-1"
+                                        [disabled]="account.perm('应用:修改')" (click)="onDeleteTriggerBtnClick(t, v)">删除</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-xs"
+                                        (click)="onEditTriggerBtnClick(t, v)">编辑</button>
                                 </div>
                             </div>
                         </li>
@@ -87,7 +111,16 @@
 
 <ng-template #deleteIcon>
     <svg width="1.2em" height="1.2em" viewBox="0 0 16 16" class="bi bi-trash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
     </svg>
 </ng-template>
+
+<ng-template #editIcon>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-journal-text" viewBox="0 0 16 16">
+        <path d="M5 10.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+        <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z"/>
+        <path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1z"/>
+    </svg>
+</ng-template>
+

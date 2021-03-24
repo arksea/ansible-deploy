@@ -4,6 +4,7 @@ import static net.arksea.ansible.deploy.api.ResultCode.*;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import net.arksea.ansible.deploy.api.auth.service.TokenService;
+import net.arksea.ansible.deploy.api.manage.entity.OperationTrigger;
 import net.arksea.ansible.deploy.api.manage.entity.Version;
 import net.arksea.ansible.deploy.api.manage.service.VersionService;
 import net.arksea.restapi.BaseResult;

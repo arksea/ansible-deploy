@@ -1,20 +1,22 @@
 import { Component, OnInit } from '@angular/core'
-import { FormGroup, FormControl, AbstractControl, Validators } from '@angular/forms'
+import { FormGroup } from '@angular/forms'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { AppsService } from './apps.service'
 import { MessageNotify } from '../utils/message-notify'
-import { App, Host, AppVariable } from '../app.entity'
+import { App, Host, AppVariable, OperationTrigger } from '../app.entity'
 import { AccountService } from '../account/account.service'
 import { Router, ActivatedRoute, ParamMap } from '@angular/router'
 import { AddHostDialog } from './add-host.dialog'
+import { EditTriggerDialog } from './edit-trigger.dialog'
 import { Version } from '../app.entity'
 import { ConfirmDialog } from '../utils/confirm.dialog'
 import { DeleteJobPlayDialog } from './job-play.dialog'
-import { PortSelectDialog } from './port-select.dialog'
+import { TriggerService } from './trigger.service'
 
 @Component({
     selector: 'version-list',
-    templateUrl: './version-list.component.html'
+    templateUrl: './version-list.component.html',
+    styles: ['.table-header { background-color: rgba(0, 0, 0, 0.03); }']
 })
 export class VersionListComponent implements OnInit {
 
@@ -24,6 +26,7 @@ export class VersionListComponent implements OnInit {
 
     constructor(private svc: AppsService,
                 public account: AccountService,
+                private triggerSvc: TriggerService,
                 protected alert: MessageNotify,
                 protected modal: NgbModal,
                 private router: Router,
@@ -61,6 +64,15 @@ export class VersionListComponent implements OnInit {
         } else {
             this.alert.warning("应用还未加入分组，不能配置部署主机")
         }
+    }
+
+    onAddTriggerBtnClick(version: Version) {
+        let ref = this.modal.open(EditTriggerDialog)
+        let trigger = new OperationTrigger()
+        trigger.versionId = version.id
+        trigger.createUser = this.account.loginUser
+        trigger.createTime = new Date().getTime()
+        ref.componentInstance.setParams(this.app.appType.id, trigger, version.triggers)
     }
 
     onEditBtnClick(version: Version) {
@@ -134,24 +146,30 @@ export class VersionListComponent implements OnInit {
             }
         })
     }
- 
-    public onSelectPortBtnClick(variable: AppVariable) {
-        let ref = this.modal.open(PortSelectDialog)
-        ref.componentInstance.variable = variable
+
+    public onDeleteTriggerBtnClick(trigger: OperationTrigger, version: Version) {
+        let ref = this.modal.open(ConfirmDialog)
+        ref.componentInstance.title = "确认要移除吗?"
+        ref.componentInstance.message = "从版本中移除触发器: "+trigger.id
         ref.result.then(result => {
-            if (result == 'ok') {
-                this.appForm.get('var_' + variable.name).setValue(variable.value)
-                this.portModifyed = true
+            if (result == "ok") {
+                this.triggerSvc.deleteTrigger(trigger.id).subscribe(success => {
+                    if (success) {
+                        version.triggers = version.triggers.filter((t,i,a) => t.id != trigger.id)
+                        this.alert.success("成功移除")
+                    }
+                })
             }
-        }, reason => {})
+        }, resaon => {})
+    }
+
+    public onEditTriggerBtnClick(trigger: OperationTrigger, version: Version) {
+        let ref = this.modal.open(EditTriggerDialog)
+        ref.componentInstance.setParams(this.app.appType.id, trigger, version.triggers)
     }
 
     getVarDesc(app: App, variable: AppVariable): string {
         let def = this.svc.getVersionVarDefine(app.appType.id, variable.name)
         return def ? def.formLabel : ''
-    }
-
-    public cancel() {
-        this.router.navigate(['/apps'])
     }
 }

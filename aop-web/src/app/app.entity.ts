@@ -50,6 +50,17 @@ export class VersionVariable {
     isPort: boolean = false// 是否端口值，用于主机范围的唯一性判断
 }
 
+export class OperationTrigger {
+    id: number|null = null
+    versionId: number
+    operationId: number
+    token: string = '';
+    description: string = ''
+    createUser: string = ''
+    createTime: number = 0
+    expiredTime: number = 0
+}
+
 export class AppOperation {
     id: number|null = null
     appType: AppType = new AppType()
@@ -90,6 +101,7 @@ export class Version {
     revision: string = 'HEAD'
     vars: Array<VersionVariable> = []// 变量
     targetHosts: Array<Host> = []    // 部署目标主机
+    triggers: Array<OperationTrigger> = [] //操作触发器
 }
 
 export class HostStatus {
@@ -147,6 +159,7 @@ export class OperationJob {
     appId: number|null = null
     operatorId: number|null = null
     operationId: number|null = null
+    triggerId: number|number = null
     execHost: string = ''
     startTime: string|null = null
     endTime: string|null = null
@@ -157,6 +170,7 @@ export class OperationJobInfo {
     jobId: number|null = null
     operation: string = ''
     operator: string = ''
+    triggerId: number|null = null
     version: string = ''
     startTime: string = ''
     endTime: string = ''

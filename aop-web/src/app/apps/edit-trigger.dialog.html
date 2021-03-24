@@ -1,0 +1,43 @@
+<form (submit)="save($event)" [formGroup]="form">
+    <div class="modal-header">
+        <h3 class="modal-title" id="modal-title"><strong>{{title}}</strong></h3>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="op">操作
+                <span class="text-danger" *ngIf="operationId.errors?.required">*</span>
+            </label>
+            <select id="op" name="op" class="form-control" formControlName="operationId">
+                <option *ngFor="let p of operations" [value]="p.id">{{p.name}}</option>
+            </select>
+        </div>
+        <div class="form-group" [hidden]="!editing">
+            <label for="name">创建者</label>
+            <input id="name" class="form-control" [value]="trigger.createUser" disabled=true/>
+        </div>
+        <div class="form-group" [hidden]="!editing">
+            <label for="name">创建时间</label>
+            <input id="name" class="form-control" [value]="trigger.createTime | date: 'yyyy-MM-dd HH:mm'" disabled=true/>
+        </div>
+        <div class="form-group" [hidden]="trigger.token==''">
+            <label for="name">令牌</label>
+            <input id="name" class="form-control" [value]="trigger.token" disabled=true/>
+        </div>
+        <div class="form-group">
+            <label for="name">过期时间(天)
+                <span class="text-danger" *ngIf="expireDays.errors?.required">*</span>
+            </label>
+            <input id="name" class="form-control" formControlName="expireDays"/>
+        </div>
+        <div class="form-group">
+            <label for="desc">描述
+                <span class="text-danger" *ngIf="desc.errors?.maxlength">(超过允许长度)</span>
+            </label>
+            <textarea id="group-desc" class="form-control" rows="3" formControlName="description"></textarea>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')">取消</button>
+        <button type="submit" class="btn btn-danger" [disabled]="!form.valid || form.pristine || account.perm('应用:修改')">确认</button>
+    </div>
+</form>

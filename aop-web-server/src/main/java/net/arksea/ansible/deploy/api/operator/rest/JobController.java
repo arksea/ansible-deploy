@@ -50,7 +50,7 @@ public class JobController {
     public RestResult<OperationJob> startJob(@RequestBody final StartOpeartionJob body,
                                               final HttpServletRequest httpRequest) {
         ClientInfo info = clientInfoService.getClientInfo(httpRequest);
-        OperationJob job = jobService.create(info.userId, body.appId, body.versionId, body.operationId);
+        OperationJob job = jobService.create(info.userId, body.appId, body.versionId, body.operationId, null);
         jobService.startJob(job, body.hosts);
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         return new RestResult<>(0, job, reqid);

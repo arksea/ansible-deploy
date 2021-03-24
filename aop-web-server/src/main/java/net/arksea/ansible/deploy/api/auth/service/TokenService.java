@@ -87,7 +87,7 @@ public class TokenService {
     public static void main(String[] args) throws Exception {
         Configurator.initialize("", "./src/test/resources/log4j2-test.xml");
         TokenService svc = new TokenService();
-        svc.expiresSeconds = 60;
+        svc.expiresSeconds = 600;
         svc.tokenSecret = "123456";
         svc.init();
         Map<String,Object> claimMap = new HashMap<>();

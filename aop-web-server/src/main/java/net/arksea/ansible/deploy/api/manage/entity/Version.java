@@ -33,6 +33,8 @@ public class Version extends IdEntity {
 
     private Set<VersionVariable> vars;// 版本变量
 
+    private Set<OperationTrigger> triggers;
+
     @NotBlank
     @Column(name = "repo_path", length = 1024, nullable = false)
     public String getRepository() {
@@ -138,5 +140,16 @@ public class Version extends IdEntity {
 
     public void setVars(final Set<VersionVariable> vars) {
         this.vars = vars;
+    }
+
+    @OneToMany(mappedBy = "versionId", fetch = FetchType.EAGER, orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE) //在数据库层面进行级联删除操作（生成库表时定义的外键会加 ON DELETE CASCADE修饰词）
+    @OrderBy("id")
+    public Set<OperationTrigger> getTriggers() {
+        return triggers;
+    }
+
+    public void setTriggers(Set<OperationTrigger> triggers) {
+        this.triggers = triggers;
     }
 }

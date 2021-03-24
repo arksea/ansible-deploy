@@ -258,7 +258,7 @@ public class AppService {
             }
             String operation = op == null ? "/" : op.getName();
             String operator = user == null ? "/" : user.getName();
-            infos.add(new GetOperationJobHistory.OperationJobInfo(j.getId(), operation, operator, version, j.getStartTime(), j.getEndTime()));
+            infos.add(new GetOperationJobHistory.OperationJobInfo(j.getId(), operation, operator, j.getTriggerId(), version, j.getStartTime(), j.getEndTime()));
         }
         return infos;
     }

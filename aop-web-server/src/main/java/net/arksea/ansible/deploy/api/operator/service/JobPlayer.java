@@ -40,6 +40,8 @@ public class JobPlayer extends AbstractActor {
     private final static long JOB_PLAY_TIMEOUT = 300;
     private FileWriter jobLogFileWriter;
     private boolean noMoreLogs = false;
+    private IJobEventListener listener;
+    private JobCommandRunner jobCommandRunner;
 
     private JobPlayer(OperationJob job, Set<Long>hosts, JobResources beans) {
         this.job = job;
@@ -47,6 +49,20 @@ public class JobPlayer extends AbstractActor {
         this.beans = beans;
         this.operation = beans.appOperationDao.findOne(job.getOperationId());
         this.app = beans.appDao.findOne(job.getAppId());
+        String cmd = getJobPath() + operation.getCommand();
+        ActorRef self = self();
+        this.listener = new IJobEventListener() {
+            @Override
+            public void log(String str) {
+                self.tell(new OfferLog(str), ActorRef.noSender());
+            }
+
+            @Override
+            public void onFinished() {
+                delayStopJob();
+            }
+        };
+        jobCommandRunner = new JobCommandRunner(cmd, listener);
     }
 
     static Props props(OperationJob job, Set<Long>hosts, JobResources state) {
@@ -90,7 +106,7 @@ public class JobPlayer extends AbstractActor {
         }
     }
     private static class NoMoreLogs {}
-    private static class StopJob {}
+    public static class StopJob {}
     private static class StartJob{}
 
     public void preStart() {
@@ -160,21 +176,8 @@ public class JobPlayer extends AbstractActor {
     }
 
     private void handleStartJob(StartJob msg) {
-        ActorRef self = self();
-        IJobEventListener listener = new IJobEventListener() {
-            @Override
-            public void log(String str) {
-                self.tell(new OfferLog(str), ActorRef.noSender());
-            }
-
-            @Override
-            public void onFinished() {
-                delayStopJob();
-            }
-        };
-        String cmd = getJobPath() + operation.getCommand();
         Futures.future(() -> {
-            JobCommandRunner.exec(cmd, listener);
+            jobCommandRunner.exec();
             return true;
         }, context().dispatcher()).onComplete(new OnComplete<Boolean>() {
             @Override
@@ -224,6 +227,7 @@ public class JobPlayer extends AbstractActor {
     }
 
     private void handleStopJob(StopJob msg) {
+        jobCommandRunner.destroy();
         context().stop(self());
     }
     private void handleOfferLog(OfferLog msg) {

@@ -6,13 +6,25 @@ import java.io.*;
  * Create by xiaohaixing on 2020/10/12
  */
 public class JobCommandRunner {
+    private Process process;
+    private final String cmd;
+    private final IJobEventListener jobLogger;
+    private final String[] envp;
 
-    protected static void exec(final String cmd, IJobEventListener jobLogger) throws Exception {
-        exec(cmd, jobLogger, null);
+    public JobCommandRunner(final String cmd, IJobEventListener jobLogger) {
+        this.cmd = cmd;
+        this.jobLogger = jobLogger;
+        this.envp = null;
     }
 
-    protected static void exec(final String cmd, IJobEventListener jobLogger, String[] envp) throws Exception {
-        final Process process = Runtime.getRuntime().exec(cmd, envp);
+    public JobCommandRunner(final String cmd, IJobEventListener jobLogger, String[] envp) {
+        this.cmd = cmd;
+        this.jobLogger = jobLogger;
+        this.envp = envp;
+    }
+
+    public void exec() throws Exception {
+        this.process = Runtime.getRuntime().exec(cmd, envp);
         try (BufferedReader inReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
              BufferedReader errReader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
             jobLogger.log(cmd+"\n");
@@ -31,6 +43,12 @@ public class JobCommandRunner {
             throw ex;
         } finally {
             jobLogger.onFinished();
+            destroy();
+        }
+    }
+
+    public void destroy() {
+        if (process != null) {
             process.destroy();
         }
     }

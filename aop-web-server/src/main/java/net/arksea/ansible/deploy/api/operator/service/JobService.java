@@ -46,7 +46,7 @@ public class JobService {
     JobResources jobResources;
 
     @Transactional
-    public OperationJob create(long userId, long appId, Long versionId, long operationId) {
+    public OperationJob create(long userId, long appId, Long versionId, long operationId, Long triggerId) {
         OperationToken t = operationTokenDao.findByAppId(appId);
         if (t == null) {
             t = new OperationToken();
@@ -58,6 +58,7 @@ public class JobService {
         job.setAppId(appId);
         job.setVersionId(versionId);
         job.setOperatorId(userId);
+        job.setTriggerId(triggerId);
         job.setOperationId(operationId);
         job.setExecHost(getLocalHost());
         job.setStartTime(new Timestamp(System.currentTimeMillis()));

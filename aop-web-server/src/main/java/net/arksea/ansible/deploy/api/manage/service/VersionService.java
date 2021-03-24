@@ -1,10 +1,7 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
 import net.arksea.ansible.deploy.api.ServiceException;
-import net.arksea.ansible.deploy.api.manage.dao.AppDao;
-import net.arksea.ansible.deploy.api.manage.dao.VersionDao;
-import net.arksea.ansible.deploy.api.manage.dao.VersionVarDao;
-import net.arksea.ansible.deploy.api.manage.dao.VersionVarDefineDao;
+import net.arksea.ansible.deploy.api.manage.dao.*;
 import net.arksea.ansible.deploy.api.manage.entity.*;
 import net.arksea.restapi.RestException;
 import org.springframework.beans.factory.annotation.Autowired;

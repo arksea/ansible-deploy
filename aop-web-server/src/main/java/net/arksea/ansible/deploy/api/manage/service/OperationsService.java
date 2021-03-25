@@ -22,6 +22,7 @@ public class OperationsService {
     @Transactional
     public AppOperation saveOperation(AppOperation operation) {
         if (operation.getId() == null && operation.getCodes() != null && operation.getCodes().size() > 0) {
+            //新建操作因为涉及关联的code表，需要先保存operation对象以获得id，之后再进行级联保存codes
             Set<AppOperationCode> codes = operation.getCodes();
             operation.setCodes(null);
             AppOperation saved = operationDao.save(operation);

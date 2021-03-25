@@ -1,8 +1,10 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
 import net.arksea.ansible.deploy.api.manage.dao.AppVarDefineDao;
+import net.arksea.ansible.deploy.api.manage.dao.VersionVarDefineDao;
 import net.arksea.ansible.deploy.api.manage.entity.AppType;
 import net.arksea.ansible.deploy.api.manage.entity.AppVarDefine;
+import net.arksea.ansible.deploy.api.manage.entity.VersionVarDefine;
 import net.arksea.restapi.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,6 +23,8 @@ public class AppTypesService {
     AppTypeDao appTypeDao;
     @Autowired
     AppVarDefineDao appVarDefineDao;
+    @Autowired
+    VersionVarDefineDao verVarDefineDao;
 
     public AppType findOne(long id) {
         try {
@@ -50,16 +54,20 @@ public class AppTypesService {
     @Transactional
     public AppType saveAppType(AppType type) {
         try {
-            Set<AppVarDefine> oldSet = type.getAppVarDefines();
-            if (type.getId() == null && oldSet.size() > 0) {
+            Set<AppVarDefine> newAppVars = type.getAppVarDefines();
+            Set<VersionVarDefine> newVerVars = type.getVersionVarDefines();
+            if (type.getId() == null) {
                 type.setAppVarDefines(new HashSet<>());
+                type.setVersionVarDefines(new HashSet<>());
                 AppType saved = appTypeDao.save(type);
-                for (AppVarDefine d: oldSet) {
-                    d.setAppTypeId(saved.getId());
-                }
-                Set<AppVarDefine> newSet = new HashSet<>();
-                appVarDefineDao.save(oldSet).forEach(newSet::add);
-                saved.setAppVarDefines(newSet);
+                newAppVars.forEach(v -> v.setAppTypeId(saved.getId()));
+                newVerVars.forEach(v -> v.setAppTypeId(saved.getId()));
+                Set<AppVarDefine> savedAppVars = new HashSet<>();
+                Set<VersionVarDefine> savedVerVars = new HashSet<>();
+                appVarDefineDao.save(newAppVars).forEach(savedAppVars::add);
+                verVarDefineDao.save(newVerVars).forEach(savedVerVars::add);
+                saved.setAppVarDefines(savedAppVars);
+                saved.setVersionVarDefines(savedVerVars);
                 return saved;
             } else {
                 return appTypeDao.save(type);
@@ -67,6 +75,10 @@ public class AppTypesService {
         } catch (Exception ex) {
             throw new RestException("保存应用类型失败", ex);
         }
+    }
+
+    private void updateVariables() {
+
     }
 
 }

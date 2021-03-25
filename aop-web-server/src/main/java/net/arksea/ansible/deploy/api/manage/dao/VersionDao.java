@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
+
 /**
  *
  * @author xiaohaixing
@@ -26,4 +28,9 @@ public interface VersionDao extends CrudRepository<Version, Long> {
     @Modifying
     @Query("update Version v set v.deployNo = ?2, v.deployNoUpdate = now() where v.id = ?1")
     int updateDeployNo(long versionId, long buildNo);
+
+    @Query(nativeQuery = true, value="select v.* from dp2_app a " +
+           " inner join dp2_app_version v on a.id = v.app_id and a.app_type_id = ?1")
+    List<Version> findByAppType(long appTypeId);
+
 }

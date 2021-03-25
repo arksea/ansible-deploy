@@ -320,4 +320,26 @@ public class PortsService {
             }
         }
     }
+
+    @Transactional
+    public <T extends Variable, U extends VarDefine>
+    void initPortVariable(long appId, T var,U def) {
+        if (def.getPortType() != null) {
+            PortType portType = def.getPortType();
+            List<Port> free = portDao.getOneFreeByTypeId(portType.getId());
+            if (free.size() == 0) {
+                throw new ServiceException("'"+portType.getName()+"'端口可用数不够，请联系管理员");
+            }
+            Port p = free.get(0);
+            int n = portDao.holdPortByValue(p.getValue(), appId);
+            if (n == 0) {
+                throw new ServiceException("端口 "+p.getValue()+" 已被占用，请稍后重试");
+            } else {
+                var.setIsPort(true);
+                var.setName(def.getName());
+                var.setValue(Integer.toString(p.getValue()));
+                portTypeDao.incRestCount(-1, portType.getId());
+            }
+        }
+    }
 }

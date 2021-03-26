@@ -1,5 +1,6 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
+import net.arksea.ansible.deploy.api.ServiceException;
 import net.arksea.ansible.deploy.api.auth.info.ClientInfo;
 import net.arksea.ansible.deploy.api.manage.dao.OperationTriggerDao;
 import net.arksea.ansible.deploy.api.manage.dao.VersionDao;
@@ -7,6 +8,8 @@ import net.arksea.ansible.deploy.api.manage.entity.OperationTrigger;
 import net.arksea.ansible.deploy.api.manage.entity.Version;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import net.arksea.ansible.deploy.api.operator.service.JobService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +22,7 @@ import java.util.*;
  */
 @Component
 public class TriggerService {
+    private static final Logger logger = LogManager.getLogger(TriggerService.class);
     @Autowired
     OperationTriggerDao operationTriggerDao;
     @Autowired
@@ -41,12 +45,15 @@ public class TriggerService {
         operationTriggerDao.delete(triggerId);
     }
 
-    public long onTrigger(String token) {
-        List<OperationTrigger> list = operationTriggerDao.findByToken(token);
-        if (list.size() > 0) {
-            OperationTrigger trigger = list.get(0);
+    public long onTrigger(String projectTag, String token) {
+        OperationTrigger trigger = operationTriggerDao.findByProjectTag(projectTag);
+        if (trigger == null) {
+            throw new ServiceException("Not found the trigger");
+        } else if (trigger.getToken().equals(token)) {
             Version ver = versionDao.findOne(trigger.getVersionId());
-            if (ver != null) {
+            if (ver == null) {
+                throw new ServiceException("Not fond the trigger's version: " + trigger.getId());
+            } else {
                 OperationJob job = jobService.create(trigger.getCreateUserId(), ver.getAppId(),
                         trigger.getVersionId(), trigger.getOperationId(), trigger.getId());
                 Set<Long> hosts = new HashSet<>();
@@ -54,7 +61,8 @@ public class TriggerService {
                 jobService.startJob(job, hosts);
                 return job.getId();
             }
+        } else {
+            throw new ServiceException("Invalid token");
         }
-        return -1;
     }
 }

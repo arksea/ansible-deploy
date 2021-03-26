@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 /**
+ * 系统在收到触发器事件时，用项目标识projectTag查询Token与请求的Token进行校验，通过则执行
  * Create by xiaohaixing on 2021/3/15
  */
 @Entity
@@ -13,6 +14,7 @@ import java.sql.Timestamp;
 public class OperationTrigger extends IdEntity {
     private Long versionId;
     private Long operationId;
+    private String projectTag; //用于唯一标识项目
     private String token;
     private String description;
     private Long createUserId;
@@ -54,6 +56,15 @@ public class OperationTrigger extends IdEntity {
 
     public void setOperationId(Long operationId) {
         this.operationId = operationId;
+    }
+
+    @Column(nullable = false, unique = true)
+    public String getProjectTag() {
+        return projectTag;
+    }
+
+    public void setProjectTag(String projectTag) {
+        this.projectTag = projectTag;
     }
 
     @Column(nullable = false, unique = true, length = 64)

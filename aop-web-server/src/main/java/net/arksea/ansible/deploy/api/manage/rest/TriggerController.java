@@ -6,6 +6,8 @@ import net.arksea.ansible.deploy.api.manage.entity.OperationTrigger;
 import net.arksea.ansible.deploy.api.manage.service.TriggerService;
 import net.arksea.restapi.BaseResult;
 import net.arksea.restapi.RestResult;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,7 @@ import static net.arksea.ansible.deploy.api.ResultCode.SUCCEED;
 @RequestMapping(value = "/api/triggers")
 public class TriggerController {
     private static final String MEDIA_TYPE = "application/json; charset=UTF-8";
+    private static Logger logger = LogManager.getLogger(TriggerController.class);
 
     @Autowired
     TriggerService triggerService;
@@ -48,10 +51,13 @@ public class TriggerController {
     }
 
     //-------------------------------------------------------------------------
-    @RequestMapping(path="job", method = RequestMethod.POST, produces = MEDIA_TYPE)
-    public RestResult<Long> onTrigger(@RequestBody final String token,
+    @RequestMapping(path="jobs", method = RequestMethod.POST, produces = MEDIA_TYPE)
+    public RestResult<Long> onTrigger(@RequestParam("token") final String token,
+                                      @RequestBody final String projectTag,
                                       final HttpServletRequest httpRequest) {
-        long jobId = triggerService.onTrigger(token);
+        logger.debug("token: {}", token);
+        logger.debug("projectTag: {}", projectTag);
+        long jobId = triggerService.onTrigger(projectTag, token);
         return new RestResult<>(SUCCEED, jobId, httpRequest);
     }
 

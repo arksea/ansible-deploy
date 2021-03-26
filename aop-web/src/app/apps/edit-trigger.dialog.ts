@@ -30,11 +30,12 @@ export class EditTriggerDialog {
         this.triggers = triggers
         this.editing = trigger.id ? true : false
         this.title = this.editing ? '修改触发器信息' : '新增触发器'
-        let days =  trigger.expiredTime == 0 ? 1000 : (trigger.expiredTime - now())/1000/3600/24
+        let days =  trigger.expiredTime == 0 ? 10000 : (trigger.expiredTime - now())/1000/3600/24
         this.form = new FormGroup({
             operationId: new FormControl({value:trigger.operationId, disabled: this.editing}, [Validators.required]),
-            description: new FormControl(trigger.description,[Validators.maxLength(255)]),
-            expireDays: new FormControl(days.toFixed(), [Validators.required])
+            description: new FormControl(trigger.description,[Validators.maxLength(128)]),
+            expireDays: new FormControl(days.toFixed(), [Validators.required]),
+            projectTag: new FormControl(trigger.projectTag, [Validators.maxLength(128)])
         })
         this.appSvc.getOperationsByAppTypeId(this.appTypeId).subscribe(ret => {
             if (ret.code == 0) {
@@ -49,6 +50,7 @@ export class EditTriggerDialog {
         this.trigger.description = this.desc.value
         this.trigger.expiredTime = now() + this.expireDays.value*24*3600*1000;
         this.trigger.operationId = this.operationId.value
+        this.trigger.projectTag = this.projectTag.value
         this.svc.saveTrigger(this.trigger).subscribe(ret => {
             if (ret.code == 0) {
                 if (!this.editing) {
@@ -71,4 +73,7 @@ export class EditTriggerDialog {
         return this.form.get('expireDays')
     }
 
+    get projectTag(): AbstractControl {
+        return this.form.get('projectTag')
+    }
 }

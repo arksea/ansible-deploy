@@ -56,7 +56,8 @@ export class OperationTrigger {
     id: number|null = null
     versionId: number
     operationId: number
-    token: string = '';
+    projectTag: string = ''
+    token: string = ''
     description: string = ''
     createUser: string = ''
     createTime: number = 0

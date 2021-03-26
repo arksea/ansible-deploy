@@ -4,19 +4,29 @@
     </div>
     <div class="modal-body">
         <div class="form-group">
-            <label for="var-name">变量名</label>
+            <label for="var-name">变量名
+                <span class="text-danger" *ngIf="name.errors?.required">*</span>
+                <span class="text-danger" *ngIf="name.errors?.maxlength">(超过允许长度)</span>
+            </label>
             <input type="text" class="form-control" id="var-name" formControlName="name">
         </div>
         <div class="form-group">
-            <label for="var-form-label">表单输入框标签</label>
+            <label for="var-form-label">表单输入框标签
+                <span class="text-danger" *ngIf="formLabel.errors?.required">*</span>
+                <span class="text-danger" *ngIf="formLabel.errors?.maxlength">(超过允许长度)</span>
+            </label>
             <input type="text" class="form-control" id="var-form-label" formControlName="formLabel">
         </div>
         <div class="form-group">
-            <label for="var-input-addon">表单输入框前缀</label>
+            <label for="var-input-addon">表单输入框前缀
+                <span class="text-danger" *ngIf="inputAddon.errors?.maxlength">(超过允许长度)</span>
+            </label>
             <input type="text" class="form-control" id="var-input-addon" formControlName="inputAddon">
         </div>
         <div class="form-group">
-            <label for="var-default-value">变量默认值</label>
+            <label for="var-default-value">变量默认值
+                <span class="text-danger" *ngIf="defaultValue.errors?.maxlength">(超过允许长度)</span>
+            </label>
             <input type="text" class="form-control" id="var-default-value" formControlName="defaultValue">
         </div>
         <div class="form-group">

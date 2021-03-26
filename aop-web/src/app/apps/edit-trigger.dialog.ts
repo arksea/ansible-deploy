@@ -35,7 +35,7 @@ export class EditTriggerDialog {
             operationId: new FormControl({value:trigger.operationId, disabled: this.editing}, [Validators.required]),
             description: new FormControl(trigger.description,[Validators.maxLength(128)]),
             expireDays: new FormControl(days.toFixed(), [Validators.required]),
-            projectTag: new FormControl(trigger.projectTag, [Validators.maxLength(128)])
+            projectTag: new FormControl(trigger.projectTag, [Validators.required, Validators.maxLength(128)])
         })
         this.appSvc.getOperationsByAppTypeId(this.appTypeId).subscribe(ret => {
             if (ret.code == 0) {

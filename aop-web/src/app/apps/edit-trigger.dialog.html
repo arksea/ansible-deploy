@@ -26,7 +26,7 @@
         <div class="form-group">
             <label for="trigger-project-tag">项目标识
                 <span class="text-danger" *ngIf="projectTag.errors?.required">*</span>
-                <span class="text-danger" *ngIf="projectTag.errors?.minlength || projectTag.errors?.maxlength">(长度7至36)</span>
+                <span class="text-danger" *ngIf="projectTag.errors?.maxlength">(超过允许长度)</span>
             </label>
             <input id="trigger-project-tag" class="form-control" formControlName="projectTag"/>
         </div>

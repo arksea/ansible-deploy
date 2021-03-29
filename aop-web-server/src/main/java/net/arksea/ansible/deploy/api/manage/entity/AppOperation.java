@@ -1,5 +1,8 @@
 package net.arksea.ansible.deploy.api.manage.entity;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import java.util.Set;
 
@@ -55,6 +58,7 @@ public class AppOperation extends IdEntity {
     }
 
     @OneToMany(mappedBy = "operationId", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @Fetch(FetchMode.SELECT)
     public Set<AppOperationCode> getCodes() {
         return codes;
     }

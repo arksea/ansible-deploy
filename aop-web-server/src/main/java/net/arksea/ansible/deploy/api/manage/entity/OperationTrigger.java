@@ -67,7 +67,7 @@ public class OperationTrigger extends IdEntity {
         this.projectTag = projectTag;
     }
 
-    @Column(nullable = false, unique = true, length = 64)
+    @Column(nullable = false, length = 64)
     public String getToken() {
         return token;
     }

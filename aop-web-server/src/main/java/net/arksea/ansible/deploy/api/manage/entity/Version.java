@@ -1,5 +1,7 @@
 package net.arksea.ansible.deploy.api.manage.entity;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.NotBlank;
@@ -110,6 +112,7 @@ public class Version extends IdEntity {
     }
 
     @ManyToMany(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SELECT)
     @JoinTable(name = "dp2_version_hosts",
             joinColumns = @JoinColumn(name = "version_id"),
             inverseJoinColumns = @JoinColumn(name = "host_id"))
@@ -132,6 +135,7 @@ public class Version extends IdEntity {
     }
 
     @OneToMany(mappedBy = "versionId", fetch = FetchType.EAGER, orphanRemoval = true)
+    @Fetch(FetchMode.SELECT)
     @OnDelete(action = OnDeleteAction.CASCADE) //在数据库层面进行级联删除操作（生成库表时定义的外键会加 ON DELETE CASCADE修饰词）
     @OrderBy("id")
     public Set<VersionVariable> getVars() {
@@ -143,6 +147,7 @@ public class Version extends IdEntity {
     }
 
     @OneToMany(mappedBy = "versionId", fetch = FetchType.EAGER, orphanRemoval = true)
+    @Fetch(FetchMode.SELECT)
     @OnDelete(action = OnDeleteAction.CASCADE) //在数据库层面进行级联删除操作（生成库表时定义的外键会加 ON DELETE CASCADE修饰词）
     @OrderBy("id")
     public Set<OperationTrigger> getTriggers() {

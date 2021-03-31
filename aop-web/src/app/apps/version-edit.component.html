@@ -16,15 +16,14 @@
                     <input type="text" class="form-control" id="ver-name" formControlName="name">
                 </div>
                 <div class="col-lg-6 col-md-6 form-group mb-4">
-                    <label for="ver-repository">部署分支</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="ver-repository" formControlName="repository"
-                            placeholder="部署包所在分支相对路径">
-                    </div>
+                    <label for="ver-repository">部署包地址</label>
+                    <input type="text" class="form-control" id="ver-repository" formControlName="repository"
+                        placeholder="部署包所在仓库分支，或者Docker映像">
                 </div>
                 <div class="col-lg-6 col-md-6 form-group mb-4">
-                    <label for="ver-revision">Revision</label>
-                    <input type="text" class="form-control" id="ver-revision" formControlName="revision">
+                    <label for="ver-revision">部署包标签</label>
+                    <input type="text" class="form-control" id="ver-revision" formControlName="revision"
+                        placeholder="分支Revision，或者Docker映像Tag">
                 </div>
                 <div class="col-lg-6 col-md-6 form-group mb-4">
                     <label for="execOpt">运行参数</label>

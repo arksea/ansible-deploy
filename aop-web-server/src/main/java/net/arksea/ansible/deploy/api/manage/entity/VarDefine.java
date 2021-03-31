@@ -68,4 +68,18 @@ public class VarDefine extends IdEntity {
     public void setPortType(PortType portType) {
         this.portType = portType;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        } else if (this.getId() == null) {
+            return false;
+        } else if (o instanceof VarDefine) {
+            VarDefine def = (VarDefine) o;
+            return this.getId().equals(def.getId());
+        } else {
+            return false;
+        }
+    }
 }

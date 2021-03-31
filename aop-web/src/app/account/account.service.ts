@@ -114,9 +114,9 @@ export class AccountService {
         localStorage.setItem('login_user', '')
         const exp: Date = new Date()
         exp.setTime(exp.getTime() - 24 * 60 * 60_000)
-        const cookie = 'rememberMe=;path=/;expires=' + exp.toUTCString()
+        const cookie = 'rememberMe=;path=/;expires=' + exp.toUTCString() + ';SameSite=lax'
         document.cookie = cookie
-        const cookie1 = 'JSESSIONID=;path=/;expires=' + exp.toUTCString()
+        const cookie1 = 'JSESSIONID=;path=/;expires=' + exp.toUTCString() + ';SameSite=lax'
         document.cookie = cookie1
         this.httpLogout().subscribe(() => { })
     }

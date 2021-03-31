@@ -3,12 +3,13 @@ import { FormGroup, FormControl, Validators } from '@angular/forms'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { OperationsService } from './operations.service'
 import { MessageNotify } from '../utils/message-notify'
-import { AppOperation, AppOperationCode, AppType } from '../app.entity'
+import { AppOperation, AppOperationCode, OperationVarDefine } from '../app.entity'
 import { AccountService } from '../account/account.service'
 import { Router, ActivatedRoute, ParamMap } from '@angular/router'
 import { ConfirmDialog } from '../utils/confirm.dialog'
 import { NewCodeFileDialog } from './new-code-file.dialog'
 import { AppTypesService } from '../app-types/app-types.service'
+import { NewOperationVarDefineDialog } from './new-operation-var-define.dialog'
 
 @Component({
     selector: 'operation-edit',
@@ -19,6 +20,7 @@ export class OperationEditComponent implements OnInit {
     public operation: AppOperation = new AppOperation()
     public editForm: FormGroup
     public isNewAction: boolean
+    public defineModified: boolean = false
     public activeCode: AppOperationCode = new AppOperationCode()
 
     constructor(public svc: OperationsService,
@@ -143,6 +145,40 @@ export class OperationEditComponent implements OnInit {
                 this.setActiveCode(new AppOperationCode())
             }
         }
+    }
+
+    newVarDefine() {
+        let ref = this.modal.open(NewOperationVarDefineDialog)
+        let def = new OperationVarDefine()
+        def.operationId = this.operation.id
+        ref.componentInstance.versionVarDefine = def
+        ref.result.then(ret => {
+            if (ret == 'ok') {
+                this.operation.varDefines.push(def)
+                this.defineModified = true
+            }
+        }, reason => {})
+    }
+
+    editVarDefine(def: OperationVarDefine) {
+        let ref = this.modal.open(NewOperationVarDefineDialog)
+        ref.componentInstance.versionVarDefine = def
+        ref.result.then(ret => {
+            if (ret == 'ok') {
+                this.defineModified = true
+            }
+        }, reason => {})
+    }
+
+    delVarDefine(def: OperationVarDefine) {
+        let list = []
+        for (let d of this.operation.varDefines) {
+            if (d.name != def.name) {
+                list.push(d)
+            }
+        }
+        this.operation.varDefines = list
+        this.defineModified = true
     }
 
     isActiveCode(code: AppOperationCode): boolean {

@@ -1,5 +1,8 @@
 package net.arksea.ansible.deploy.api.manage.entity;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import java.util.Set;
 
@@ -33,6 +36,7 @@ public class AppType extends IdEntity {
     }
 
     @OneToMany(mappedBy = "appTypeId", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(FetchMode.SELECT)
     public Set<AppVarDefine> getAppVarDefines() {
         return appVarDefines;
     }
@@ -42,6 +46,7 @@ public class AppType extends IdEntity {
     }
 
     @OneToMany(mappedBy = "appTypeId", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(FetchMode.SELECT)
     public Set<VersionVarDefine> getVersionVarDefines() {
         return versionVarDefines;
     }

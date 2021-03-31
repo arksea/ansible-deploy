@@ -1,10 +1,7 @@
 package net.arksea.ansible.deploy.api.manage.service;
 
 import net.arksea.ansible.deploy.api.ServiceException;
-import net.arksea.ansible.deploy.api.manage.dao.AppDao;
-import net.arksea.ansible.deploy.api.manage.dao.VersionDao;
-import net.arksea.ansible.deploy.api.manage.dao.VersionVarDao;
-import net.arksea.ansible.deploy.api.manage.dao.VersionVarDefineDao;
+import net.arksea.ansible.deploy.api.manage.dao.*;
 import net.arksea.ansible.deploy.api.manage.entity.*;
 import net.arksea.restapi.RestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +10,6 @@ import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Supplier;
 
 /**
  * Create by xiaohaixing on 2020/9/14
@@ -125,5 +120,15 @@ public class VersionService {
             }
         }
         return ver;
+    }
+
+    @Transactional
+    public void setVersionBuildNo(long versionId, long buildNo) {
+        versionDao.updateBuildNo(versionId, buildNo);
+    }
+
+    @Transactional
+    public void setVersionDeployedNo(long versionId, long buildNo) {
+        versionDao.updateDeployNo(versionId, buildNo);
     }
 }

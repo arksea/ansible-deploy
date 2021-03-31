@@ -8,9 +8,8 @@ import akka.dispatch.Futures;
 import akka.dispatch.OnComplete;
 import akka.japi.Creator;
 import akka.japi.pf.ReceiveBuilder;
-import net.arksea.ansible.deploy.api.manage.entity.App;
-import net.arksea.ansible.deploy.api.manage.entity.AppOperation;
-import net.arksea.ansible.deploy.api.manage.entity.AppOperationType;
+import net.arksea.ansible.deploy.api.manage.entity.*;
+import net.arksea.ansible.deploy.api.manage.msg.OperationVariable;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import net.arksea.ansible.deploy.api.operator.entity.OperationToken;
 import org.apache.logging.log4j.LogManager;
@@ -35,6 +34,7 @@ public class JobPlayer extends AbstractActor {
     private final AppOperation operation;
     private final App app;
     private final Set<Long> hosts;
+    private final Set<OperationVariable> operationVariables;
     private final LinkedList<String> logs = new LinkedList<>();
     private final JobResources beans;
     private final static long MAX_LOG_LEN_PER_REQUEST = 10240;
@@ -42,21 +42,38 @@ public class JobPlayer extends AbstractActor {
     private final static long JOB_PLAY_TIMEOUT = 300;
     private FileWriter jobLogFileWriter;
     private boolean noMoreLogs = false;
+    private IJobEventListener listener;
+    private JobCommandRunner jobCommandRunner;
 
-    private JobPlayer(OperationJob job, Set<Long>hosts, JobResources beans) {
+    private JobPlayer(OperationJob job, Set<Long>hosts, Set<OperationVariable> operationVariables, JobResources beans) {
         this.job = job;
         this.hosts = hosts;
+        this.operationVariables = operationVariables;
         this.beans = beans;
         this.operation = beans.appOperationDao.findOne(job.getOperationId());
         this.app = beans.appDao.findOne(job.getAppId());
+        String cmd = getJobPath() + operation.getCommand();
+        ActorRef self = self();
+        this.listener = new IJobEventListener() {
+            @Override
+            public void log(String str) {
+                self.tell(new OfferLog(str), ActorRef.noSender());
+            }
+
+            @Override
+            public void onFinished() {
+                delayStopJob();
+            }
+        };
+        jobCommandRunner = new JobCommandRunner(cmd, listener);
     }
 
-    static Props props(OperationJob job, Set<Long>hosts, JobResources state) {
+    static Props props(OperationJob job, Set<Long>hosts, Set<OperationVariable> operationVariables, JobResources state) {
         return Props.create(new Creator<Actor>() {
             private static final long serialVersionUID = -4530785006800458792L;
             @Override
             public Actor create() {
-                return new JobPlayer(job, hosts, state);
+                return new JobPlayer(job, hosts, operationVariables, state);
             }
         });
     }
@@ -92,7 +109,7 @@ public class JobPlayer extends AbstractActor {
         }
     }
     private static class NoMoreLogs {}
-    private static class StopJob {}
+    public static class StopJob {}
     private static class StartJob{}
 
     public void preStart() {
@@ -151,7 +168,7 @@ public class JobPlayer extends AbstractActor {
             }
             jobLogFileWriter = new FileWriter(file);
             offerLog("初始化操作任务:\n");
-            JobContextCreator creator = new JobContextCreator(getJobPath(), job, operation, hosts, beans, this::offerLog);
+            JobContextCreator creator = new JobContextCreator(getJobPath(), job, operation, hosts, operationVariables, beans, this::offerLog);
             creator.run();
             self().tell(new StartJob(), self());
         } catch (Exception ex) {
@@ -162,21 +179,8 @@ public class JobPlayer extends AbstractActor {
     }
 
     private void handleStartJob(StartJob msg) {
-        ActorRef self = self();
-        IJobEventListener listener = new IJobEventListener() {
-            @Override
-            public void log(String str) {
-                self.tell(new OfferLog(str), ActorRef.noSender());
-            }
-
-            @Override
-            public void onFinished() {
-                delayStopJob();
-            }
-        };
-        String cmd = getJobPath() + operation.getCommand();
         Futures.future(() -> {
-            JobCommandRunner.exec(cmd, listener);
+            jobCommandRunner.exec();
             return true;
         }, context().dispatcher()).onComplete(new OnComplete<Boolean>() {
             @Override
@@ -226,6 +230,7 @@ public class JobPlayer extends AbstractActor {
     }
 
     private void handleStopJob(StopJob msg) {
+        jobCommandRunner.destroy();
         context().stop(self());
     }
     private void handleOfferLog(OfferLog msg) {

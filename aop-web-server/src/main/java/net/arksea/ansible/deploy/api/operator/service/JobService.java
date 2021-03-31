@@ -7,6 +7,7 @@ import akka.dispatch.Futures;
 import akka.pattern.Patterns;
 import net.arksea.ansible.deploy.api.ServiceException;
 import net.arksea.ansible.deploy.api.auth.entity.User;
+import net.arksea.ansible.deploy.api.manage.msg.OperationVariable;
 import net.arksea.ansible.deploy.api.operator.dao.OperationJobDao;
 import net.arksea.ansible.deploy.api.operator.dao.OperationTokenDao;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
@@ -46,7 +47,7 @@ public class JobService {
     JobResources jobResources;
 
     @Transactional
-    public OperationJob create(long userId, long appId, Long versionId, long operationId) {
+    public OperationJob create(long userId, long appId, Long versionId, long operationId, Long triggerId) {
         OperationToken t = operationTokenDao.findByAppId(appId);
         if (t == null) {
             t = new OperationToken();
@@ -58,6 +59,7 @@ public class JobService {
         job.setAppId(appId);
         job.setVersionId(versionId);
         job.setOperatorId(userId);
+        job.setTriggerId(triggerId);
         job.setOperationId(operationId);
         job.setExecHost(getLocalHost());
         job.setStartTime(new Timestamp(System.currentTimeMillis()));
@@ -76,9 +78,9 @@ public class JobService {
         return saved;
     }
 
-    public void startJob(OperationJob job, Set<Long> hosts) {
+    public void startJob(OperationJob job, Set<Long> hosts, Set<OperationVariable> operationVariables) {
         String name = makeJobActorName(job.getId());
-        ActorRef ref = system.actorOf(JobPlayer.props(job, hosts, jobResources), name);
+        ActorRef ref = system.actorOf(JobPlayer.props(job, hosts, operationVariables, jobResources), name);
     }
 
     public Future<JobPlayer.PollLogsResult> pollJobLogs(long jobId, int index) {
@@ -112,5 +114,14 @@ public class JobService {
         long epochSecond = localDate.atStartOfDay().toEpochSecond(ZoneOffset.of("+8"));
         int n = operationJobDao.deleteExpireJobs(new Timestamp(epochSecond*1000));
         logger.info("删除 {} 前的操作记录 {} 条", localDate, n);
+    }
+
+    public String getJobHistoryLog(long jobId) {
+        OperationJob job = operationJobDao.findOne(jobId);
+        if (job == null) {
+            return "";
+        } else {
+            return job.getLog();
+        }
     }
 }

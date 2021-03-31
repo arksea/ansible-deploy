@@ -88,10 +88,7 @@ export class AppComponent implements OnInit {
     }
 
     onOperationClick(ver: Version, op: AppOperation) {
-        let ref = this.modal.open(JobPlayDialog, {size: 'lg', scrollable: true})
-        ref.componentInstance.operation = op
-        ref.componentInstance.app = this.app
-        ref.componentInstance.ver = ver
+        let ref = this.modal.open(JobPlayDialog, {size: 'xl', scrollable: true, backdrop: 'static', keyboard: false})
         let hosts: Array<Host> = []
         for (let h of ver.targetHosts) {
             let name = this.checkName(ver, h)
@@ -100,16 +97,12 @@ export class AppComponent implements OnInit {
                 hosts.push(h)
             }
         }
-        ref.componentInstance.hosts = hosts
+        ref.componentInstance.setParams(op, this.app, ver, hosts)
     }
 
     onStatusOperationClick(ver: Version, op: AppOperation) {
-        let ref = this.modal.open(StatusJobPlayDialog, {size: 'lg', scrollable: true})
-        ref.componentInstance.operation = op
-        ref.componentInstance.app = this.app
-        ref.componentInstance.ver = ver
-        ref.componentInstance.hosts = ver.targetHosts
-        ref.componentInstance.isStatusTestJob = true
+        let ref = this.modal.open(StatusJobPlayDialog, {size: 'xl', scrollable: true})
+        ref.componentInstance.setParams(op, this.app, ver, ver.targetHosts)
     }
 
     public getHostStatusStyle(s: HostStatus): string {
@@ -157,6 +150,15 @@ export class AppComponent implements OnInit {
             }
         }
         return false
+    }
+
+    getBuildNoAndDeployNo(v: Version): string {
+        if (v.buildNo == 0) {
+            return ''
+        } else {
+            return '(b'+  v.buildNo +'/b' + (v.deployNo?v.deployNo:'') +   ')'
+        }
+
     }
 
     get status(): AppOperation[] {

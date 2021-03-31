@@ -13,6 +13,7 @@ import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import net.arksea.ansible.deploy.api.operator.entity.OperationToken;
 import net.arksea.restapi.RestException;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -98,7 +99,7 @@ public class AppService {
         App app = new App();
         app.setAppType(type);
         Version ver = versionService.createVersionTemplate(appTypeName);
-        ver.setName("Online");
+        ver.setName("online");
         app.setVersions(new HashSet<>());
         app.getVersions().add(ver);
         app.setVars(new HashSet<>());
@@ -254,12 +255,11 @@ public class AppService {
                 version = "/";
             } else {
                 Version ver = verMap.computeIfAbsent(j.getVersionId(), id -> versionDao.findOne(id));
-                version = ver.getName();
+                version = ver==null? "/" : ver.getName();
             }
-            String operation = op.getName();
-            String operator = user.getName();
-
-            infos.add(new GetOperationJobHistory.OperationJobInfo(j.getId(), operation, operator, version, j.getStartTime(), j.getEndTime()));
+            String operation = op == null ? "/" : op.getName();
+            String operator = user == null ? "/" : user.getName();
+            infos.add(new GetOperationJobHistory.OperationJobInfo(j.getId(), operation, operator, j.getTriggerId(), version, j.getStartTime(), j.getEndTime()));
         }
         return infos;
     }

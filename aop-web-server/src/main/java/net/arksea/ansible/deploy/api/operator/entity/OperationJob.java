@@ -15,6 +15,7 @@ public class OperationJob extends IdEntity {
     private Long versionId;
     private Long operatorId;
     private Long operationId;
+    private Long triggerId;
     private String execHost;
     private Timestamp startTime;
     private Timestamp endTime;
@@ -29,7 +30,7 @@ public class OperationJob extends IdEntity {
         this.appId = appId;
     }
 
-    @Column
+    @Column(nullable = false)
     public Long getVersionId() {
         return versionId;
     }
@@ -54,6 +55,15 @@ public class OperationJob extends IdEntity {
 
     public void setOperationId(Long operationId) {
         this.operationId = operationId;
+    }
+
+    @Column
+    public Long getTriggerId() {
+        return triggerId;
+    }
+
+    public void setTriggerId(Long triggerId) {
+        this.triggerId = triggerId;
     }
 
     @Column(nullable = false, length = 36)

@@ -24,6 +24,10 @@
                         placeholder="以字母开头，由字母与下划线组成">
                 </div>
                 <div class="col-lg-6 col-md-6 form-group mb-4">
+                    <label for="appType">应用类型</label>
+                    <input type="text" id="appType" readonly="true" class="form-control" placeholder="{{app.appType.name}}">
+                </div>
+                <div class="col-lg-6 col-md-6 form-group mb-4">
                     <label for="appGroup">所属分组
                         <span class="text-danger" *ngIf="appGroupId.errors?.required">*</span>
                     </label>

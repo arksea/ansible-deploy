@@ -12,6 +12,7 @@ import { AccountModule } from '../account/account.module'
 import { OperationsService } from './operations.service'
 import { OperationEditComponent } from './operation-edit.component'
 import { NewCodeFileDialog } from './new-code-file.dialog'
+import { NewOperationVarDefineDialog } from './new-operation-var-define.dialog'
 
 @NgModule({
   imports: [
@@ -22,10 +23,10 @@ import { NewCodeFileDialog } from './new-code-file.dialog'
     AccountModule, OperationsRoutingModule],
   declarations: [
     OperationsComponent, OperationEditComponent,
-    NewCodeFileDialog
+    NewCodeFileDialog, NewOperationVarDefineDialog
   ],
   entryComponents: [
-    NewCodeFileDialog
+    NewCodeFileDialog, NewOperationVarDefineDialog
   ],
   providers: [OperationsService],
   exports: []

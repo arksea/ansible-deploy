@@ -39,6 +39,6 @@
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')">取消</button>
-        <button type="submit" class="btn btn-danger" [disabled]="!form.valid" (click)="save()">确认</button>
+        <button type="submit" class="btn btn-danger" [disabled]="form.invalid || form.pristine" (click)="save()">确认</button>
     </div>
 </form>

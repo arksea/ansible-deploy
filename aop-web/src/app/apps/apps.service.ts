@@ -5,13 +5,14 @@ import { HttpUtils } from '../utils/http-utils'
 import { environment } from '../../environments/environment'
 import { map } from 'rxjs/operators'
 import { App, AppGroup, AppType, OperationJob, OperationJobInfo, Version, AppVarDefine, VersionVarDefine, AppInfo } from '../app.entity'
-import { AppOperation, Host, Port, Page } from '../app.entity'
+import { AppOperation, Host, Port, Page, OperationVariable } from '../app.entity'
 
 class StartOpeartionJob {
     appId: number
     versionId: number
     operationId: number
     hosts: Array<number> = []
+    vars: Array<OperationVariable> = []
 }
 
 export class PollLogsResult {
@@ -185,7 +186,7 @@ export class AppsService {
         return this.httpUtils.httpGet('查询用户的分组', url)
     }
 
-    public startJob(app: App, ver: Version, operation: AppOperation,hosts: Array<Host>): Observable<ServiceResponse<OperationJob>> {
+    public startJob(app: App, ver: Version, operation: AppOperation,hosts: Array<Host>, vars: Array<OperationVariable>): Observable<ServiceResponse<OperationJob>> {
         const url = environment.apiUrl + '/api/jobs'
         const body = new StartOpeartionJob()
         body.appId = app.id
@@ -197,6 +198,7 @@ export class AppsService {
         for (let h of hosts) {
             body.hosts.push(h.id)
         }
+        body.vars = vars
         return this.httpUtils.httpPost('开始操作任务', url, body)
     }
 

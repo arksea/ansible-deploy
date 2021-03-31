@@ -3,6 +3,7 @@ package net.arksea.ansible.deploy.api.manage.rest;
 import net.arksea.ansible.deploy.api.auth.info.ClientInfo;
 import net.arksea.ansible.deploy.api.auth.service.ClientInfoService;
 import net.arksea.ansible.deploy.api.manage.entity.OperationTrigger;
+import net.arksea.ansible.deploy.api.manage.msg.OperationVariable;
 import net.arksea.ansible.deploy.api.manage.service.TriggerService;
 import net.arksea.restapi.BaseResult;
 import net.arksea.restapi.RestResult;
@@ -13,6 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static net.arksea.ansible.deploy.api.ResultCode.SUCCEED;
 
@@ -55,9 +60,23 @@ public class TriggerController {
     public RestResult<Long> onTrigger(@RequestParam("token") final String token,
                                       @RequestBody final String projectTag,
                                       final HttpServletRequest httpRequest) {
-        logger.debug("token: {}", token);
-        logger.debug("projectTag: {}", projectTag);
-        long jobId = triggerService.onTrigger(projectTag, token);
+        Set<OperationVariable> vars = new HashSet<>();
+        Map<String, String[]> params = httpRequest.getParameterMap();
+        for (Map.Entry<String, String[]> e: params.entrySet()) {
+            if (!e.getKey().equals("token")) {
+                OperationVariable v = new OperationVariable();
+                v.setName(e.getKey());
+                v.setValue(e.getValue()[0]);
+                vars.add(v);
+            }
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("token: {}, projectTag: {}, params: {}",
+                    token, projectTag,
+                    vars.stream().map(OperationVariable::toString)
+                                 .reduce((m, n) -> m +";"+ n).orElse(""));
+        }
+        long jobId = triggerService.onTrigger(projectTag, token, vars);
         return new RestResult<>(SUCCEED, jobId, httpRequest);
     }
 

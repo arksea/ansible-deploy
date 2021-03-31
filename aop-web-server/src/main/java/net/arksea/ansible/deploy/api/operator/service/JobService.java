@@ -7,6 +7,7 @@ import akka.dispatch.Futures;
 import akka.pattern.Patterns;
 import net.arksea.ansible.deploy.api.ServiceException;
 import net.arksea.ansible.deploy.api.auth.entity.User;
+import net.arksea.ansible.deploy.api.manage.msg.OperationVariable;
 import net.arksea.ansible.deploy.api.operator.dao.OperationJobDao;
 import net.arksea.ansible.deploy.api.operator.dao.OperationTokenDao;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
@@ -77,9 +78,9 @@ public class JobService {
         return saved;
     }
 
-    public void startJob(OperationJob job, Set<Long> hosts) {
+    public void startJob(OperationJob job, Set<Long> hosts, Set<OperationVariable> operationVariables) {
         String name = makeJobActorName(job.getId());
-        ActorRef ref = system.actorOf(JobPlayer.props(job, hosts, jobResources), name);
+        ActorRef ref = system.actorOf(JobPlayer.props(job, hosts, operationVariables, jobResources), name);
     }
 
     public Future<JobPlayer.PollLogsResult> pollJobLogs(long jobId, int index) {

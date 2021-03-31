@@ -29,13 +29,6 @@
             </label>
             <input type="text" class="form-control" id="var-default-value" formControlName="defaultValue">
         </div>
-        <div class="form-group">
-            <label for="portType">端口类型</label>
-            <select id="portType" name="portType" class="form-control" formControlName="portType">
-                <option [value]="-1">非端口变量</option>
-                <option *ngFor="let t of portTypes" [value]="t.id">{{t.name}} - {{t.description}}</option>
-            </select>
-        </div>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')">取消</button>

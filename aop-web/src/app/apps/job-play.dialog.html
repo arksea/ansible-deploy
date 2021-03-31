@@ -1,18 +1,32 @@
 <div class="modal-header d-flex">
-    <h2 class="modal-title m-2 mr-auto"><span class="text-danger"> [{{operation.name}}] </span>操作</h2>
-    <button type="button" class="btn btn-danger m-2" *ngIf="!(jobStarted|async)" (click)="startJob()">开始</button>
-    <button type="button" class="btn btn-warning m-2" 
-            title="跳过操作并确认删除"
-            *ngIf="!(jobStarted|async) && isDeleteJob"
+        <h2 class="modal-title m-2 mr-auto"><span class="text-danger"> [{{operation.name}}] </span>操作</h2>
+        <button type="button" class="btn btn-danger m-2" *ngIf="!(jobStarted|async)" (click)="startJob()">开始</button>
+        <button type="button" class="btn btn-warning m-2" title="跳过操作并确认删除" *ngIf="!(jobStarted|async) && isDeleteJob"
             (click)="skipJob()">跳过</button>
-    <button type="button" class="btn btn-danger m-2"
-            *ngIf="(jobStarted|async) && isDeleteJob"
+        <button type="button" class="btn btn-danger m-2" *ngIf="(jobStarted|async) && isDeleteJob"
             (click)="modal.close('ok')">删除</button>
-    <button type="button" class="btn btn-outline-secondary m-2" 
+        <button type="button" class="btn btn-outline-secondary m-2"
             (click)="modal.close('cancel')">{{isDeleteJob?'取消':'关闭'}}</button>
-</div>
+    </div>
+
+<form [formGroup]="form" class="row modal-header" [hidden]="operation.varDefines.length==0">
+    <div *ngFor="let v of operation.varDefines" class="col-lg-6 col-md-6 form-group">
+        <label for="var_{{v.name}}">
+            <span>{{v.formLabel}}</span>
+            <span class="text-danger" *ngIf="form.get('var_'+v.name)?.invalid">(超过允许长度)</span>
+        </label>
+        <div class="input-group">
+            <div class="input-group-prepend" *ngIf="v.inputAddon.length > 0">
+                <span class="input-group-text">{{v.inputAddon}}</span>
+            </div>
+            <input [type]="text" id="var_{{v.name}}" formControlName="var_{{v.name}}" class="form-control">
+        </div>
+    </div>
+</form>
+
+
 <div class="modal-body" #scrollLogs>
     <div class="mb-3 text-primary">{{operation.description}}</div>
-    <pre id="job-logs" class="p-1 border border-secondary text-light bg-dark text-monospace">{{(jobLogs | async)?.logs}}</pre>
+    <pre id="job-logs"
+        class="p-1 border border-secondary text-light bg-dark text-monospace">{{(jobLogs | async)?.logs}}</pre>
 </div>
-

@@ -9,6 +9,7 @@ import akka.dispatch.OnComplete;
 import akka.japi.Creator;
 import akka.japi.pf.ReceiveBuilder;
 import net.arksea.ansible.deploy.api.manage.entity.*;
+import net.arksea.ansible.deploy.api.manage.msg.OperationVariable;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import net.arksea.ansible.deploy.api.operator.entity.OperationToken;
 import org.apache.logging.log4j.LogManager;
@@ -33,6 +34,7 @@ public class JobPlayer extends AbstractActor {
     private final AppOperation operation;
     private final App app;
     private final Set<Long> hosts;
+    private final Set<OperationVariable> operationVariables;
     private final LinkedList<String> logs = new LinkedList<>();
     private final JobResources beans;
     private final static long MAX_LOG_LEN_PER_REQUEST = 10240;
@@ -43,9 +45,10 @@ public class JobPlayer extends AbstractActor {
     private IJobEventListener listener;
     private JobCommandRunner jobCommandRunner;
 
-    private JobPlayer(OperationJob job, Set<Long>hosts, JobResources beans) {
+    private JobPlayer(OperationJob job, Set<Long>hosts, Set<OperationVariable> operationVariables, JobResources beans) {
         this.job = job;
         this.hosts = hosts;
+        this.operationVariables = operationVariables;
         this.beans = beans;
         this.operation = beans.appOperationDao.findOne(job.getOperationId());
         this.app = beans.appDao.findOne(job.getAppId());
@@ -65,12 +68,12 @@ public class JobPlayer extends AbstractActor {
         jobCommandRunner = new JobCommandRunner(cmd, listener);
     }
 
-    static Props props(OperationJob job, Set<Long>hosts, JobResources state) {
+    static Props props(OperationJob job, Set<Long>hosts, Set<OperationVariable> operationVariables, JobResources state) {
         return Props.create(new Creator<Actor>() {
             private static final long serialVersionUID = -4530785006800458792L;
             @Override
             public Actor create() {
-                return new JobPlayer(job, hosts, state);
+                return new JobPlayer(job, hosts, operationVariables, state);
             }
         });
     }
@@ -165,7 +168,7 @@ public class JobPlayer extends AbstractActor {
             }
             jobLogFileWriter = new FileWriter(file);
             offerLog("初始化操作任务:\n");
-            JobContextCreator creator = new JobContextCreator(getJobPath(), job, operation, hosts, beans, this::offerLog);
+            JobContextCreator creator = new JobContextCreator(getJobPath(), job, operation, hosts, operationVariables, beans, this::offerLog);
             creator.run();
             self().tell(new StartJob(), self());
         } catch (Exception ex) {

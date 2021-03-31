@@ -28,6 +28,15 @@ export class VersionVarDefine {
     portType: PortType|null = null
 }
 
+export class OperationVarDefine {
+    id: number|null = null
+    operationId: number|null = null
+    name: string = ''// 变量名
+    formLabel: string = ''  //表单输入框标签
+    inputAddon: string = '' //表单输入框提示前缀
+    defaultValue: string = ''
+}
+
 export class AppType {
     id: number|null = null
     name: string = ''
@@ -71,6 +80,7 @@ export class AppOperation {
     description: string = ''
     command: string = ''
     codes: Array<AppOperationCode> = []
+    varDefines: Array<OperationVarDefine> = []
     released: boolean = false
     type: string = 'COMMON'
 }
@@ -183,4 +193,9 @@ export class Page<T> {
     total: number = 0
     totalPages: number = 0
     items: Array<T> = []
+}
+
+export class OperationVariable {
+    name: string
+    value: string
 }

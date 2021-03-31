@@ -6,6 +6,7 @@ import net.arksea.ansible.deploy.api.manage.dao.OperationTriggerDao;
 import net.arksea.ansible.deploy.api.manage.dao.VersionDao;
 import net.arksea.ansible.deploy.api.manage.entity.OperationTrigger;
 import net.arksea.ansible.deploy.api.manage.entity.Version;
+import net.arksea.ansible.deploy.api.manage.msg.OperationVariable;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import net.arksea.ansible.deploy.api.operator.service.JobService;
 import org.apache.logging.log4j.LogManager;
@@ -45,7 +46,7 @@ public class TriggerService {
         operationTriggerDao.delete(triggerId);
     }
 
-    public long onTrigger(String projectTag, String token) {
+    public long onTrigger(String projectTag, String token, Set<OperationVariable> vars) {
         OperationTrigger trigger = operationTriggerDao.findByProjectTag(projectTag);
         if (trigger == null) {
             throw new ServiceException("Not found the trigger");
@@ -58,7 +59,7 @@ public class TriggerService {
                         trigger.getVersionId(), trigger.getOperationId(), trigger.getId());
                 Set<Long> hosts = new HashSet<>();
                 ver.getTargetHosts().forEach(h -> hosts.add(h.getId()));
-                jobService.startJob(job, hosts);
+                jobService.startJob(job, hosts, vars);
                 return job.getId();
             }
         } else {

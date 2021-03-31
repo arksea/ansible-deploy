@@ -1,6 +1,7 @@
 package net.arksea.ansible.deploy.api.operator.service;
 
 import net.arksea.ansible.deploy.api.manage.entity.*;
+import net.arksea.ansible.deploy.api.manage.msg.OperationVariable;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 
 import java.io.*;
@@ -18,14 +19,16 @@ public class JobContextCreator {
     private OperationJob job;
     private AppOperation operation;
     private Set<Long> hosts;
+    private Set<OperationVariable> operationVariables;
     private IJobEventListener jobLogger;
     private String jobPath;
 
-    public JobContextCreator(String jobPath, OperationJob job, AppOperation op, Set<Long> hosts, JobResources resources, IJobEventListener jobLogger) {
+    public JobContextCreator(String jobPath, OperationJob job, AppOperation op, Set<Long> hosts, Set<OperationVariable> operationVariables, JobResources resources, IJobEventListener jobLogger) {
         this.jobPath = jobPath;
         this.job = job;
         this.operation = op;
         this.hosts = hosts;
+        this.operationVariables = operationVariables;
         this.resources = resources;
         this.jobLogger = jobLogger;
     }
@@ -156,7 +159,10 @@ public class JobContextCreator {
                         w1.append(var.getName()).append(": ").append(var.getValue()).append("\n");
                         w2.append("export ").append(var.getName()).append("=\"").append(var.getValue()).append("\"\n");
                     }
-
+                    for (final OperationVariable var: operationVariables) {
+                        w1.append(var.getName()).append(": ").append(var.getValue()).append("\n");
+                        w2.append("export ").append(var.getName()).append("=\"").append(var.getValue()).append("\"\n");
+                    }
                     Map<String,Object> claimMap = new HashMap<>();
                     claimMap.put("verId", ver.getId());
                     claimMap.put("buildNo", buildNo);

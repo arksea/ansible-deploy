@@ -17,6 +17,7 @@ public class AppOperation extends IdEntity {
     private String description;
     private String command;
     private Set<AppOperationCode> codes;
+    private Set<OperationVarDefine> varDefines;
     private Boolean released;
     private AppOperationType type;
 
@@ -65,6 +66,16 @@ public class AppOperation extends IdEntity {
 
     public void setCodes(Set<AppOperationCode> codes) {
         this.codes = codes;
+    }
+
+    @OneToMany(mappedBy = "operationId", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(FetchMode.SELECT)
+    public Set<OperationVarDefine> getVarDefines() {
+        return varDefines;
+    }
+
+    public void setVarDefines(Set<OperationVarDefine> varDefines) {
+        this.varDefines = varDefines;
     }
 
     @Column(nullable = false, columnDefinition = "TINYINT(1) NOT NULL DEFAULT 0")

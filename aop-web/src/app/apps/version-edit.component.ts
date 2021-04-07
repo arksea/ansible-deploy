@@ -163,4 +163,15 @@ export class VersionEditComponent implements OnInit {
     public get revision(): AbstractControl {
         return this.verForm.get('revision')
     }
+
+    
+    public get verVars(): VersionVariable[] {
+        let vars = []
+        for (let v of this.version.vars) {
+            if (!v.deleted) {
+                vars.push(v)
+            }
+        }
+        return vars
+    }
 }

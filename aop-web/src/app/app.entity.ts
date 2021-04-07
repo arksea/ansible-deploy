@@ -50,7 +50,7 @@ export class AppVariable {
     name: string = ''// 变量名
     value: string = ''// 变量值
     isPort: boolean = false// 是否端口值，用于主机范围的唯一性判断
-    isDeleted: boolean = false
+    deleted: boolean = false
 }
 
 export class VersionVariable {
@@ -58,7 +58,7 @@ export class VersionVariable {
     name: string = ''// 变量名
     value: string = ''// 变量值
     isPort: boolean = false// 是否端口值，用于主机范围的唯一性判断
-    isDeleted: boolean = false
+    deleted: boolean = false
 }
 
 export class OperationTrigger {

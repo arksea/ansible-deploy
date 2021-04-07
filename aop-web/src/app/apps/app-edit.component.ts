@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core'
-import { FormGroup, FormControl, AbstractControl, Validators } from '@angular/forms'
+import { FormGroup, FormControl, AbstractControl, Validators, ValidatorFn } from '@angular/forms'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { AppsService } from './apps.service'
 import { MessageNotify } from '../utils/message-notify'
@@ -8,6 +8,14 @@ import { AccountService } from '../account/account.service'
 import { Router, ActivatedRoute, ParamMap } from '@angular/router'
 import { HostsService } from '../hosts/hosts.service'
 import { PortSelectDialog } from './port-select.dialog'
+
+
+export function forbiddenNameValidator(nameRe: RegExp): ValidatorFn {
+    return (control: AbstractControl): {[key: string]: any} | null => {
+        const forbidden = !nameRe.test(control.value)
+        return forbidden ? {forbiddenName: {value: control.value}} : null
+    };
+}
 
 @Component({
     selector: 'app-edit',
@@ -33,7 +41,8 @@ export class AppEditComponent implements OnInit {
         this.app = this.svc.createDefAppTemplate()
         this.appForm = new FormGroup({
             'appGroupId': new FormControl(0, [Validators.required]),
-            'apptag': new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(30)]),
+            'apptag': new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(30),
+                forbiddenNameValidator(/^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/)]),
             'description': new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(256)])
         })
         this.svc.getUserGroups().subscribe(ret => {
@@ -154,5 +163,15 @@ export class AppEditComponent implements OnInit {
 
     public get appGroupId(): AbstractControl {
         return this.appForm.get('appGroupId')
+    }
+
+    public get appVars(): AppVariable[] {
+        let vars = []
+        for (let v of this.app.vars) {
+            if (!v.deleted) {
+                vars.push(v)
+            }
+        }
+        return vars
     }
 }

@@ -16,6 +16,7 @@
                             <ng-container *ngTemplateOutlet="formInfoIcon"></ng-container>
                         </span>
                         <span class="text-danger" *ngIf="apptag.errors?.required">*</span>
+                        <span class="text-danger" *ngIf="!apptag.errors?.required && apptag.errors?.forbiddenName">需要符合域名规范，只能包含小写字母、连字符'-'和'.'</span>
                         <span class="text-danger"
                             *ngIf="apptag.errors?.minlength || apptag.errors?.maxlength">(长度4至30)</span>
                     </label>
@@ -35,7 +36,7 @@
                         <option *ngFor="let g of userGroups" [value]="g.id">{{g.name}}</option>
                     </select>
                 </div>
-                <div *ngFor="let v of app.vars" class="col-lg-6 col-md-6 form-group mb-4">
+                <div *ngFor="let v of appVars" class="col-lg-6 col-md-6 form-group mb-4">
                     <label for="var_{{v.name}}">
                         <span *ngIf="!v.isPort">{{getVarDesc(app, v)}}</span>
                         <span class="text-danger" *ngIf="appForm.get('var_'+v.name)?.invalid">(长度0至128)</span>

@@ -48,7 +48,7 @@
                             <div class="row">
                                     <div class="col-sm-2">内网IP</div>
                                     <div class="col">描述</div>
-                                    <div class="col-sm-2 text-center">
+                                    <div class="col-sm-3 text-center">
                                         <div class="btn-group btn-group-xs" role="group" *ngFor="let op of operations" [hidden]="op.type!='STATUS'">
                                             <button type="button" class="btn btn-outline-dark" 
                                                     [disabled]="account.perm('应用:操作')"
@@ -70,9 +70,9 @@
                             <div class="row">
                                 <div class="col-sm-2">{{h.privateIp}}</div>
                                 <div class="col">{{h.description}}</div>
-                                <div class="col-sm-2 text-center">
-                                    <div *ngFor="let op of status">
-                                        <span class="badge" [class]="getHostStatusStyle(h.status[op.name])">{{getHostStatusValue(h.status[op.name])}}</span>
+                                <div class="col-sm-3 text-center">
+                                    <div class="btn-group btn-group-xs" *ngFor="let op of status">
+                                        <span class="badge mx-2" [class]="getHostStatusStyle(h.status[op.name])">{{getHostStatusValue(h.status[op.name])}}</span>
                                     </div>
                                 </div>
                                 <div class="col-sm-2 text-right"><input type="checkbox" formControlName="{{checkName(v,h)}}"></div>

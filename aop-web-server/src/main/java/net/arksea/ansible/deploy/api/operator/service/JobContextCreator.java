@@ -133,8 +133,10 @@ public class JobContextCreator {
             w2.append("#!/bin/bash\n");
             w2.append("export apptag=\"").append(app.getApptag()).append("\"\n");
             for (final AppVariable var : app.getVars()) {
-                w1.append(var.getName()).append(": ").append(var.getValue()).append("\n");
-                w2.append("export ").append(var.getName()).append("=\"").append(var.getValue()).append("\"\n");
+                if (!var.isDeleted()) {
+                    w1.append(var.getName()).append(": ").append(var.getValue()).append("\n");
+                    w2.append("export ").append(var.getName()).append("=\"").append(var.getValue()).append("\"\n");
+                }
             }
             if (job.getVersionId() != null) {
                 final Version ver = resources.versionDao.findOne(job.getVersionId());
@@ -156,8 +158,10 @@ public class JobContextCreator {
                     w1.append("build_no: ").append(Long.toString(buildNo)).append("\n");
                     w2.append("export build_no=\"").append(Long.toString(buildNo)).append("\"\n");
                     for (final VersionVariable var : ver.getVars()) {
-                        w1.append(var.getName()).append(": ").append(var.getValue()).append("\n");
-                        w2.append("export ").append(var.getName()).append("=\"").append(var.getValue()).append("\"\n");
+                        if (!var.isDeleted()) {
+                            w1.append(var.getName()).append(": ").append(var.getValue()).append("\n");
+                            w2.append("export ").append(var.getName()).append("=\"").append(var.getValue()).append("\"\n");
+                        }
                     }
                     for (final OperationVariable var: operationVariables) {
                         w1.append(var.getName()).append(": ").append(var.getValue()).append("\n");

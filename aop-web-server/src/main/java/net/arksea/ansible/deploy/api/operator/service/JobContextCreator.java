@@ -6,6 +6,7 @@ import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -50,23 +51,29 @@ public class JobContextCreator {
     private void generateCodeFiles() throws IOException {
         log("生成脚本文件...");
         for (AppOperationCode c : operation.getCodes()) {
-            generateCodeFile(c);
+            generateCodeFile(c.getFileName(), c.getCode());
+        }
+        List<AppCustomOperationCode> codes = resources.appCodeDao.findByAppId(job.getAppId());
+        for (AppCustomOperationCode c: codes) {
+            if (c.getOperationId() == job.getOperationId()) {
+                generateCodeFile(c.getFileName(), c.getCode());
+            }
         }
         log("成功\n");
     }
 
-    private void generateCodeFile(AppOperationCode code) throws IOException {
-        String path = getJobPath() + code.getFileName();
+    private void generateCodeFile(String fileName, String code) throws IOException {
+        String path = getJobPath() + fileName;
         final File file = new File(path);
         final File parentFile = file.getParentFile();
         if (!parentFile.exists()) {
             parentFile.mkdirs();
         }
-        try (final FileWriter writer = new FileWriter(file)) {
-            writer.append(code.getCode());
+        try (final FileWriter writer = new FileWriter(file, false)) {
+            writer.append(code);
             writer.flush();
         }
-        chmod(code.getFileName());
+        chmod(fileName);
     }
 
     private void chmod(final String fileName) throws IOException {

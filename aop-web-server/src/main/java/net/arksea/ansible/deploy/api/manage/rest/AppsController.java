@@ -2,6 +2,7 @@ package net.arksea.ansible.deploy.api.manage.rest;
 
 import static net.arksea.ansible.deploy.api.ResultCode.*;
 import net.arksea.ansible.deploy.api.manage.entity.App;
+import net.arksea.ansible.deploy.api.manage.entity.AppCustomOperationCode;
 import net.arksea.ansible.deploy.api.manage.msg.AppInfo;
 import net.arksea.ansible.deploy.api.manage.msg.GetOperationJobHistory;
 import net.arksea.ansible.deploy.api.manage.service.AppService;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * Create by xiaohaixing on 2020/8/28
@@ -52,6 +54,12 @@ public class AppsController {
         } else {
             return new RestResult<>(SUCCEED, app, httpRequest);
         }
+    }
+    //-------------------------------------------------------------------------
+    @RequiresPermissions("应用:查询")
+    @RequestMapping(path="{appId}/codes", method = RequestMethod.GET, produces = MEDIA_TYPE)
+    public BaseResult getAppCodesById(@PathVariable("appId") long appId, HttpServletRequest httpRequest) {
+        return new RestResult<>(SUCCEED, appService.findAppCodes(appId), httpRequest);
     }
     //-------------------------------------------------------------------------
     @RequiresPermissions("应用:查询")

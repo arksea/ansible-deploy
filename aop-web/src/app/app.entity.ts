@@ -89,7 +89,15 @@ export class AppOperationCode {
     id: number|null = null
     operationId: number|null = null
     fileName: string = ''
-    description: string = ''
+    code: string = ''
+}
+
+export class AppCustomOperationCode {
+    id: number|null = null
+    appId: number|null = null
+    operationId: number|null = null
+    operationName: string = ''
+    fileName: string = ''
     code: string = ''
 }
 

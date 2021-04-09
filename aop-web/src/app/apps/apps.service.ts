@@ -4,7 +4,7 @@ import { ServiceResponse } from '../utils/http-utils'
 import { HttpUtils } from '../utils/http-utils'
 import { environment } from '../../environments/environment'
 import { map } from 'rxjs/operators'
-import { App, AppGroup, AppType, OperationJob, OperationJobInfo, Version, AppVarDefine, VersionVarDefine, AppInfo } from '../app.entity'
+import { App, AppGroup, AppType, OperationJob, OperationJobInfo, Version, AppVarDefine, VersionVarDefine, AppInfo, AppCustomOperationCode } from '../app.entity'
 import { AppOperation, Host, Port, Page, OperationVariable } from '../app.entity'
 
 class StartOpeartionJob {
@@ -171,6 +171,21 @@ export class AppsService {
         return this.httpUtils.httpGet('查询应用', url)
     }
 
+    public getAppCodes(appId: number): Observable<ServiceResponse<AppCustomOperationCode[]>> {
+        const url = environment.apiUrl + '/api/apps/' + appId + "/codes"
+        return this.httpUtils.httpGet('查询应用自定义脚本', url)
+    }
+
+    public deleteAppCode(code: AppCustomOperationCode):Observable<ServiceResponse<boolean>> {
+        const url = environment.apiUrl + '/api/appCodes/' + code.id
+        return this.httpUtils.httpDelete('删除应用自定义操作脚本', url)
+    }
+
+    public saveAppCodes(codes: Array<AppCustomOperationCode>): Observable<ServiceResponse<any>> {
+        const url = environment.apiUrl + '/api/appCodes'
+        return this.httpUtils.httpPost('保存应用自定义操作脚本', url, codes)
+    }
+
     public getAppInfoById(appId: number): Observable<ServiceResponse<AppInfo>> {
         const url = environment.apiUrl + '/api/apps/' + appId + '/info'
         return this.httpUtils.httpGet('查询应用信息', url)
@@ -184,6 +199,11 @@ export class AppsService {
     public getUserGroups(): Observable<ServiceResponse<Array<AppGroup>>> {
         let url = environment.apiUrl + '/api/user/groups'
         return this.httpUtils.httpGet('查询用户的分组', url)
+    }
+
+    public getOperations(appTypeId: number): Observable<ServiceResponse<Array<AppOperation>>> {
+        const url = environment.apiUrl + '/api/appTypes/'+appTypeId + '/operations'
+        return this.httpUtils.httpGet('查询操作', url)
     }
 
     public startJob(app: App, ver: Version, operation: AppOperation,hosts: Array<Host>, vars: Array<OperationVariable>): Observable<ServiceResponse<OperationJob>> {

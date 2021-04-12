@@ -12,6 +12,7 @@ import { AppOperation, AppCustomOperationCode } from '../app.entity'
 export class NewAppCodeFileDialog {
 
     public operations: Array<AppOperation> = []
+    public custemCodes: Array<AppCustomOperationCode> = []
     createForm: FormGroup
 
     constructor(public modal: NgbActiveModal) {
@@ -28,11 +29,9 @@ export class NewAppCodeFileDialog {
 
     DuplicateNameValidator(): ValidatorFn {
         return (control: AbstractControl): { [key: string]: any } | null => {
-            for (let op of this.operations) {
-                for (let c of op.codes) {
-                    if (control.value == c.fileName) {
-                        return { 'duplicateName': { value: control.value } }
-                    }
+            for (let c of this.custemCodes) {
+                if (control.value == c.fileName && this.operationId.value == c.operationId) {
+                    return { 'duplicateName': { value: control.value } }
                 }
             }
             return null

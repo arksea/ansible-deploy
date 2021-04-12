@@ -39,7 +39,7 @@ public class JobPlayer extends AbstractActor {
     private final JobResources beans;
     private final static long MAX_LOG_LEN_PER_REQUEST = 10240;
     private final static long STOP_JOB_DELAY = 3;
-    private final static long JOB_PLAY_TIMEOUT = 300;
+    private final static long JOB_PLAY_TIMEOUT = 1800;
     private FileWriter jobLogFileWriter;
     private boolean noMoreLogs = false;
     private IJobEventListener listener;

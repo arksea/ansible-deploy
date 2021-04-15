@@ -39,10 +39,10 @@ public class TriggerController {
     //-------------------------------------------------------------------------
     @RequiresPermissions("应用:修改")
     @RequestMapping(method = RequestMethod.POST, produces = MEDIA_TYPE)
-    public RestResult<OperationTrigger> addTrigger(@RequestBody final OperationTrigger trigger,
+    public RestResult<OperationTrigger> saveTrigger(@RequestBody final OperationTrigger trigger,
                                                    final HttpServletRequest httpRequest) {
         ClientInfo info = clientInfoService.getClientInfo(httpRequest);
-        OperationTrigger saved = triggerService.addTrigger(info, trigger);
+        OperationTrigger saved = triggerService.saveTrigger(info, trigger);
         return new RestResult<>(SUCCEED, saved, httpRequest);
     }
 

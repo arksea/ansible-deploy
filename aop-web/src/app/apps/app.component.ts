@@ -101,7 +101,7 @@ export class AppComponent implements OnInit {
     }
 
     onStatusOperationClick(ver: Version, op: AppOperation) {
-        let ref = this.modal.open(StatusJobPlayDialog, {size: 'xl', scrollable: true})
+        let ref = this.modal.open(StatusJobPlayDialog, {size: 'xl', scrollable: true, backdrop: 'static', keyboard: false})
         ref.componentInstance.setParams(op, this.app, ver, ver.targetHosts)
     }
 

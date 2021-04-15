@@ -62,7 +62,7 @@ export class AppOperationHistoryComponent implements OnInit {
     }
 
     public onJobClick(jobInfo: OperationJobInfo) {
-        let ref = this.modal.open(JobLogDialog, {size: 'lg', scrollable: true})
+        let ref = this.modal.open(JobLogDialog, {size: 'xl', scrollable: true})
         ref.componentInstance.jobInfo = jobInfo
     }
 

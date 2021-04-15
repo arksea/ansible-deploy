@@ -71,6 +71,8 @@ export class OperationTrigger {
     createUser: string = ''
     createTime: number = 0
     expiredTime: number = 0
+    notifyEmails: string = '';
+    notifyOnlyOfFailed: boolean = true;
 }
 
 export class AppOperation {

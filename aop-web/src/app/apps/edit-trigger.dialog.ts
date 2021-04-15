@@ -35,7 +35,9 @@ export class EditTriggerDialog {
             operationId: new FormControl({value:trigger.operationId, disabled: this.editing}, [Validators.required]),
             description: new FormControl(trigger.description,[Validators.maxLength(128)]),
             expireDays: new FormControl(days.toFixed(), [Validators.required]),
-            projectTag: new FormControl(trigger.projectTag, [Validators.required, Validators.maxLength(128)])
+            projectTag: new FormControl(trigger.projectTag, [Validators.required, Validators.maxLength(128)]),
+            notifyOnlyOfFailed: new FormControl(trigger.notifyOnlyOfFailed),
+            notifyEmails: new FormControl(trigger.notifyEmails, [Validators.maxLength(1024)])
         })
         this.appSvc.getOperationsByAppTypeId(this.appTypeId).subscribe(ret => {
             if (ret.code == 0) {
@@ -51,6 +53,8 @@ export class EditTriggerDialog {
         this.trigger.expiredTime = now() + this.expireDays.value*24*3600*1000;
         this.trigger.operationId = this.operationId.value
         this.trigger.projectTag = this.projectTag.value
+        this.trigger.notifyOnlyOfFailed = this.notifyOfFailed.value
+        this.trigger.notifyEmails = this.emails.value
         this.svc.saveTrigger(this.trigger).subscribe(ret => {
             if (ret.code == 0) {
                 if (!this.editing) {
@@ -75,5 +79,13 @@ export class EditTriggerDialog {
 
     get projectTag(): AbstractControl {
         return this.form.get('projectTag')
+    }
+
+    get emails(): AbstractControl {
+        return this.form.get('notifyEmails')
+    }
+
+    get notifyOfFailed(): AbstractControl {
+        return this.form.get('notifyOnlyOfFailed')
     }
 }

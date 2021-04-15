@@ -21,6 +21,8 @@ public class OperationTrigger extends IdEntity {
     private String createUser;
     private Timestamp createTime;
     private Timestamp expiredTime;
+    private String notifyEmails;
+    private Boolean notifyOnlyOfFailed;
 
     @Column(nullable = false)
     public Long getVersionId() {
@@ -103,4 +105,21 @@ public class OperationTrigger extends IdEntity {
         this.expiredTime = expiredTime;
     }
 
+    @Column(length = 1024)
+    public String getNotifyEmails() {
+        return notifyEmails;
+    }
+
+    public void setNotifyEmails(String notifyEmails) {
+        this.notifyEmails = notifyEmails;
+    }
+
+    @Column(nullable = false, columnDefinition = "TINYINT(1) NOT NULL DEFAULT 1")
+    public Boolean isNotifyOnlyOfFailed() {
+        return notifyOnlyOfFailed;
+    }
+
+    public void setNotifyOnlyOfFailed(Boolean notifyOnlyOfFailed) {
+        this.notifyOnlyOfFailed = notifyOnlyOfFailed;
+    }
 }

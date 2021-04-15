@@ -172,6 +172,7 @@ export class AppEditComponent implements OnInit {
     newCode() {
         let ref = this.modal.open(NewAppCodeFileDialog)
         ref.componentInstance.operations = this.operations
+        ref.componentInstance.customCodes = this.customCodes
         ref.result.then(result => {
             if (result != 'cancel') {
                 let code = result as AppCustomOperationCode

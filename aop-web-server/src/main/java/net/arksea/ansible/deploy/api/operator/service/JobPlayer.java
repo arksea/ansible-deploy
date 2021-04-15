@@ -12,16 +12,24 @@ import net.arksea.ansible.deploy.api.manage.entity.*;
 import net.arksea.ansible.deploy.api.manage.msg.OperationVariable;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import net.arksea.ansible.deploy.api.operator.entity.OperationToken;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.duration.Duration;
 
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import java.io.File;
 import java.io.FileWriter;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -44,6 +52,7 @@ public class JobPlayer extends AbstractActor {
     private boolean noMoreLogs = false;
     private IJobEventListener listener;
     private JobCommandRunner jobCommandRunner;
+    private boolean operationFailed = false;
 
     private JobPlayer(OperationJob job, Set<Long>hosts, Set<OperationVariable> operationVariables, JobResources beans) {
         this.job = job;
@@ -122,19 +131,46 @@ public class JobPlayer extends AbstractActor {
     }
 
     public void postStop() {
+        saveJobInfo();
+        releaseOperationToken();
+        closeJobLogFile();
+        sendJobNotificationMail();
+    }
+
+    private void saveJobInfo() {
         job.setEndTime(new Timestamp(System.currentTimeMillis()));
         StringBuilder sb = new StringBuilder();
         logs.forEach(sb::append);
         if (operation.getType() != AppOperationType.STATUS) { //为了减少日志占用数据库空间，状态查询日志只记录到文件
             job.setLog(sb.toString());
+            beans.operationJobDao.save(job);
         }
-        beans.operationJobDao.save(job);
+    }
+
+    private void releaseOperationToken() {
         OperationToken t = beans.operationTokenDao.findByAppId(job.getAppId());
         if (t != null) {
             t.setReleased(true);
             t.setReleaseTime(new Timestamp(System.currentTimeMillis()));
             beans.operationTokenDao.save(t);
         }
+    }
+
+    private void sendJobNotificationMail() {
+        if (job.getTriggerId() != null) {
+            if (job.getLog().contains("@@DEPLOY_OPERATION_FAILED")) {
+                operationFailed = true;
+            }
+            OperationTrigger t = beans.operationTriggerDao.findOne(job.getTriggerId());
+            if (t != null && StringUtils.isNotBlank(t.getNotifyEmails()) && (operationFailed || !t.isNotifyOnlyOfFailed())) {
+                String emails = t.getNotifyEmails();
+                String subject = operation.getName() + "" + app.getApptag() + (operationFailed?"失败":"成功");
+                beans.mailService.send(emails, subject, job.getLog());
+            }
+        }
+    }
+
+    private void closeJobLogFile() {
         if (jobLogFileWriter != null) {
             try {
                 jobLogFileWriter.flush();
@@ -174,6 +210,7 @@ public class JobPlayer extends AbstractActor {
         } catch (Exception ex) {
             delayStopJob();
             offerLog("初始化操作任务失败: "+ex.getMessage() + "\n");
+            operationFailed = true;
             logger.warn("初始化操作任务失败",ex);
         }
     }
@@ -190,6 +227,7 @@ public class JobPlayer extends AbstractActor {
                     offerLog("操作任务完成\n");
                 } else {
                     offerLog("操作任务失败:"+failure.getMessage()+"\n");
+                    operationFailed = true;
                     logger.warn("操作任务失败", failure);
                 }
             }

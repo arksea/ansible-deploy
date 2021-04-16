@@ -72,7 +72,8 @@ export class OperationTrigger {
     createTime: number = 0
     expiredTime: number = 0
     notifyEmails: string = '';
-    notifyOnlyOfFailed: boolean = true;
+    notifyRegex: string = '';
+    notifyMatchOrNot: boolean = true;
 }
 
 export class AppOperation {

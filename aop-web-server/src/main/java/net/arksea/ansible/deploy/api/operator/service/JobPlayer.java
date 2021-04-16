@@ -8,7 +8,10 @@ import akka.dispatch.Futures;
 import akka.dispatch.OnComplete;
 import akka.japi.Creator;
 import akka.japi.pf.ReceiveBuilder;
-import net.arksea.ansible.deploy.api.manage.entity.*;
+import net.arksea.ansible.deploy.api.manage.entity.App;
+import net.arksea.ansible.deploy.api.manage.entity.AppOperation;
+import net.arksea.ansible.deploy.api.manage.entity.AppOperationType;
+import net.arksea.ansible.deploy.api.manage.entity.OperationTrigger;
 import net.arksea.ansible.deploy.api.manage.msg.OperationVariable;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import net.arksea.ansible.deploy.api.operator.entity.OperationToken;
@@ -17,21 +20,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.duration.Duration;
 
-import javax.mail.Authenticator;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import java.io.File;
 import java.io.FileWriter;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 /**
  * Create by xiaohaixing on 2020/9/30
@@ -52,7 +49,7 @@ public class JobPlayer extends AbstractActor {
     private boolean noMoreLogs = false;
     private IJobEventListener listener;
     private JobCommandRunner jobCommandRunner;
-    private boolean operationFailed = false;
+    private boolean operationJobFailed = false;
 
     private JobPlayer(OperationJob job, Set<Long>hosts, Set<OperationVariable> operationVariables, JobResources beans) {
         this.job = job;
@@ -158,14 +155,23 @@ public class JobPlayer extends AbstractActor {
 
     private void sendJobNotificationMail() {
         if (job.getTriggerId() != null) {
-            if (job.getLog().contains("@@DEPLOY_OPERATION_FAILED")) {
-                operationFailed = true;
-            }
             OperationTrigger t = beans.operationTriggerDao.findOne(job.getTriggerId());
-            if (t != null && StringUtils.isNotBlank(t.getNotifyEmails()) && (operationFailed || !t.isNotifyOnlyOfFailed())) {
+            if (t!=null && StringUtils.isNotBlank(t.getNotifyEmails())) {
+                boolean matched = false;
+                if (StringUtils.isNotBlank(t.getNotifyRegex())) {
+                    try {
+                        Pattern pattern = Pattern.compile(t.getNotifyRegex());
+                        matched = pattern.matcher(job.getLog()).find();
+                    } catch (Exception ex) {
+                        logger.warn("用正则搜索失败，regex={}", t.getNotifyRegex());
+                    }
+                }
                 String emails = t.getNotifyEmails();
-                String subject = operation.getName() + "" + app.getApptag() + (operationFailed?"失败":"成功");
-                beans.mailService.send(emails, subject, job.getLog());
+                logger.debug("operationJobFailed={}, matched={}, notifyMatchOrNot={}", operationJobFailed, matched, t.getNotifyMatchOrNot());
+                if (operationJobFailed || t.getNotifyMatchOrNot().equals(matched)) {
+                    String subject = operation.getName() + "" + app.getApptag();
+                    beans.mailService.send(emails, subject, job.getLog());
+                }
             }
         }
     }
@@ -210,7 +216,7 @@ public class JobPlayer extends AbstractActor {
         } catch (Exception ex) {
             delayStopJob();
             offerLog("初始化操作任务失败: "+ex.getMessage() + "\n");
-            operationFailed = true;
+            operationJobFailed = true;
             logger.warn("初始化操作任务失败",ex);
         }
     }
@@ -227,7 +233,7 @@ public class JobPlayer extends AbstractActor {
                     offerLog("操作任务完成\n");
                 } else {
                     offerLog("操作任务失败:"+failure.getMessage()+"\n");
-                    operationFailed = true;
+                    operationJobFailed = true;
                     logger.warn("操作任务失败", failure);
                 }
             }

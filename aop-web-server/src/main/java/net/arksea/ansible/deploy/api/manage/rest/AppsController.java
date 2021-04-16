@@ -1,8 +1,6 @@
 package net.arksea.ansible.deploy.api.manage.rest;
 
-import static net.arksea.ansible.deploy.api.ResultCode.*;
 import net.arksea.ansible.deploy.api.manage.entity.App;
-import net.arksea.ansible.deploy.api.manage.entity.AppCustomOperationCode;
 import net.arksea.ansible.deploy.api.manage.msg.AppInfo;
 import net.arksea.ansible.deploy.api.manage.msg.GetOperationJobHistory;
 import net.arksea.ansible.deploy.api.manage.service.AppService;
@@ -14,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+
+import static net.arksea.ansible.deploy.api.ResultCode.FAILED;
+import static net.arksea.ansible.deploy.api.ResultCode.SUCCEED;
 
 /**
  * Create by xiaohaixing on 2020/8/28

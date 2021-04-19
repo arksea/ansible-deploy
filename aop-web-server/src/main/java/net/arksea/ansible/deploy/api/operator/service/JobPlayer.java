@@ -43,13 +43,14 @@ public class JobPlayer extends AbstractActor {
     private final LinkedList<String> logs = new LinkedList<>();
     private final JobResources beans;
     private final static long MAX_LOG_LEN_PER_REQUEST = 10240;
-    private final static long STOP_JOB_DELAY = 3;
+    private final static long STOP_JOB_DELAY = 5;
     private final static long JOB_PLAY_TIMEOUT = 1800;
     private FileWriter jobLogFileWriter;
     private boolean noMoreLogs = false;
     private IJobEventListener listener;
     private JobCommandRunner jobCommandRunner;
     private boolean operationJobFailed = false;
+    private boolean hasClientPollingLog = false; //有客户端正在实时读取日志，退出消息将会被延迟
 
     private JobPlayer(OperationJob job, Set<Long>hosts, Set<OperationVariable> operationVariables, JobResources beans) {
         this.job = job;
@@ -69,6 +70,7 @@ public class JobPlayer extends AbstractActor {
             @Override
             public void onFinished() {
                 delayStopJob();
+                self().tell(new NoMoreLogs(), ActorRef.noSender());
             }
         };
         jobCommandRunner = new JobCommandRunner(cmd, listener);
@@ -160,7 +162,7 @@ public class JobPlayer extends AbstractActor {
                 boolean matched = false;
                 if (StringUtils.isNotBlank(t.getNotifyRegex())) {
                     try {
-                        Pattern pattern = Pattern.compile(t.getNotifyRegex());
+                        Pattern pattern = Pattern.compile(t.getNotifyRegex(), Pattern.MULTILINE);
                         matched = pattern.matcher(job.getLog()).find();
                     } catch (Exception ex) {
                         logger.warn("用正则搜索失败，regex={}", t.getNotifyRegex());
@@ -170,7 +172,8 @@ public class JobPlayer extends AbstractActor {
                 logger.debug("operationJobFailed={}, matched={}, notifyMatchOrNot={}", operationJobFailed, matched, t.getNotifyMatchOrNot());
                 if (operationJobFailed || t.getNotifyMatchOrNot().equals(matched)) {
                     String subject = operation.getName() + "" + app.getApptag();
-                    beans.mailService.send(emails, subject, job.getLog());
+                    String html = "<pre>\n"+job.getLog()+"\n</pre>";
+                    beans.mailService.send(emails, subject, html);
                 }
             }
         }
@@ -218,6 +221,7 @@ public class JobPlayer extends AbstractActor {
             offerLog("初始化操作任务失败: "+ex.getMessage() + "\n");
             operationJobFailed = true;
             logger.warn("初始化操作任务失败",ex);
+            self().tell(new NoMoreLogs(), ActorRef.noSender());
         }
     }
 
@@ -236,12 +240,12 @@ public class JobPlayer extends AbstractActor {
                     operationJobFailed = true;
                     logger.warn("操作任务失败", failure);
                 }
+                self().tell(new NoMoreLogs(), ActorRef.noSender());
             }
         }, context().dispatcher());
     }
 
     private void delayStopJob() {
-        self().tell(new NoMoreLogs(), ActorRef.noSender());
         context().system().scheduler().scheduleOnce(
                 Duration.create(STOP_JOB_DELAY, TimeUnit.SECONDS),
                 self(),new StopJob(),context().dispatcher(),self());
@@ -253,6 +257,7 @@ public class JobPlayer extends AbstractActor {
 
     private void handlePollLogs(PollLogs msg) {
         if (msg.index < logs.size() || !noMoreLogs) {
+            hasClientPollingLog = true;
             StringBuilder sb = new StringBuilder();
             long len = 0;
             int index;
@@ -268,14 +273,19 @@ public class JobPlayer extends AbstractActor {
             PollLogsResult result = new PollLogsResult(sb.toString(), index, logs.size());
             sender().tell(result, self());
         } else {
+            hasClientPollingLog = false;
             PollLogsResult result = new PollLogsResult("", -1, logs.size());
             sender().tell(result, self());
         }
     }
 
     private void handleStopJob(StopJob msg) {
-        jobCommandRunner.destroy();
-        context().stop(self());
+        if (hasClientPollingLog) {
+            delayStopJob();
+        } else {
+            jobCommandRunner.destroy();
+            context().stop(self());
+        }
     }
     private void handleOfferLog(OfferLog msg) {
         offerLog(msg.log);
@@ -298,5 +308,17 @@ public class JobPlayer extends AbstractActor {
     private String getJobPath() {
         LocalDate localDate = LocalDate.now();
         return beans.jobWorkRoot + "/" + localDate + "/" + app.getApptag() + "/" + job.getId() + "/";
+    }
+
+    public static void main(String[] args) {
+        Pattern pattern = Pattern.compile("^BUILD SUCCESSFUL in \\d+", Pattern.MULTILINE);
+        String log = "Use '--warning-mode all' to show the individual deprecation warnings.\n" +
+                "See https://docs.gradle.org/6.8.2/userguide/command_line_interface.html#sec:command_line_warnings\n" +
+                "\n" +
+                "BUILD SUCCESSFUL in 13s\n" +
+                "4 actionable tasks: 4 executed\n" +
+                "Sending build context to Docker daemon  243.9MB";
+        boolean matched = pattern.matcher(log).find();
+        System.out.println(matched);
     }
 }

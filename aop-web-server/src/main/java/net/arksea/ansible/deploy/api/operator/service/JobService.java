@@ -88,7 +88,7 @@ public class JobService {
             String path = "akka.tcp://system@" + job.getExecHost() + ":" + systemBindPort + "/user/" + makeJobActorName(jobId);
             ActorSelection s = system.actorSelection(path);
             JobPlayer.PollLogs msg = new JobPlayer.PollLogs(index);
-            return Patterns.ask(s, msg, 10000).mapTo(classTag(JobPlayer.PollLogsResult.class));
+            return Patterns.ask(s, msg, 1000).mapTo(classTag(JobPlayer.PollLogsResult.class));
         } else {
             return Futures.successful(new JobPlayer.PollLogsResult("", -1, 0));
         }

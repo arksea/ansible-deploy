@@ -137,45 +137,85 @@ public class JobPlayer extends AbstractActor {
     }
 
     private void saveJobInfo() {
-        job.setEndTime(new Timestamp(System.currentTimeMillis()));
-        StringBuilder sb = new StringBuilder();
-        logs.forEach(sb::append);
-        if (operation.getType() != AppOperationType.STATUS) { //为了减少日志占用数据库空间，状态查询日志只记录到文件
-            job.setLog(sb.toString());
-            beans.operationJobDao.save(job);
+        try {
+            job.setEndTime(new Timestamp(System.currentTimeMillis()));
+            if (operation.getType() != AppOperationType.STATUS) { //为了减少日志占用数据库空间，状态查询日志只记录到文件
+                StringBuilder sb = new StringBuilder();
+                //logs.forEach(sb::append);
+                //这里曾经发生过一次异常错误
+                //判断不出确切原因，难道有其他异常被这个空指针异常抑制掉了看不到？
+                //先改成传统写法，saveJobInfo()加了异常捕获，再观察
+                //10:09:30.995 | ERROR | null | JobPlayer.$anonfun$applyOrElse$1(69) | system-akka.actor.default-dispatcher-2010 | akka://system/user/operationJob3185
+                //java.lang.NullPointerException
+                //        ... suppressed 2 lines
+                //        at net.arksea.ansible.deploy.api.operator.service.JobPlayer.saveJobInfo(JobPlayer.java:142) ~[classes/:?]
+                //        at net.arksea.ansible.deploy.api.operator.service.JobPlayer.postStop(JobPlayer.java:133) ~[classes/:?]
+                //        at akka.actor.Actor.aroundPostStop(Actor.scala:536) ~[akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.actor.Actor.aroundPostStop$(Actor.scala:536) ~[akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.actor.AbstractActor.aroundPostStop(AbstractActor.scala:147) ~[akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.actor.dungeon.FaultHandling.finishTerminate(FaultHandling.scala:210) ~[akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.actor.dungeon.FaultHandling.terminate(FaultHandling.scala:172) ~[akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.actor.dungeon.FaultHandling.terminate$(FaultHandling.scala:142) ~[akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.actor.ActorCell.terminate(ActorCell.scala:433) ~[akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.actor.ActorCell.invokeAll$1(ActorCell.scala:531) [akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.actor.ActorCell.systemInvoke(ActorCell.scala:547) [akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.dispatch.Mailbox.processAllSystemMessages(Mailbox.scala:282) ~[akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.dispatch.Mailbox.processMailbox(Mailbox.scala:260) [akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.dispatch.Mailbox.run(Mailbox.scala:224) [akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.dispatch.Mailbox.exec(Mailbox.scala:234) [akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.dispatch.forkjoin.ForkJoinTask.doExec(ForkJoinTask.java:260) [akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.dispatch.forkjoin.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1339) [akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.dispatch.forkjoin.ForkJoinPool.runWorker(ForkJoinPool.java:1979) [akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.dispatch.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:107) [akka-actor_2.12-2.5.11.jar:2.5.11]
+                for (String l : this.logs) {
+                    sb.append(l);
+                }
+                job.setLog(sb.toString());
+                beans.operationJobDao.save(job);
+            }
+        } catch (Exception ex) {
+            logger.error("保存操作日志失败",ex);
         }
     }
 
     private void releaseOperationToken() {
-        OperationToken t = beans.operationTokenDao.findByAppId(job.getAppId());
-        if (t != null) {
-            t.setReleased(true);
-            t.setReleaseTime(new Timestamp(System.currentTimeMillis()));
-            beans.operationTokenDao.save(t);
+        try {
+            OperationToken t = beans.operationTokenDao.findByAppId(job.getAppId());
+            if (t != null) {
+                t.setReleased(true);
+                t.setReleaseTime(new Timestamp(System.currentTimeMillis()));
+                beans.operationTokenDao.save(t);
+            }
+        } catch (Exception ex) {
+            logger.error("释放操作令牌失败", ex);
         }
     }
 
     private void sendJobNotificationMail() {
-        if (job.getTriggerId() != null) {
-            OperationTrigger t = beans.operationTriggerDao.findOne(job.getTriggerId());
-            if (t!=null && StringUtils.isNotBlank(t.getNotifyEmails())) {
-                boolean matched = false;
-                if (StringUtils.isNotBlank(t.getNotifyRegex())) {
-                    try {
-                        Pattern pattern = Pattern.compile(t.getNotifyRegex(), Pattern.MULTILINE);
-                        matched = pattern.matcher(job.getLog()).find();
-                    } catch (Exception ex) {
-                        logger.warn("用正则搜索失败，regex={}", t.getNotifyRegex());
+        try {
+            if (job.getTriggerId() != null) {
+                OperationTrigger t = beans.operationTriggerDao.findOne(job.getTriggerId());
+                if (t != null && StringUtils.isNotBlank(t.getNotifyEmails())) {
+                    boolean matched = false;
+                    if (StringUtils.isNotBlank(t.getNotifyRegex())) {
+                        try {
+                            Pattern pattern = Pattern.compile(t.getNotifyRegex(), Pattern.MULTILINE);
+                            matched = pattern.matcher(job.getLog()).find();
+                        } catch (Exception ex) {
+                            logger.warn("用正则搜索失败，regex={}", t.getNotifyRegex());
+                        }
+                    }
+                    String emails = t.getNotifyEmails();
+                    logger.debug("operationJobFailed={}, matched={}, notifyMatchOrNot={}", operationJobFailed, matched, t.getNotifyMatchOrNot());
+                    if (operationJobFailed || t.getNotifyMatchOrNot().equals(matched)) {
+                        String subject = operation.getName() + "" + app.getApptag();
+                        String html = "<pre>\n" + job.getLog() + "\n</pre>";
+                        beans.mailService.send(emails, subject, html);
                     }
                 }
-                String emails = t.getNotifyEmails();
-                logger.debug("operationJobFailed={}, matched={}, notifyMatchOrNot={}", operationJobFailed, matched, t.getNotifyMatchOrNot());
-                if (operationJobFailed || t.getNotifyMatchOrNot().equals(matched)) {
-                    String subject = operation.getName() + "" + app.getApptag();
-                    String html = "<pre>\n"+job.getLog()+"\n</pre>";
-                    beans.mailService.send(emails, subject, html);
-                }
             }
+        } catch (Exception ex) {
+            logger.error("发送通知邮件失败", ex);
         }
     }
 

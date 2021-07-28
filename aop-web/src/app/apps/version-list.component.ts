@@ -67,7 +67,7 @@ export class VersionListComponent implements OnInit {
     }
 
     onAddTriggerBtnClick(version: Version) {
-        let ref = this.modal.open(EditTriggerDialog)
+        let ref = this.modal.open(EditTriggerDialog, {size: 'lg'})
         let trigger = new OperationTrigger()
         trigger.versionId = version.id
         trigger.createUser = this.account.loginUser
@@ -164,7 +164,7 @@ export class VersionListComponent implements OnInit {
     }
 
     public onEditTriggerBtnClick(trigger: OperationTrigger, version: Version) {
-        let ref = this.modal.open(EditTriggerDialog)
+        let ref = this.modal.open(EditTriggerDialog, {size: 'lg'})
         ref.componentInstance.setParams(this.app.appType.id, trigger, version.triggers)
     }
 

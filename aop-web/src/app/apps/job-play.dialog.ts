@@ -136,16 +136,16 @@ export class JobPlayDialog implements OnInit, OnDestroy, AfterViewChecked {
                     let color = kv[2]
                     let name = kv[3]
                     for (let h of this.hosts) {
-                        if (h.privateIp == key) {
+                        if (h.privateIp == key || key == 'ALL') {
                             h.status[name] = {value: value, color: color}
                         }
                     }
-                } else if (kv.length > 3) {
+                } else if (kv.length >= 3) {
                     let key   = kv[0]
                     let value = kv[1]
                     let color = kv[2]
                     for (let h of this.hosts) {
-                        if (h.privateIp == key) {
+                        if (h.privateIp == key || key == 'ALL') {
                             h.status[this.operation.name] = {value: value, color: color}
                         }
                     }

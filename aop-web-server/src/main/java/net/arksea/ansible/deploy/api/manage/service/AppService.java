@@ -13,7 +13,6 @@ import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import net.arksea.ansible.deploy.api.operator.entity.OperationToken;
 import net.arksea.restapi.RestException;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -67,6 +66,8 @@ public class AppService {
     VersionService versionService;
     @Autowired
     PortsService portsService;
+    @Autowired
+    AppCustomOperationCodeDao appCodeDao;
 
     ZoneId zoneId = ZoneId.of("+8");
 
@@ -167,6 +168,10 @@ public class AppService {
         return appDao.findOne(id);
     }
 
+    public List<AppCustomOperationCode> findAppCodes(final Long appId) {
+        return appCodeDao.findByAppId(appId);
+    }
+
     @Transactional
     public void deletedById(final long id) {
         deleteApp(id);
@@ -262,5 +267,15 @@ public class AppService {
             infos.add(new GetOperationJobHistory.OperationJobInfo(j.getId(), operation, operator, j.getTriggerId(), version, j.getStartTime(), j.getEndTime()));
         }
         return infos;
+    }
+
+    @Transactional
+    public void deleteAppCode(Long id) {
+        appCodeDao.delete(id);
+    }
+
+    @Transactional
+    public Iterable<AppCustomOperationCode> saveAppCodes(List<AppCustomOperationCode> codes) {
+        return appCodeDao.save(codes);
     }
 }

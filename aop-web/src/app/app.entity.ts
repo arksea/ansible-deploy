@@ -50,7 +50,7 @@ export class AppVariable {
     name: string = ''// 变量名
     value: string = ''// 变量值
     isPort: boolean = false// 是否端口值，用于主机范围的唯一性判断
-    isDeleted: boolean = false
+    deleted: boolean = false
 }
 
 export class VersionVariable {
@@ -58,7 +58,7 @@ export class VersionVariable {
     name: string = ''// 变量名
     value: string = ''// 变量值
     isPort: boolean = false// 是否端口值，用于主机范围的唯一性判断
-    isDeleted: boolean = false
+    deleted: boolean = false
 }
 
 export class OperationTrigger {
@@ -71,6 +71,9 @@ export class OperationTrigger {
     createUser: string = ''
     createTime: number = 0
     expiredTime: number = 0
+    notifyEmails: string = '';
+    notifyRegex: string = '';
+    notifyMatchOrNot: boolean = true;
 }
 
 export class AppOperation {
@@ -89,7 +92,15 @@ export class AppOperationCode {
     id: number|null = null
     operationId: number|null = null
     fileName: string = ''
-    description: string = ''
+    code: string = ''
+}
+
+export class AppCustomOperationCode {
+    id: number|null = null
+    appId: number|null = null
+    operationId: number|null = null
+    operationName: string = ''
+    fileName: string = ''
     code: string = ''
 }
 

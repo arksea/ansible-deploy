@@ -22,6 +22,7 @@ import { JobPlayDialog, StatusJobPlayDialog, DeleteJobPlayDialog } from './job-p
 import { JobLogDialog } from './job-log.dialog'
 import { PortSelectDialog } from './port-select.dialog'
 import { AppOperationHistoryComponent } from './app-operation-history.component'
+import { NewAppCodeFileDialog } from './new-app-code-file.dialog'
 
 @NgModule({
   imports: [
@@ -34,11 +35,11 @@ import { AppOperationHistoryComponent } from './app-operation-history.component'
     AppsComponent, AppListComponent, AppEditComponent, AppComponent, 
     VersionEditComponent, VersionListComponent, AddHostDialog, EditTriggerDialog,
     JobPlayDialog, StatusJobPlayDialog, DeleteJobPlayDialog, JobLogDialog,
-    PortSelectDialog, AppOperationHistoryComponent
+    PortSelectDialog, AppOperationHistoryComponent, NewAppCodeFileDialog
   ],
   entryComponents: [
     AddHostDialog, EditTriggerDialog, JobPlayDialog, StatusJobPlayDialog,
-    PortSelectDialog, DeleteJobPlayDialog, JobLogDialog
+    PortSelectDialog, DeleteJobPlayDialog, JobLogDialog, NewAppCodeFileDialog
   ],
   providers: [AppsService, TriggerService],
   exports: []

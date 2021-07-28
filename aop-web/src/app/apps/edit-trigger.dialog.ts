@@ -35,7 +35,10 @@ export class EditTriggerDialog {
             operationId: new FormControl({value:trigger.operationId, disabled: this.editing}, [Validators.required]),
             description: new FormControl(trigger.description,[Validators.maxLength(128)]),
             expireDays: new FormControl(days.toFixed(), [Validators.required]),
-            projectTag: new FormControl(trigger.projectTag, [Validators.required, Validators.maxLength(128)])
+            projectTag: new FormControl(trigger.projectTag, [Validators.required, Validators.maxLength(128)]),
+            notifyMatchOrNot: new FormControl(trigger.notifyMatchOrNot),
+            notifyEmails: new FormControl(trigger.notifyEmails, [Validators.maxLength(1024)]),
+            notifyRegex: new FormControl(trigger.notifyRegex, [Validators.maxLength(256)])
         })
         this.appSvc.getOperationsByAppTypeId(this.appTypeId).subscribe(ret => {
             if (ret.code == 0) {
@@ -51,6 +54,9 @@ export class EditTriggerDialog {
         this.trigger.expiredTime = now() + this.expireDays.value*24*3600*1000;
         this.trigger.operationId = this.operationId.value
         this.trigger.projectTag = this.projectTag.value
+        this.trigger.notifyMatchOrNot = this.matchOrNot.value
+        this.trigger.notifyEmails = this.emails.value
+        this.trigger.notifyRegex = this.regex.value
         this.svc.saveTrigger(this.trigger).subscribe(ret => {
             if (ret.code == 0) {
                 if (!this.editing) {
@@ -75,5 +81,17 @@ export class EditTriggerDialog {
 
     get projectTag(): AbstractControl {
         return this.form.get('projectTag')
+    }
+
+    get emails(): AbstractControl {
+        return this.form.get('notifyEmails')
+    }
+
+    get matchOrNot(): AbstractControl {
+        return this.form.get('notifyMatchOrNot')
+    }
+
+    get regex(): AbstractControl {
+        return this.form.get('notifyRegex')
     }
 }

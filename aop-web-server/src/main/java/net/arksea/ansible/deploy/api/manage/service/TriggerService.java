@@ -32,12 +32,14 @@ public class TriggerService {
     VersionDao versionDao;
 
     @Transactional
-    public OperationTrigger addTrigger(ClientInfo info, OperationTrigger trigger) {
-        trigger.setCreateUserId(info.userId);
-        trigger.setCreateUser(info.username);
-        trigger.setCreateTime(new Timestamp(System.currentTimeMillis()));
-        String token = UUID.randomUUID().toString();
-        trigger.setToken(token);
+    public OperationTrigger saveTrigger(ClientInfo info, OperationTrigger trigger) {
+        if (trigger.getId() == null) {
+            trigger.setCreateUserId(info.userId);
+            trigger.setCreateUser(info.username);
+            trigger.setCreateTime(new Timestamp(System.currentTimeMillis()));
+            String token = UUID.randomUUID().toString();
+            trigger.setToken(token);
+        }
         return operationTriggerDao.save(trigger);
     }
 

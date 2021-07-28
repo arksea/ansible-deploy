@@ -21,6 +21,9 @@ public class OperationTrigger extends IdEntity {
     private String createUser;
     private Timestamp createTime;
     private Timestamp expiredTime;
+    private String notifyEmails;
+    private String notifyRegex;
+    private Boolean notifyMatchOrNot;
 
     @Column(nullable = false)
     public Long getVersionId() {
@@ -103,4 +106,30 @@ public class OperationTrigger extends IdEntity {
         this.expiredTime = expiredTime;
     }
 
+    @Column(length = 1024)
+    public String getNotifyEmails() {
+        return notifyEmails;
+    }
+
+    public void setNotifyEmails(String notifyEmails) {
+        this.notifyEmails = notifyEmails;
+    }
+
+    @Column(length = 256)
+    public String getNotifyRegex() {
+        return notifyRegex;
+    }
+
+    public void setNotifyRegex(String notifyRegex) {
+        this.notifyRegex = notifyRegex;
+    }
+
+    @Column(nullable = false, columnDefinition = "TINYINT(1) NOT NULL DEFAULT 1")
+    public Boolean getNotifyMatchOrNot() {
+        return notifyMatchOrNot;
+    }
+
+    public void setNotifyMatchOrNot(Boolean notifyMatchOrNot) {
+        this.notifyMatchOrNot = notifyMatchOrNot;
+    }
 }

@@ -8,10 +8,14 @@ import akka.dispatch.Futures;
 import akka.dispatch.OnComplete;
 import akka.japi.Creator;
 import akka.japi.pf.ReceiveBuilder;
-import net.arksea.ansible.deploy.api.manage.entity.*;
+import net.arksea.ansible.deploy.api.manage.entity.App;
+import net.arksea.ansible.deploy.api.manage.entity.AppOperation;
+import net.arksea.ansible.deploy.api.manage.entity.AppOperationType;
+import net.arksea.ansible.deploy.api.manage.entity.OperationTrigger;
 import net.arksea.ansible.deploy.api.manage.msg.OperationVariable;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import net.arksea.ansible.deploy.api.operator.entity.OperationToken;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.concurrent.duration.Duration;
@@ -24,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 /**
  * Create by xiaohaixing on 2020/9/30
@@ -38,12 +43,14 @@ public class JobPlayer extends AbstractActor {
     private final LinkedList<String> logs = new LinkedList<>();
     private final JobResources beans;
     private final static long MAX_LOG_LEN_PER_REQUEST = 10240;
-    private final static long STOP_JOB_DELAY = 3;
-    private final static long JOB_PLAY_TIMEOUT = 300;
+    private final static long STOP_JOB_DELAY = 5;
+    private final static long JOB_PLAY_TIMEOUT = 1800;
     private FileWriter jobLogFileWriter;
     private boolean noMoreLogs = false;
     private IJobEventListener listener;
     private JobCommandRunner jobCommandRunner;
+    private boolean operationJobFailed = false;
+    private boolean hasClientPollingLog = false; //有客户端正在实时读取日志，退出消息将会被延迟
 
     private JobPlayer(OperationJob job, Set<Long>hosts, Set<OperationVariable> operationVariables, JobResources beans) {
         this.job = job;
@@ -63,6 +70,7 @@ public class JobPlayer extends AbstractActor {
             @Override
             public void onFinished() {
                 delayStopJob();
+                self().tell(new NoMoreLogs(), ActorRef.noSender());
             }
         };
         jobCommandRunner = new JobCommandRunner(cmd, listener);
@@ -122,19 +130,96 @@ public class JobPlayer extends AbstractActor {
     }
 
     public void postStop() {
-        job.setEndTime(new Timestamp(System.currentTimeMillis()));
-        StringBuilder sb = new StringBuilder();
-        logs.forEach(sb::append);
-        if (operation.getType() != AppOperationType.STATUS) { //为了减少日志占用数据库空间，状态查询日志只记录到文件
-            job.setLog(sb.toString());
+        saveJobInfo();
+        releaseOperationToken();
+        closeJobLogFile();
+        sendJobNotificationMail();
+    }
+
+    private void saveJobInfo() {
+        try {
+            job.setEndTime(new Timestamp(System.currentTimeMillis()));
+            if (operation.getType() != AppOperationType.STATUS) { //为了减少日志占用数据库空间，状态查询日志只记录到文件
+                StringBuilder sb = new StringBuilder();
+                //logs.forEach(sb::append);
+                //这里曾经发生过一次异常错误
+                //判断不出确切原因，难道有其他异常被这个空指针异常抑制掉了看不到？
+                //先改成传统写法，saveJobInfo()加了异常捕获，再观察
+                //10:09:30.995 | ERROR | null | JobPlayer.$anonfun$applyOrElse$1(69) | system-akka.actor.default-dispatcher-2010 | akka://system/user/operationJob3185
+                //java.lang.NullPointerException
+                //        ... suppressed 2 lines
+                //        at net.arksea.ansible.deploy.api.operator.service.JobPlayer.saveJobInfo(JobPlayer.java:142) ~[classes/:?]
+                //        at net.arksea.ansible.deploy.api.operator.service.JobPlayer.postStop(JobPlayer.java:133) ~[classes/:?]
+                //        at akka.actor.Actor.aroundPostStop(Actor.scala:536) ~[akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.actor.Actor.aroundPostStop$(Actor.scala:536) ~[akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.actor.AbstractActor.aroundPostStop(AbstractActor.scala:147) ~[akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.actor.dungeon.FaultHandling.finishTerminate(FaultHandling.scala:210) ~[akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.actor.dungeon.FaultHandling.terminate(FaultHandling.scala:172) ~[akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.actor.dungeon.FaultHandling.terminate$(FaultHandling.scala:142) ~[akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.actor.ActorCell.terminate(ActorCell.scala:433) ~[akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.actor.ActorCell.invokeAll$1(ActorCell.scala:531) [akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.actor.ActorCell.systemInvoke(ActorCell.scala:547) [akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.dispatch.Mailbox.processAllSystemMessages(Mailbox.scala:282) ~[akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.dispatch.Mailbox.processMailbox(Mailbox.scala:260) [akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.dispatch.Mailbox.run(Mailbox.scala:224) [akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.dispatch.Mailbox.exec(Mailbox.scala:234) [akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.dispatch.forkjoin.ForkJoinTask.doExec(ForkJoinTask.java:260) [akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.dispatch.forkjoin.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1339) [akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.dispatch.forkjoin.ForkJoinPool.runWorker(ForkJoinPool.java:1979) [akka-actor_2.12-2.5.11.jar:2.5.11]
+                //        at akka.dispatch.forkjoin.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:107) [akka-actor_2.12-2.5.11.jar:2.5.11]
+                for (String l : this.logs) {
+                    sb.append(l);
+                }
+                job.setLog(sb.toString());
+                beans.operationJobDao.save(job);
+            }
+        } catch (Exception ex) {
+            logger.error("保存操作日志失败",ex);
         }
-        beans.operationJobDao.save(job);
-        OperationToken t = beans.operationTokenDao.findByAppId(job.getAppId());
-        if (t != null) {
-            t.setReleased(true);
-            t.setReleaseTime(new Timestamp(System.currentTimeMillis()));
-            beans.operationTokenDao.save(t);
+    }
+
+    private void releaseOperationToken() {
+        try {
+            OperationToken t = beans.operationTokenDao.findByAppId(job.getAppId());
+            if (t != null) {
+                t.setReleased(true);
+                t.setReleaseTime(new Timestamp(System.currentTimeMillis()));
+                beans.operationTokenDao.save(t);
+            }
+        } catch (Exception ex) {
+            logger.error("释放操作令牌失败", ex);
         }
+    }
+
+    private void sendJobNotificationMail() {
+        try {
+            if (job.getTriggerId() != null) {
+                OperationTrigger t = beans.operationTriggerDao.findOne(job.getTriggerId());
+                if (t != null && StringUtils.isNotBlank(t.getNotifyEmails())) {
+                    boolean matched = false;
+                    if (StringUtils.isNotBlank(t.getNotifyRegex())) {
+                        try {
+                            Pattern pattern = Pattern.compile(t.getNotifyRegex(), Pattern.MULTILINE);
+                            matched = pattern.matcher(job.getLog()).find();
+                        } catch (Exception ex) {
+                            logger.warn("用正则搜索失败，regex={}", t.getNotifyRegex());
+                        }
+                    }
+                    String emails = t.getNotifyEmails();
+                    logger.debug("operationJobFailed={}, matched={}, notifyMatchOrNot={}", operationJobFailed, matched, t.getNotifyMatchOrNot());
+                    if (operationJobFailed || t.getNotifyMatchOrNot().equals(matched)) {
+                        String subject = operation.getName() + "" + app.getApptag();
+                        String html = "<pre>\n" + job.getLog() + "\n</pre>";
+                        beans.mailService.send(emails, subject, html);
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            logger.error("发送通知邮件失败", ex);
+        }
+    }
+
+    private void closeJobLogFile() {
         if (jobLogFileWriter != null) {
             try {
                 jobLogFileWriter.flush();
@@ -174,7 +259,9 @@ public class JobPlayer extends AbstractActor {
         } catch (Exception ex) {
             delayStopJob();
             offerLog("初始化操作任务失败: "+ex.getMessage() + "\n");
+            operationJobFailed = true;
             logger.warn("初始化操作任务失败",ex);
+            self().tell(new NoMoreLogs(), ActorRef.noSender());
         }
     }
 
@@ -190,14 +277,15 @@ public class JobPlayer extends AbstractActor {
                     offerLog("操作任务完成\n");
                 } else {
                     offerLog("操作任务失败:"+failure.getMessage()+"\n");
+                    operationJobFailed = true;
                     logger.warn("操作任务失败", failure);
                 }
+                self().tell(new NoMoreLogs(), ActorRef.noSender());
             }
         }, context().dispatcher());
     }
 
     private void delayStopJob() {
-        self().tell(new NoMoreLogs(), ActorRef.noSender());
         context().system().scheduler().scheduleOnce(
                 Duration.create(STOP_JOB_DELAY, TimeUnit.SECONDS),
                 self(),new StopJob(),context().dispatcher(),self());
@@ -209,6 +297,7 @@ public class JobPlayer extends AbstractActor {
 
     private void handlePollLogs(PollLogs msg) {
         if (msg.index < logs.size() || !noMoreLogs) {
+            hasClientPollingLog = true;
             StringBuilder sb = new StringBuilder();
             long len = 0;
             int index;
@@ -224,14 +313,19 @@ public class JobPlayer extends AbstractActor {
             PollLogsResult result = new PollLogsResult(sb.toString(), index, logs.size());
             sender().tell(result, self());
         } else {
+            hasClientPollingLog = false;
             PollLogsResult result = new PollLogsResult("", -1, logs.size());
             sender().tell(result, self());
         }
     }
 
     private void handleStopJob(StopJob msg) {
-        jobCommandRunner.destroy();
-        context().stop(self());
+        if (hasClientPollingLog) {
+            delayStopJob();
+        } else {
+            jobCommandRunner.destroy();
+            context().stop(self());
+        }
     }
     private void handleOfferLog(OfferLog msg) {
         offerLog(msg.log);
@@ -254,5 +348,17 @@ public class JobPlayer extends AbstractActor {
     private String getJobPath() {
         LocalDate localDate = LocalDate.now();
         return beans.jobWorkRoot + "/" + localDate + "/" + app.getApptag() + "/" + job.getId() + "/";
+    }
+
+    public static void main(String[] args) {
+        Pattern pattern = Pattern.compile("^BUILD SUCCESSFUL in \\d+", Pattern.MULTILINE);
+        String log = "Use '--warning-mode all' to show the individual deprecation warnings.\n" +
+                "See https://docs.gradle.org/6.8.2/userguide/command_line_interface.html#sec:command_line_warnings\n" +
+                "\n" +
+                "BUILD SUCCESSFUL in 13s\n" +
+                "4 actionable tasks: 4 executed\n" +
+                "Sending build context to Docker daemon  243.9MB";
+        boolean matched = pattern.matcher(log).find();
+        System.out.println(matched);
     }
 }

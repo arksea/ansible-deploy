@@ -13,8 +13,6 @@ import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import net.arksea.ansible.deploy.api.operator.entity.OperationToken;
 import net.arksea.restapi.RestException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -42,7 +40,6 @@ import java.util.*;
 @Component
 public class AppService {
 
-    Logger logger = LogManager.getLogger(AppService.class);
     @Autowired
     private AppDao appDao;
     @Autowired
@@ -50,7 +47,7 @@ public class AppService {
     @Autowired
     private AppVarDefineDao appVarDefineDao;
     @Autowired
-    GroupVarDao groupVarDao;
+    AppVarDao appVarDao;
     @Autowired
     PortDao portDao;
     @Autowired
@@ -65,6 +62,12 @@ public class AppService {
     AppOperationDao appOperationDao;
     @Autowired
     UserDao userDao;
+    @Autowired
+    VersionService versionService;
+    @Autowired
+    PortsService portsService;
+    @Autowired
+    AppCustomOperationCodeDao appCodeDao;
 
     ZoneId zoneId = ZoneId.of("+8");
 
@@ -96,12 +99,8 @@ public class AppService {
         AppType type = appTypeDao.findByName(appTypeName);
         App app = new App();
         app.setAppType(type);
-        Version ver = new Version();
-        ver.setName("Online");
-        ver.setRepository("trunk");
-        ver.setRevision("HEAD");
-        ver.setExecOpt("");
-        ver.setTargetHosts(new HashSet<>());
+        Version ver = versionService.createVersionTemplate(appTypeName);
+        ver.setName("online");
         app.setVersions(new HashSet<>());
         app.getVersions().add(ver);
         app.setVars(new HashSet<>());
@@ -130,21 +129,22 @@ public class AppService {
         try {
             if (!isNewAction) {
                 App old = appDao.findOne(app.getId());
-                updateAppPort(old, app);
+                portsService.updatePortVariables(app.getId(), old.getVars(), app.getVars());
             }
             App saved = appDao.save(app);
             if (isNewAction) {//分配端口
-                setPortsAndVars(saved);
+                List<AppVarDefine> defines = appVarDefineDao.findByAppTypeId(app.getAppType().getId());
+                portsService.initPortVariables(app.getId(), saved.getVars(), defines, AppVariable::new);
             }
             long id = saved.getId();
             for (final AppVariable v : app.getVars()) {
                 v.setAppId(id);
-                groupVarDao.save(v);
+                appVarDao.save(v);
             }
             if (isNewAction) {
                 for (final Version v : app.getVersions()) {
                     v.setAppId(id);
-                    versionDao.save(v);
+                    versionService.saveVersion(v);
                 }
                 createOperationToken(saved.getId());
             }
@@ -156,79 +156,7 @@ public class AppService {
         }
     }
 
-    private void updateAppPort(App old, App updated) {
-        for (AppVariable u : updated.getVars()) {
-            for (AppVariable o : old.getVars()) {
-                if (u.getId().equals(o.getId()) && !u.getValue().equals(o.getValue())) {
-                    if (!u.getIsPort()) {
-                        continue;
-                    }
-                    int updateValue = Integer.parseInt(u.getValue());
-                    List<Port> l = portDao.findByValue(updateValue);
-                    if (l.size() == 1) {
-                        Port updatePort = l.get(0);
-                        if (updatePort.getAppId() != null) {
-                            throw new ServiceException("目标端口已被占用:"+updateValue);
-                        }
-                        if (!updatePort.getEnabled()) {
-                            throw new ServiceException("目标端口已被禁用:"+updateValue);
-                        }
-                        int oldValue = Integer.parseInt(o.getValue());
-                        List<Port> oldPorts = portDao.findByValue(oldValue);
-                        if (oldPorts.size() == 0) {
-                            throw new ServiceException("获取端口记录失败:"+oldValue);
-                        }
-                        portDao.releasePortByValue(oldValue);
-                        portTypeDao.incRestCount(1,  oldPorts.get(0).getTypeId());
-                        portDao.holdPortByValue(updateValue, updated.getId());
-                        portTypeDao.incRestCount(-1, updatePort.getTypeId());
-                    } else {
-                        throw new ServiceException("目标端口不存在:"+updateValue);
-                    }
-                }
-            }
-        }
-    }
-
-    private void setPortsAndVars(App app) {
-        List<AppVarDefine> defines = appVarDefineDao.findByAppTypeId(app.getAppType().getId());
-        int portCount = 0;
-        for (AppVarDefine def: defines) {
-            if (def.getPortType() != null) {
-                portCount++;
-                PortType portType = def.getPortType();
-                int n = portDao.assignForAppByTypeId(app.getId(), portType.getId());
-                if (n == 0) {
-                    throw new ServiceException("'"+portType.getName()+"'端口可用数不够，请联系管理员");
-                }
-                portTypeDao.incRestCount(-1, portType.getId());
-            }
-        }
-        List<Port> ports = portDao.findByAppId(app.getId());
-        if (ports.size() < portCount) {
-            throw new ServiceException("没有足够端口可供分配，请联系管理员");
-        } else if (ports.size() > portCount) {
-            throw new ServiceException("断言失败：分配端口逻辑错误");
-        }
-        for (AppVarDefine def: defines) {
-            if (def.getPortType() != null) {
-                PortType portType = def.getPortType();
-                for (Port p : ports) {
-                    if (portType.getId() == p.getTypeId()) {
-                        AppVariable var = new AppVariable();
-                        var.setAppId(app.getId());
-                        var.setIsPort(true);
-                        var.setName(def.getName());
-                        var.setValue(Integer.toString(p.getValue()));
-                        app.getVars().add(var);
-                        ports.remove(p);
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
+    @Transactional
     private void createOperationToken(long appId) {
         OperationToken token = new OperationToken();
         token.setAppId(appId);
@@ -238,6 +166,10 @@ public class AppService {
 
     public App findOne(final Long id) {
         return appDao.findOne(id);
+    }
+
+    public List<AppCustomOperationCode> findAppCodes(final Long appId) {
+        return appCodeDao.findByAppId(appId);
     }
 
     @Transactional
@@ -328,13 +260,22 @@ public class AppService {
                 version = "/";
             } else {
                 Version ver = verMap.computeIfAbsent(j.getVersionId(), id -> versionDao.findOne(id));
-                version = ver.getName();
+                version = ver==null? "/" : ver.getName();
             }
-            String operation = op.getName();
-            String operator = user.getName();
-
-            infos.add(new GetOperationJobHistory.OperationJobInfo(j.getId(), operation, operator, version, j.getStartTime(), j.getEndTime()));
+            String operation = op == null ? "/" : op.getName();
+            String operator = user == null ? "/" : user.getName();
+            infos.add(new GetOperationJobHistory.OperationJobInfo(j.getId(), operation, operator, j.getTriggerId(), version, j.getStartTime(), j.getEndTime()));
         }
         return infos;
+    }
+
+    @Transactional
+    public void deleteAppCode(Long id) {
+        appCodeDao.delete(id);
+    }
+
+    @Transactional
+    public Iterable<AppCustomOperationCode> saveAppCodes(List<AppCustomOperationCode> codes) {
+        return appCodeDao.save(codes);
     }
 }

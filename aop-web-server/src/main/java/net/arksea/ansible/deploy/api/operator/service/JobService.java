@@ -1,12 +1,12 @@
 package net.arksea.ansible.deploy.api.operator.service;
 
-import akka.actor.ActorRef;
 import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import akka.dispatch.Futures;
 import akka.pattern.Patterns;
 import net.arksea.ansible.deploy.api.ServiceException;
 import net.arksea.ansible.deploy.api.auth.entity.User;
+import net.arksea.ansible.deploy.api.manage.msg.OperationVariable;
 import net.arksea.ansible.deploy.api.operator.dao.OperationJobDao;
 import net.arksea.ansible.deploy.api.operator.dao.OperationTokenDao;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
@@ -35,18 +35,18 @@ public class JobService {
     private static final Logger logger = LogManager.getLogger(JobService.class);
     private static final long HOLD_TIMEOUT_SECONDS = 600;
     @Autowired
-    private OperationJobDao operationJobDao;
+    private OperationJobDao operationJobDao = null;
     @Autowired
-    private OperationTokenDao operationTokenDao;
+    private OperationTokenDao operationTokenDao = null;
     @Autowired
-    ActorSystem system;
+    private ActorSystem system = null;
     @Resource(name = "systemBindPort")
-    int systemBindPort;
+    private int systemBindPort;
     @Autowired
-    JobResources jobResources;
+    private JobResources jobResources = null;
 
     @Transactional
-    public OperationJob create(long userId, long appId, Long versionId, long operationId) {
+    public OperationJob create(long userId, long appId, Long versionId, long operationId, Long triggerId) {
         OperationToken t = operationTokenDao.findByAppId(appId);
         if (t == null) {
             t = new OperationToken();
@@ -58,6 +58,7 @@ public class JobService {
         job.setAppId(appId);
         job.setVersionId(versionId);
         job.setOperatorId(userId);
+        job.setTriggerId(triggerId);
         job.setOperationId(operationId);
         job.setExecHost(getLocalHost());
         job.setStartTime(new Timestamp(System.currentTimeMillis()));
@@ -76,9 +77,9 @@ public class JobService {
         return saved;
     }
 
-    public void startJob(OperationJob job, Set<Long> hosts) {
+    public void startJob(OperationJob job, Set<Long> hosts, Set<OperationVariable> operationVariables) {
         String name = makeJobActorName(job.getId());
-        ActorRef ref = system.actorOf(JobPlayer.props(job, hosts, jobResources), name);
+        system.actorOf(JobPlayer.props(job, hosts, operationVariables, jobResources), name);
     }
 
     public Future<JobPlayer.PollLogsResult> pollJobLogs(long jobId, int index) {
@@ -87,7 +88,7 @@ public class JobService {
             String path = "akka.tcp://system@" + job.getExecHost() + ":" + systemBindPort + "/user/" + makeJobActorName(jobId);
             ActorSelection s = system.actorSelection(path);
             JobPlayer.PollLogs msg = new JobPlayer.PollLogs(index);
-            return Patterns.ask(s, msg, 10000).mapTo(classTag(JobPlayer.PollLogsResult.class));
+            return Patterns.ask(s, msg, 1000).mapTo(classTag(JobPlayer.PollLogsResult.class));
         } else {
             return Futures.successful(new JobPlayer.PollLogsResult("", -1, 0));
         }
@@ -112,5 +113,14 @@ public class JobService {
         long epochSecond = localDate.atStartOfDay().toEpochSecond(ZoneOffset.of("+8"));
         int n = operationJobDao.deleteExpireJobs(new Timestamp(epochSecond*1000));
         logger.info("删除 {} 前的操作记录 {} 条", localDate, n);
+    }
+
+    public String getJobHistoryLog(long jobId) {
+        OperationJob job = operationJobDao.findOne(jobId);
+        if (job == null) {
+            return "";
+        } else {
+            return job.getLog();
+        }
     }
 }

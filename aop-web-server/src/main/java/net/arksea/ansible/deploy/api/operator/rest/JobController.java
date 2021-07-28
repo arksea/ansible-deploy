@@ -3,9 +3,10 @@ package net.arksea.ansible.deploy.api.operator.rest;
 import akka.actor.ActorSystem;
 import akka.dispatch.OnComplete;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import static net.arksea.ansible.deploy.api.ResultCode.*;
 import net.arksea.ansible.deploy.api.auth.info.ClientInfo;
 import net.arksea.ansible.deploy.api.auth.service.ClientInfoService;
+import net.arksea.ansible.deploy.api.manage.msg.OperationVariable;
 import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import net.arksea.ansible.deploy.api.operator.service.JobPlayer;
 import net.arksea.ansible.deploy.api.operator.service.JobService;
@@ -31,11 +32,11 @@ public class JobController {
     private static final String MEDIA_TYPE = "application/json; charset=UTF-8";
     private static final Logger logger = LogManager.getLogger(JobController.class);
     @Autowired
-    JobService jobService;
+    private JobService jobService = null;
     @Autowired
-    ClientInfoService clientInfoService;
+    private ClientInfoService clientInfoService = null;
     @Autowired
-    ActorSystem system;
+    private ActorSystem system = null;
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class StartOpeartionJob {
@@ -43,6 +44,7 @@ public class JobController {
         public Long versionId;
         public Long operationId;
         public Set<Long> hosts;
+        public Set<OperationVariable> vars;
     }
 
     @RequiresPermissions("应用:操作")
@@ -50,8 +52,14 @@ public class JobController {
     public RestResult<OperationJob> startJob(@RequestBody final StartOpeartionJob body,
                                               final HttpServletRequest httpRequest) {
         ClientInfo info = clientInfoService.getClientInfo(httpRequest);
-        OperationJob job = jobService.create(info.userId, body.appId, body.versionId, body.operationId);
-        jobService.startJob(job, body.hosts);
+        OperationJob job = jobService.create(info.userId, body.appId, body.versionId, body.operationId, null);
+        if (logger.isDebugEnabled()) {
+            logger.debug("userId: {}, appId: {}, versionId: {}, operationId: {}, params: {}",
+                    info.userId, body.appId, body.versionId, body.operationId,
+                    body.vars.stream().map(OperationVariable::toString)
+                            .reduce((m, n) -> m +";"+ n).orElse(""));
+        }
+        jobService.startJob(job, body.hosts, body.vars);
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         return new RestResult<>(0, job, reqid);
     }
@@ -78,5 +86,9 @@ public class JobController {
         return result;
     }
 
-
+    @RequiresPermissions("应用:查询")
+    @RequestMapping(path="{jobId}/historyLogs", method = RequestMethod.GET, produces = MEDIA_TYPE)
+    public RestResult<String> getHistoryJobLog(@PathVariable(name="jobId") final long jobId, final HttpServletRequest httpRequest) {
+        return new RestResult<>(SUCCEED, jobService.getJobHistoryLog(jobId), httpRequest);
+    }
 }

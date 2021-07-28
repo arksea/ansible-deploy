@@ -4,9 +4,10 @@ import { FormGroup, FormControl, AbstractControl } from '@angular/forms'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { AppsService } from './apps.service'
 import { MessageNotify } from '../utils/message-notify'
-import { App, OperationJobInfo, Page } from '../app.entity'
+import { App, OperationJobInfo, Page, OperationJob } from '../app.entity'
 import { AccountService } from '../account/account.service'
-import { PageEvent } from '@angular/material/paginator';
+import { PageEvent } from '@angular/material/paginator'
+import { JobLogDialog } from './job-log.dialog'
 
 @Component({
     selector: 'app-operation-history',
@@ -58,6 +59,11 @@ export class AppOperationHistoryComponent implements OnInit {
         this.pageSize = event.pageSize;
         this.query(page)
         return event;
+    }
+
+    public onJobClick(jobInfo: OperationJobInfo) {
+        let ref = this.modal.open(JobLogDialog, {size: 'xl', scrollable: true})
+        ref.componentInstance.jobInfo = jobInfo
     }
 
     public get operator(): AbstractControl {

@@ -4,14 +4,15 @@ import { ServiceResponse } from '../utils/http-utils'
 import { HttpUtils } from '../utils/http-utils'
 import { environment } from '../../environments/environment'
 import { map } from 'rxjs/operators'
-import { App, AppGroup, AppType, OperationJob, OperationJobInfo, Version, AppVarDefine } from '../app.entity'
-import { AppOperation, Host, Port, Page } from '../app.entity'
+import { App, AppGroup, AppType, OperationJob, OperationJobInfo, Version, AppVarDefine, VersionVarDefine, AppInfo, AppCustomOperationCode } from '../app.entity'
+import { AppOperation, Host, Port, Page, OperationVariable } from '../app.entity'
 
 class StartOpeartionJob {
     appId: number
     versionId: number
     operationId: number
     hosts: Array<number> = []
+    vars: Array<OperationVariable> = []
 }
 
 export class PollLogsResult {
@@ -22,7 +23,8 @@ export class PollLogsResult {
 
 @Injectable()
 export class AppsService {
-    private varDefineMap: Map<string,AppVarDefine> = new Map()
+    private appVarDefineMap: Map<string,AppVarDefine> = new Map()
+    private versionVarDefineMap: Map<string,VersionVarDefine> = new Map()
 
     public constructor(private httpUtils: HttpUtils) {
     }
@@ -48,13 +50,25 @@ export class AppsService {
         )
     }
 
-    public queryVarDefine() {
-        let url = environment.apiUrl + '/api/varDefines'
-        this.httpUtils.httpGet('查询变量定义',url).subscribe(ret => {
+    public queryAppVarDefine() {
+        let url = environment.apiUrl + '/api/varDefines/app'
+        this.httpUtils.httpGet('查询应用变量定义',url).subscribe(ret => {
             if (ret.code == 0) {
                 for (let def of ret.result) {
                     let key = '' + def.appTypeId + ':' + def.name
-                    this.varDefineMap[key] = def
+                    this.appVarDefineMap[key] = def
+                }
+            }
+        })
+    }
+
+    public queryVersionVarDefine() {
+        let url = environment.apiUrl + '/api/varDefines/version'
+        this.httpUtils.httpGet('查询版本变量定义',url).subscribe(ret => {
+            if (ret.code == 0) {
+                for (let def of ret.result) {
+                    let key = '' + def.appTypeId + ':' + def.name
+                    this.versionVarDefineMap[key] = def
                 }
             }
         })
@@ -73,9 +87,19 @@ export class AppsService {
         return this.httpUtils.httpGet('获取应用创建模版', url)
     }
 
+    public createVersionTemplate(appType: string): Observable<ServiceResponse<Version>> {
+        let url = environment.apiUrl + '/api/versions/template/'+appType
+        return this.httpUtils.httpGet('获取版本创建模版', url)
+    }
+
     public getAppVarDefine(appTypeId: number, name: string): AppVarDefine {
         let key = '' + appTypeId + ':' + name
-        return this.varDefineMap[key]
+        return this.appVarDefineMap[key]
+    }
+
+    public getVersionVarDefine(appTypeId: number, name: string): VersionVarDefine {
+        let key = '' + appTypeId + ':' + name
+        return this.versionVarDefineMap[key]
     }
 
     public createDefAppTemplate(): App {
@@ -147,12 +171,42 @@ export class AppsService {
         return this.httpUtils.httpGet('查询应用', url)
     }
 
+    public getAppCodes(appId: number): Observable<ServiceResponse<AppCustomOperationCode[]>> {
+        const url = environment.apiUrl + '/api/apps/' + appId + "/codes"
+        return this.httpUtils.httpGet('查询应用自定义脚本', url)
+    }
+
+    public deleteAppCode(code: AppCustomOperationCode):Observable<ServiceResponse<boolean>> {
+        const url = environment.apiUrl + '/api/appCodes/' + code.id
+        return this.httpUtils.httpDelete('删除应用自定义操作脚本', url)
+    }
+
+    public saveAppCodes(codes: Array<AppCustomOperationCode>): Observable<ServiceResponse<any>> {
+        const url = environment.apiUrl + '/api/appCodes'
+        return this.httpUtils.httpPost('保存应用自定义操作脚本', url, codes)
+    }
+
+    public getAppInfoById(appId: number): Observable<ServiceResponse<AppInfo>> {
+        const url = environment.apiUrl + '/api/apps/' + appId + '/info'
+        return this.httpUtils.httpGet('查询应用信息', url)
+    }
+
+    public getVersionById(versionId: number): Observable<ServiceResponse<Version>> {
+        const url = environment.apiUrl + '/api/versions/' + versionId
+        return this.httpUtils.httpGet('查询应用版本', url)
+    }
+
     public getUserGroups(): Observable<ServiceResponse<Array<AppGroup>>> {
         let url = environment.apiUrl + '/api/user/groups'
         return this.httpUtils.httpGet('查询用户的分组', url)
     }
 
-    public startJob(app: App, ver: Version, operation: AppOperation,hosts: Array<Host>): Observable<ServiceResponse<OperationJob>> {
+    public getOperations(appTypeId: number): Observable<ServiceResponse<Array<AppOperation>>> {
+        const url = environment.apiUrl + '/api/appTypes/'+appTypeId + '/operations'
+        return this.httpUtils.httpGet('查询操作', url)
+    }
+
+    public startJob(app: App, ver: Version, operation: AppOperation,hosts: Array<Host>, vars: Array<OperationVariable>): Observable<ServiceResponse<OperationJob>> {
         const url = environment.apiUrl + '/api/jobs'
         const body = new StartOpeartionJob()
         body.appId = app.id
@@ -164,6 +218,7 @@ export class AppsService {
         for (let h of hosts) {
             body.hosts.push(h.id)
         }
+        body.vars = vars
         return this.httpUtils.httpPost('开始操作任务', url, body)
     }
 
@@ -207,5 +262,10 @@ export class AppsService {
             url = url + '&operator=' + encodeURI(operator)
         }
         return this.httpUtils.httpGet('查询应用操作记录', url)
+    }
+
+    public getJobHistoryLogs(jobId: number): Observable<ServiceResponse<string>> {
+        let url = environment.apiUrl + '/api/jobs/' + jobId + '/historyLogs'
+        return this.httpUtils.httpGet('查询操作任务日志', url)
     }
 }

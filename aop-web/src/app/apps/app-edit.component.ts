@@ -1,18 +1,23 @@
 import { Component, OnInit } from '@angular/core'
-import { FormGroup, FormControl, AbstractControl, Validators } from '@angular/forms'
+import { FormGroup, FormControl, AbstractControl, Validators, ValidatorFn } from '@angular/forms'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { AppsService } from './apps.service'
 import { MessageNotify } from '../utils/message-notify'
-import { App,AppGroup, Host, AppVariable } from '../app.entity'
+import { App,AppGroup, AppVariable, AppCustomOperationCode, AppOperation } from '../app.entity'
 import { AccountService } from '../account/account.service'
 import { Router, ActivatedRoute, ParamMap } from '@angular/router'
-import { NewVersionDialog } from './new-version.dialog'
 import { HostsService } from '../hosts/hosts.service'
-import { AddHostDialog } from './add-host.dialog'
-import { Version } from '../app.entity'
-import { ConfirmDialog } from '../utils/confirm.dialog'
-import { DeleteJobPlayDialog } from './job-play.dialog'
 import { PortSelectDialog } from './port-select.dialog'
+import { NewAppCodeFileDialog } from './new-app-code-file.dialog'
+import { ConfirmDialog } from '../utils/confirm.dialog'
+
+
+export function forbiddenNameValidator(nameRe: RegExp): ValidatorFn {
+    return (control: AbstractControl): {[key: string]: any} | null => {
+        const forbidden = !nameRe.test(control.value)
+        return forbidden ? {forbiddenName: {value: control.value}} : null
+    };
+}
 
 @Component({
     selector: 'app-edit',
@@ -23,10 +28,14 @@ export class AppEditComponent implements OnInit {
     public groupSelectModel: any
     public app: App
     public appForm: FormGroup
+    //public codeForm: FormGroup
     public isNewAction: boolean
     public userGroups: AppGroup[]
     private groupMap: Map<number,AppGroup> = new Map()
     portModifyed: boolean = false
+    customCodes: AppCustomOperationCode[] = []
+    public activeCode: AppCustomOperationCode = new AppCustomOperationCode()
+    private operations: Array<AppOperation> = []
 
     constructor(private svc: AppsService,
                 private hostSvc: HostsService,
@@ -37,9 +46,11 @@ export class AppEditComponent implements OnInit {
                 private route: ActivatedRoute) {
         this.app = this.svc.createDefAppTemplate()
         this.appForm = new FormGroup({
-            'appGroupId': new FormControl(0, [Validators.required]),
-            'apptag': new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(30)]),
-            'description': new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(256)])
+            appGroupId: new FormControl(0, [Validators.required]),
+            apptag: new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(30),
+                forbiddenNameValidator(/^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/)]),
+            description: new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(256)]),
+            codeContent: new FormControl({value:'',disabled:this.readonly()}, [Validators.maxLength(65535)])
         })
         this.svc.getUserGroups().subscribe(ret => {
             if (ret.code == 0) {
@@ -61,6 +72,8 @@ export class AppEditComponent implements OnInit {
                     if (ret.code == 0) {
                         this.app = ret.result
                         this.setFormValue(this.app)
+                    } else {
+                        this.router.navigate(["/apps"])
                     }
                 }
             )
@@ -71,6 +84,19 @@ export class AppEditComponent implements OnInit {
                 if (ret.code == 0) {
                     this.app = ret.result
                     this.setFormValue(this.app)
+                    this.svc.getAppCodes(appId).subscribe(codesRet => {
+                        if (codesRet.code == 0) {
+                            this.customCodes = codesRet.result
+                            if (this.customCodes.length > 0) {
+                                this.setActiveCode(this.customCodes[0])
+                            }
+                        }
+                    })
+                    this.svc.getOperations(this.app.appType.id).subscribe(opRet => {
+                        if (opRet.code == 0) {
+                            this.operations = opRet.result
+                        }
+                    })
                 } else {
                     this.router.navigate(["/apps"])
                 }
@@ -93,121 +119,37 @@ export class AppEditComponent implements OnInit {
     }
 
     public save() {
-        let f = this.appForm
-        let a = this.app
-        a.apptag = this.apptag.value
-        a.description = this.desc.value
-        a.appGroup = this.groupMap.get(Number(this.appGroupId.value))
-        for (let i of a.vars) {
-            let c = f.get('var_' + i.name)
-            i.value = c.value
-        }
-        this.svc.saveApp(a).subscribe(ret => {
-                if (ret.code == 0) {
-                    this.alert.success('保存应用成功')
-                    this.router.navigate(['/apps'])
-                }
+
+            let f = this.appForm
+            let a = this.app
+            a.apptag = this.apptag.value
+            a.description = this.desc.value
+            a.appGroup = this.groupMap.get(Number(this.appGroupId.value))
+            for (let i of a.vars) {
+                let c = f.get('var_' + i.name)
+                i.value = c.value
             }
-        )
-    }
-
-    onNewVersionBtnClick() {
-        let ref = this.modal.open(NewVersionDialog)
-        this.app.apptag = this.apptag.value
-        ref.componentInstance.app = this.app
-    }
-
-    onAddHostBtnClick(version: Version) {
-        if (this.appGroupId.value) {
-            let ref = this.modal.open(AddHostDialog)
-            ref.componentInstance.setParams(this.app, version, this.appGroupId.value)
-        } else {
-            this.alert.warning("应用还未加入分组，不能配置部署主机")
-        }
-    }
-
-    onEditBtnClick(version: Version) {
-        let ref = this.modal.open(NewVersionDialog)
-        ref.componentInstance.app = this.app
-        ref.componentInstance.version = version
-    }
-
-    onDeleteVersionBtnClick(version: Version) {
-        if (this.isNewAction) { //未保存的新建应用
-            this.app.versions = this.app.versions.filter((v,i,a) => v.name != version.name)
-        } else {
-            let ref = this.modal.open(ConfirmDialog)
-            ref.componentInstance.title = "删除版本: "+version.name
-            ref.componentInstance.message = "确认要删除吗?"
-            ref.result.then(result => {
-                if (result == "ok") {
-                    this.svc.deleteVersionById(version.id).subscribe(success => {
-                        if (success) {
-                            this.app.versions = this.app.versions.filter((v,i,a) => v.id != version.id)
-                            this.alert.success("已删除")
-                        }
-                    })
-                }
-            }, resaon => {})
-        }
-    }
-
-    private confirmDeleteHost(host: Host, version: Version) {
-        let ref = this.modal.open(ConfirmDialog)
-        ref.componentInstance.title = "确认要移除吗?"
-        ref.componentInstance.message = "从版本中移除主机: "+host.privateIp
-        ref.result.then(result => {
-            if (result == "ok") {
-                this.doDeleteHostFromVersion(host, version)
-            }
-        }, resaon => {})
-    }
-
-    onDeleteHostBtnClick(host: Host, ver: Version) {
-        if (this.isNewAction) { //未保存的新建应用
-            ver.targetHosts = ver.targetHosts.filter((h,i,a) => h.id != host.id)
-        } else {
-            this.svc.getOperationsByAppTypeId(this.app.appType.id).subscribe(ret => {
-                if (ret.code == 0) {
-                    let operations = ret.result
-                    let hasDelScript = false
-                    for (let op of operations) {
-                        if (op.type == 'DELETE') {
-                            hasDelScript = true
-                            let ref = this.modal.open(DeleteJobPlayDialog, {size: 'lg', scrollable: true})
-                            ref.componentInstance.operation = op
-                            ref.componentInstance.app = this.app
-                            ref.componentInstance.hosts = [host]
-                            ref.componentInstance.ver = ver
-                            ref.result.then(result => {
-                                    if (result == 'skip') {
-                                        this.confirmDeleteHost(host, ver)
-                                    } else if (result == "ok") {
-                                        this.doDeleteHostFromVersion(host, ver)
-                                    }
-                                }, reason => {
-                                    this.alert.error("删除失败: " + reason)
-                                })
-                            break
-                        }
+            this.svc.saveApp(a).subscribe(ret => {
+                    if (ret.code == 0) {
+                        this.alert.success('保存应用成功')
+                        this.router.navigate(['/apps'])
                     }
-                    if (!hasDelScript)  {
-                        this.confirmDeleteHost(host, ver)
+                }
+            )
+        
+
+            this.activeCode.code = this.codeContent.value
+            this.svc.saveAppCodes(this.customCodes).subscribe(ret => {
+                if (this.appForm.pristine) {
+                    if (ret.code == 0) {
+                        this.alert.success('保存脚本成功')
+                        this.router.navigate(['/apps'])
                     }
                 }
             })
-        }
+        
     }
 
-    private doDeleteHostFromVersion (host: Host, version: Version) {
-        this.svc.removeHostFromVersion(version.id, host.id).subscribe(success => {
-            if (success) {
-                version.targetHosts = version.targetHosts.filter((h,i,a) => h.id != host.id)
-                this.alert.success("成功移除")
-            }
-        })
-    }
- 
     public onSelectPortBtnClick(variable: AppVariable) {
         let ref = this.modal.open(PortSelectDialog)
         ref.componentInstance.variable = variable
@@ -217,6 +159,72 @@ export class AppEditComponent implements OnInit {
                 this.portModifyed = true
             }
         }, reason => {})
+    }
+
+    private setActiveCode(code: AppCustomOperationCode) {
+        if (this.activeCode != undefined) {
+            this.activeCode.code = this.codeContent.value
+        }
+        this.activeCode = code
+        this.codeContent.setValue(this.activeCode.code)
+    }
+
+    newCode() {
+        let ref = this.modal.open(NewAppCodeFileDialog)
+        ref.componentInstance.operations = this.operations
+        ref.componentInstance.customCodes = this.customCodes
+        ref.result.then(result => {
+            if (result != 'cancel') {
+                let code = result as AppCustomOperationCode
+                code.appId = this.app.id
+                this.customCodes.push(code)
+                this.selectCode(code)
+            }
+        },reason => {})
+    }
+
+    deleteCode(code: AppCustomOperationCode) {
+        let ref = this.modal.open(ConfirmDialog)
+        ref.componentInstance.title = "确认要删除吗?"
+        ref.componentInstance.message = "删除文件: "+code.fileName
+        ref.result.then(result => {
+            if (result == "ok") {
+                if (this.isNewAction || code.id == undefined) {
+                    this.doDeleteCode(code);
+                } else {
+                    this.svc.deleteAppCode(code).subscribe(ret => {
+                        if (ret) {
+                            this.doDeleteCode(code);
+                        }
+                    })
+                }
+            }
+        }, resaon => {})
+    }
+
+    doDeleteCode(code: AppCustomOperationCode) {
+        let codes: Array<AppCustomOperationCode> = []
+        for (let c of this.customCodes) {
+            if (c.fileName != code.fileName || c.operationId != code.operationId) {
+                codes.push(c)
+            }
+        }
+        this.customCodes = codes
+        if (code.fileName == this.activeCode.fileName && code.operationId == this.activeCode.operationId) {
+            if (this.customCodes.length > 0) {
+                this.setActiveCode(this.customCodes[0])
+            } else {
+                this.setActiveCode(new AppCustomOperationCode())
+            }
+        }
+    }
+
+    isActiveCode(code: AppCustomOperationCode): boolean {
+        return this.activeCode.fileName == code.fileName && this.activeCode.operationId == code.operationId
+    }
+
+    selectCode(code: AppCustomOperationCode) {
+        this.setActiveCode(code)
     }
 
     getVarDesc(app: App, variable: AppVariable): string {
@@ -236,16 +244,20 @@ export class AppEditComponent implements OnInit {
         }
     }
 
+    readonly(): boolean {
+        return this.account.perm('应用:修改')
+    }
+
     public cancel() {
-        this.router.navigate(['/apps'])
+        if (this.isNewAction) {
+            this.router.navigate(['/apps'])
+        } else {
+            this.router.navigate(['/apps', this.app.id])
+        }
     }
 
     public get apptag(): AbstractControl {
         return this.appForm.get('apptag')
-    }
-
-    public get deployPath(): AbstractControl {
-        return this.appForm.get('deployPath')
     }
 
     public get desc(): AbstractControl {
@@ -254,5 +266,19 @@ export class AppEditComponent implements OnInit {
 
     public get appGroupId(): AbstractControl {
         return this.appForm.get('appGroupId')
+    }
+
+    public get appVars(): AppVariable[] {
+        let vars = []
+        for (let v of this.app.vars) {
+            if (!v.deleted) {
+                vars.push(v)
+            }
+        }
+        return vars
+    }
+
+    get codeContent() {
+        return this.appForm.get('codeContent')
     }
 }

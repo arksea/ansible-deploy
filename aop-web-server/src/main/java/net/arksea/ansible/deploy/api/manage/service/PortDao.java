@@ -26,6 +26,10 @@ interface PortDao extends CrudRepository<Port, Long> {
            value="update dp2_port p set p.app_id=?1 where p.type_id=?2 and p.app_id is null and p.enabled is true limit 1")
     int assignForAppByTypeId(long appId, Long typeId);
 
+    @Query(nativeQuery = true,
+            value="select * from dp2_port p where p.type_id=?1 and p.app_id is null and p.enabled is true limit 1")
+    List<Port> getOneFreeByTypeId(long typeId);
+
     @Modifying
     @Query(nativeQuery = true,
            value="update dp2_port p set p.app_id=null where p.app_id=?1")
@@ -42,16 +46,16 @@ interface PortDao extends CrudRepository<Port, Long> {
     @Modifying
     @Query(nativeQuery = true,
            value = "update dp2_port p set p.app_id = NULL where p.value = ?1")
-    void releasePortByValue(int value);
+    int releasePortByValue(int value);
 
     @Modifying
     @Query(nativeQuery = true,
-           value = "update dp2_port p set p.app_id = ?2 where p.value = ?1")
-    void holdPortByValue(int value, long appId);
+           value = "update dp2_port p set p.app_id = ?2 where p.value = ?1 and p.app_id is null and p.enabled is true")
+    int holdPortByValue(int value, long appId);
 
     @Modifying
     @Query(nativeQuery = true, value = "update dp2_port p set p.type_id = ?1 where p.value>=?2 and p.value<=?3")
-    void updatePortsType( long typeId, int min, int max);
+    int updatePortsType( long typeId, int min, int max);
 
     @Query(nativeQuery = true, value = "select count(*) from dp2_port p where p.value>=?1 and p.value<=?2 and p.app_id is null")
     int getSectionRestCount(int min, int max);

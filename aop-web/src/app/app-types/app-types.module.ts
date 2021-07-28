@@ -12,7 +12,8 @@ import { AppTypesService } from './app-types.service'
 import { AppTypesComponent } from './app-types.component'
 import { AppTypeListComponent } from './app-type-list.component'
 import { AppTypeEditComponent } from './app-type-edit.component'
-import { NewAppVarDefineDialog } from './new-var-define.dialog'
+import { NewAppVarDefineDialog } from './new-app-var-define.dialog'
+import { NewVersionVarDefineDialog } from './new-version-var-define.dialog'
 import { OperationListComponent } from './operation-list.component'
 
 @NgModule({
@@ -23,9 +24,9 @@ import { OperationListComponent } from './operation-list.component'
         VenderModule, NgbPaginationModule, NgbAlertModule, NgbModule,
         AccountModule, AppTypesRoutingModule],
     declarations: [AppTypesComponent, AppTypeListComponent, AppTypeEditComponent, 
-        OperationListComponent, NewAppVarDefineDialog],
+        OperationListComponent, NewAppVarDefineDialog, NewVersionVarDefineDialog],
     entryComponents: [
-        NewAppVarDefineDialog
+        NewAppVarDefineDialog, NewVersionVarDefineDialog
     ],
     providers: [AppTypesService],
     exports: []

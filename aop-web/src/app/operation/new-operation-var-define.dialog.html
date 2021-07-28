@@ -1,0 +1,37 @@
+<form (ngSubmit)="save()" [formGroup]="form">
+    <div class="modal-header">
+    <h3 class="modal-title" id="modal-title">新增变量</h3>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="var-name">变量名
+                <span class="text-danger" *ngIf="name.errors?.required">*</span>
+                <span class="text-danger" *ngIf="name.errors?.maxlength">(超过允许长度)</span>
+            </label>
+            <input type="text" class="form-control" id="var-name" formControlName="name">
+        </div>
+        <div class="form-group">
+            <label for="var-form-label">表单输入框标签
+                <span class="text-danger" *ngIf="formLabel.errors?.required">*</span>
+                <span class="text-danger" *ngIf="formLabel.errors?.maxlength">(超过允许长度)</span>
+            </label>
+            <input type="text" class="form-control" id="var-form-label" formControlName="formLabel">
+        </div>
+        <div class="form-group">
+            <label for="var-input-addon">表单输入框前缀
+                <span class="text-danger" *ngIf="inputAddon.errors?.maxlength">(超过允许长度)</span>
+            </label>
+            <input type="text" class="form-control" id="var-input-addon" formControlName="inputAddon">
+        </div>
+        <div class="form-group">
+            <label for="var-default-value">变量默认值
+                <span class="text-danger" *ngIf="defaultValue.errors?.maxlength">(超过允许长度)</span>
+            </label>
+            <input type="text" class="form-control" id="var-default-value" formControlName="defaultValue">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')">取消</button>
+        <button type="submit" class="btn btn-danger" [disabled]="form.invalid || form.pristine" (click)="save()">确认</button>
+    </div>
+</form>

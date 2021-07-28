@@ -16,16 +16,18 @@ public class GetOperationJobHistory {
         public final Long jobId;
         public final String operation;
         public final String operator;
+        public final Long triggerId;
         public final String version;
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+08:00")
         public final Timestamp startTime;
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+08:00")
         public final Timestamp endTime;
 
-        public OperationJobInfo(Long jobId, String operation, String operator, String ver, Timestamp startTime, Timestamp endTime) {
+        public OperationJobInfo(Long jobId, String operation, String operator, Long triggerId, String ver, Timestamp startTime, Timestamp endTime) {
             this.jobId = jobId;
             this.operation = operation;
             this.operator = operator;
+            this.triggerId = triggerId;
             this.version = ver;
             this.startTime = startTime;
             this.endTime = endTime;

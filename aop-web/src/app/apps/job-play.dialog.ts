@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked } from '@angular/core'
+import { FormGroup, FormControl, Validators } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { Subject, BehaviorSubject, Observable } from 'rxjs'
 import { publishReplay, refCount, scan, map, delay } from 'rxjs/operators'
 import { AppsService } from './apps.service'
-import { AppOperation, App, Host, Version } from '../app.entity'
+import { AppOperation, App, Host, Version, OperationVariable } from '../app.entity'
 
 export type IModelOperation = (data: ModelData) => ModelData
 export class ModelData {
@@ -23,6 +24,7 @@ export class JobPlayDialog implements OnInit, OnDestroy, AfterViewChecked {
     app: App
     hosts: Array<Host>
     ver: Version
+    public form: FormGroup
 
     @ViewChild('scrollLogs')
     private scrollContainer: ElementRef
@@ -36,6 +38,17 @@ export class JobPlayDialog implements OnInit, OnDestroy, AfterViewChecked {
     jobLogs: Observable<ModelData>
 
     constructor(public modal: NgbActiveModal, public svc: AppsService) {
+        this.form = new FormGroup({})
+    }
+
+    setParams(op: AppOperation, app: App, ver: Version, hosts: Array<Host>): void {
+        this.operation = op
+        this.app = app
+        this.ver = ver
+        this.hosts = hosts
+        for (let v of op.varDefines) {
+            this.form.addControl('var_' + v.name, new FormControl(v.defaultValue, [Validators.maxLength(128)]))
+        }
     }
 
     ngAfterViewChecked() {        
@@ -84,7 +97,15 @@ export class JobPlayDialog implements OnInit, OnDestroy, AfterViewChecked {
     }
 
     startJob() {
-        this.svc.startJob(this.app,this.ver, this.operation, this.hosts).subscribe(ret => {
+        let vars: Array<OperationVariable> = []
+        for (let i of this.operation.varDefines) {
+            let c = this.form.get('var_' + i.name)
+            let v = new OperationVariable()
+            v.name = i.name
+            v.value = c.value
+            vars.push(v)
+        }
+        this.svc.startJob(this.app,this.ver, this.operation, this.hosts, vars).subscribe(ret => {
             if (ret.code == 0) {
                 this.jobStarted.next(true)
                 let jobId = ret.result.id
@@ -115,16 +136,16 @@ export class JobPlayDialog implements OnInit, OnDestroy, AfterViewChecked {
                     let color = kv[2]
                     let name = kv[3]
                     for (let h of this.hosts) {
-                        if (h.privateIp == key) {
+                        if (h.privateIp == key || key == 'ALL') {
                             h.status[name] = {value: value, color: color}
                         }
                     }
-                } else if (kv.length > 3) {
+                } else if (kv.length >= 3) {
                     let key   = kv[0]
                     let value = kv[1]
                     let color = kv[2]
                     for (let h of this.hosts) {
-                        if (h.privateIp == key) {
+                        if (h.privateIp == key || key == 'ALL') {
                             h.status[this.operation.name] = {value: value, color: color}
                         }
                     }
@@ -145,7 +166,9 @@ export class StatusJobPlayDialog extends JobPlayDialog {
     }
     ngOnInit(): void {
         super.ngOnInit()
-        this.startJob()
+        if (this.operation.varDefines.length == 0) {
+            this.startJob()
+        }
     }
 }
 

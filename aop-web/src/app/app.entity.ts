@@ -18,11 +18,31 @@ export class AppVarDefine {
     portType: PortType|null = null
 }
 
+export class VersionVarDefine {
+    id: number|null = null
+    appTypeId: number|null = null
+    name: string = ''// 变量名
+    formLabel: string = ''  //表单输入框标签
+    inputAddon: string = '' //表单输入框提示前缀
+    defaultValue: string = ''
+    portType: PortType|null = null
+}
+
+export class OperationVarDefine {
+    id: number|null = null
+    operationId: number|null = null
+    name: string = ''// 变量名
+    formLabel: string = ''  //表单输入框标签
+    inputAddon: string = '' //表单输入框提示前缀
+    defaultValue: string = ''
+}
+
 export class AppType {
     id: number|null = null
     name: string = ''
     description: string = ''
     appVarDefines: Array<AppVarDefine> = []
+    versionVarDefines: Array<VersionVarDefine> = []
 }
 
 export class AppVariable {
@@ -30,6 +50,30 @@ export class AppVariable {
     name: string = ''// 变量名
     value: string = ''// 变量值
     isPort: boolean = false// 是否端口值，用于主机范围的唯一性判断
+    deleted: boolean = false
+}
+
+export class VersionVariable {
+    id: number|null = null
+    name: string = ''// 变量名
+    value: string = ''// 变量值
+    isPort: boolean = false// 是否端口值，用于主机范围的唯一性判断
+    deleted: boolean = false
+}
+
+export class OperationTrigger {
+    id: number|null = null
+    versionId: number
+    operationId: number
+    projectTag: string = ''
+    token: string = ''
+    description: string = ''
+    createUser: string = ''
+    createTime: number = 0
+    expiredTime: number = 0
+    notifyEmails: string = '';
+    notifyRegex: string = '';
+    notifyMatchOrNot: boolean = true;
 }
 
 export class AppOperation {
@@ -39,6 +83,7 @@ export class AppOperation {
     description: string = ''
     command: string = ''
     codes: Array<AppOperationCode> = []
+    varDefines: Array<OperationVarDefine> = []
     released: boolean = false
     type: string = 'COMMON'
 }
@@ -47,7 +92,15 @@ export class AppOperationCode {
     id: number|null = null
     operationId: number|null = null
     fileName: string = ''
-    description: string = ''
+    code: string = ''
+}
+
+export class AppCustomOperationCode {
+    id: number|null = null
+    appId: number|null = null
+    operationId: number|null = null
+    operationName: string = ''
+    fileName: string = ''
     code: string = ''
 }
 
@@ -63,10 +116,16 @@ export class Version {
     id: number|null = null
     appId: number|null = null
     name: string = ''
-    repository: string = ''
-    execOpt: string = ''
+    repository: string = 'trunk' //部署包仓库分支路径
+    execOpt: string = ''         //运行参数
+    buildNo: number = 0          //最近构建
+    buildNoUpdate: number = 0    //更新构建号的时间
+    deployNo: number = 0         //当前部署
+    deployNoUpdate: number = 0   //部署时间
     revision: string = 'HEAD'
-    targetHosts: Array<Host> = []
+    vars: Array<VersionVariable> = []// 变量
+    targetHosts: Array<Host> = []    // 部署目标主机
+    triggers: Array<OperationTrigger> = [] //操作触发器
 }
 
 export class HostStatus {
@@ -95,6 +154,12 @@ export class App {
     createTime: string|null = null //创建时间
 }
 
+export class AppInfo {
+    id: number|null = null
+    apptag: string = '' //应用标签，通常用来部署时建立应用目录名
+    appTypeId: number|null = null
+}
+
 export class AppGroup {
     id: number|null = null
     name: string = ''        // 分组名称
@@ -118,6 +183,7 @@ export class OperationJob {
     appId: number|null = null
     operatorId: number|null = null
     operationId: number|null = null
+    triggerId: number|number = null
     execHost: string = ''
     startTime: string|null = null
     endTime: string|null = null
@@ -128,6 +194,7 @@ export class OperationJobInfo {
     jobId: number|null = null
     operation: string = ''
     operator: string = ''
+    triggerId: number|null = null
     version: string = ''
     startTime: string = ''
     endTime: string = ''
@@ -137,4 +204,9 @@ export class Page<T> {
     total: number = 0
     totalPages: number = 0
     items: Array<T> = []
+}
+
+export class OperationVariable {
+    name: string
+    value: string
 }

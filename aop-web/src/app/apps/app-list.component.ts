@@ -51,6 +51,10 @@ export class AppListComponent implements OnInit {
         this.router.navigate(['/apps/' + app.id + '/edit'])
     }
 
+    onVersionBtnClick(app: App) {
+        this.router.navigate(['/apps/' + app.id + '/versions'])
+    }
+
     onViewBtnClick(app: App) {
         this.router.navigate(['/apps', app.id])
     }

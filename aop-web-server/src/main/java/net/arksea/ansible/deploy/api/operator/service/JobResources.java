@@ -1,19 +1,16 @@
 package net.arksea.ansible.deploy.api.operator.service;
 
 import akka.actor.ActorSystem;
-import net.arksea.ansible.deploy.api.manage.dao.AppDao;
-import net.arksea.ansible.deploy.api.manage.dao.AppOperationDao;
-import net.arksea.ansible.deploy.api.manage.dao.VersionDao;
+import net.arksea.ansible.deploy.api.auth.service.TokenService;
+import net.arksea.ansible.deploy.api.manage.dao.*;
 import net.arksea.ansible.deploy.api.manage.service.HostsService;
 import net.arksea.ansible.deploy.api.operator.dao.OperationJobDao;
 import net.arksea.ansible.deploy.api.operator.dao.OperationTokenDao;
-import net.arksea.ansible.deploy.api.operator.entity.OperationJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
 
 /**
  * Create by xiaohaixing on 2020/10/10
@@ -38,4 +35,12 @@ public class JobResources {
     int systemBindPort;
     @Autowired
     ActorSystem system;
+    @Autowired
+    TokenService tokenService;
+    @Autowired
+    AppCustomOperationCodeDao appCodeDao;
+    @Autowired
+    MailService mailService;
+    @Autowired
+    OperationTriggerDao operationTriggerDao;
 }

@@ -1,6 +1,8 @@
 package net.arksea.ansible.deploy.api.manage.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -37,6 +39,7 @@ public class PortType extends IdEntity{
 
     @JsonIgnore
     @OneToMany(mappedBy = "typeId",fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SELECT)
     public Set<Port> getPorts() {
         return ports;
     }

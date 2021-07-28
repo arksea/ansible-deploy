@@ -11,6 +11,18 @@
                 <div class="d-flex">
                     <div class="mr-auto">
                     </div>
+                    <div class="p-1">
+                        <button type="button" class="btn btn-success"
+                            [disabled]="account.perm('应用:查询')" [routerLink]="['/apps',app.id,'operations']">操作记录</button>
+                    </div>
+                    <div class="p-1">
+                        <button type="button" class="btn btn-success"
+                            [disabled]="account.perm('应用:修改')" (click)="onEditBtnClick(app)">编辑</button>
+                    </div>
+                    <div class="p-1">
+                        <button type="button" class="btn btn-success"
+                            [disabled]="account.perm('应用:修改')" (click)="onVersionBtnClick(app)">版本</button>
+                    </div>
                 </div>
             </li>
             <li *ngFor="let v of app?.versions" class="list-group-item py-4">
@@ -18,12 +30,12 @@
                     <div class="card-header">
                         <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
                             <div class="pt-2">
-                                <strong>版本: {{v.name}}</strong>
+                                <strong>版本: {{v.name}}</strong> {{getBuildNoAndDeployNo(v)}}
                             </div>
                             <div class="btn-group btn-group-sm" role="group" [title] = "hasHostChecked(v)?'':'请选择要操作的目标主机'">
                                 <button type="button" class="btn btn-outline-dark"
                                     *ngFor="let op of operations"
-                                    [hidden]="op.type != 'COMMON'"
+                                    [hidden]="op.type != 'COMMON' && op.type != 'BUILD'"
                                     [disabled]="account.perm('应用:操作')  || !hasHostChecked(v)"
                                     (click)="onOperationClick(v, op)">
                                     {{op.name}}
@@ -36,7 +48,7 @@
                             <div class="row">
                                     <div class="col-sm-2">内网IP</div>
                                     <div class="col">描述</div>
-                                    <div class="col-sm-2 text-center">
+                                    <div class="col-sm-3 text-center">
                                         <div class="btn-group btn-group-xs" role="group" *ngFor="let op of operations" [hidden]="op.type!='STATUS'">
                                             <button type="button" class="btn btn-outline-dark" 
                                                     [disabled]="account.perm('应用:操作')"
@@ -58,9 +70,9 @@
                             <div class="row">
                                 <div class="col-sm-2">{{h.privateIp}}</div>
                                 <div class="col">{{h.description}}</div>
-                                <div class="col-sm-2 text-center">
-                                    <div *ngFor="let op of status">
-                                        <span class="badge" [class]="getHostStatusStyle(h.status[op.name])">{{getHostStatusValue(h.status[op.name])}}</span>
+                                <div class="col-sm-3 text-center">
+                                    <div class="btn-group btn-group-xs" *ngFor="let op of status">
+                                        <span class="badge mx-2" [class]="getHostStatusStyle(h.status[op.name])">{{getHostStatusValue(h.status[op.name])}}</span>
                                     </div>
                                 </div>
                                 <div class="col-sm-2 text-right"><input type="checkbox" formControlName="{{checkName(v,h)}}"></div>

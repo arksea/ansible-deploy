@@ -3,7 +3,7 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a [routerLink]="['/apps']">我的应用</a></li>
             <li class="breadcrumb-item"><a [routerLink]="['/apps',app.id]">{{app?.apptag}}</a></li>
-            <li class="breadcrumb-item active">操作历史</li>
+            <li class="breadcrumb-item active">操作记录</li>
         </ol>
     </nav>
 
@@ -40,9 +40,10 @@
                     <div class="col">操作名称</div>
                     <div class="col">应用版本</div>
                     <div class="col">操作者</div>
+                    <div class="col">触发器ID</div>
                 </div>
             </li>
-            <li *ngFor="let h of history.items" class="list-group-item list-group-item-action">
+            <li *ngFor="let h of history.items" class="list-group-item list-group-item-action" (click)="onJobClick(h)">
                 <div class="row">
                     <div class="col-1">{{h.jobId}}</div>
                     <div class="col">{{h.startTime}}</div>
@@ -50,6 +51,7 @@
                     <div class="col">{{h.operation}}</div>
                     <div class="col">{{h.version}}</div>
                     <div class="col">{{h.operator}}</div>
+                    <div class="col">{{h.triggerId==null?'手动':h.triggerId}}</div>
                 </div>
             </li>
         </ul>

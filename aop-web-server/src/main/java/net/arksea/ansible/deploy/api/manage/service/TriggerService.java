@@ -49,10 +49,10 @@ public class TriggerService {
     }
 
     public long onTrigger(String projectTag, String token, Set<OperationVariable> vars) {
-        OperationTrigger trigger = operationTriggerDao.findByProjectTag(projectTag);
+        OperationTrigger trigger = operationTriggerDao.findByProjectTagAndToken(projectTag, token);
         if (trigger == null) {
-            throw new ServiceException("Not found the trigger");
-        } else if (trigger.getToken().equals(token)) {
+            throw new ServiceException("Not found the trigger or invalid token");
+        } else {
             Version ver = versionDao.findOne(trigger.getVersionId());
             if (ver == null) {
                 throw new ServiceException("Not fond the trigger's version: " + trigger.getId());
@@ -64,8 +64,6 @@ public class TriggerService {
                 jobService.startJob(job, hosts, vars);
                 return job.getId();
             }
-        } else {
-            throw new ServiceException("Invalid token");
         }
     }
 }

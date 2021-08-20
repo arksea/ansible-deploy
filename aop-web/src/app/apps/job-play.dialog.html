@@ -1,19 +1,21 @@
 <div class="modal-header d-flex">
     <h2 class="modal-title m-2 mr-auto"><span class="text-danger"> [{{operation.name}}] </span>操作</h2>
-    <button type="button" class="btn btn-danger m-2" *ngIf="!(jobStarted|async)" (click)="startJob()">开始</button>
+    <button type="button" class="btn btn-danger m-2" *ngIf="!(jobStarted|async)" (click)="startJob()"
+           [disabled]="form.invalid">开始</button>
     <button type="button" class="btn btn-warning m-2" title="跳过操作并确认删除" *ngIf="!(jobStarted|async) && isDeleteJob"
         (click)="skipJob()">跳过</button>
     <button type="button" class="btn btn-danger m-2" *ngIf="(jobStarted|async) && isDeleteJob"
-        (click)="modal.close('ok')">删除</button>
+        (click)="close('ok')">删除</button>
     <button type="button" class="btn btn-outline-secondary m-2"
-        (click)="modal.close('cancel')">{{isDeleteJob?'取消':'关闭'}}</button>
+        (click)="close('cancel')">{{isDeleteJob?'取消':'关闭'}}</button>
 </div>
 
 <form [formGroup]="form" class="row modal-header" [hidden]="operation.varDefines.length==0 || (jobStarted|async)">
     <div *ngFor="let v of operation.varDefines" class="col-lg-6 col-md-6 form-group">
         <label for="var_{{v.name}}">
             <span>{{v.formLabel}}</span>
-            <span class="text-danger" *ngIf="form.get('var_'+v.name)?.invalid">(超过允许长度)</span>
+            <span class="text-danger" *ngIf="form.get('var_'+v.name)?.errors?.required">*</span>
+            <span class="text-danger" *ngIf="form.get('var_'+v.name)?.errors?.maxlength">(超过允许长度)</span>
         </label>
         <div class="input-group">
             <div class="input-group-prepend" *ngIf="v.inputAddon.length > 0">

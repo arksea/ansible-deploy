@@ -4,10 +4,11 @@ import { FormGroup, FormControl, AbstractControl } from '@angular/forms'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { AppsService } from './apps.service'
 import { MessageNotify } from '../utils/message-notify'
-import { App, OperationJobInfo, Page, OperationJob } from '../app.entity'
+import { App, OperationJobInfo, Page, Version } from '../app.entity'
 import { AccountService } from '../account/account.service'
 import { PageEvent } from '@angular/material/paginator'
 import { JobLogDialog } from './job-log.dialog'
+import { JobPlayDialog } from './job-play.dialog'
 
 @Component({
     selector: 'app-operation-history',
@@ -62,8 +63,21 @@ export class AppOperationHistoryComponent implements OnInit {
     }
 
     public onJobClick(jobInfo: OperationJobInfo) {
-        let ref = this.modal.open(JobLogDialog, {size: 'xl', scrollable: true})
-        ref.componentInstance.jobInfo = jobInfo
+        if (jobInfo.endTime != null) {
+            let ref = this.modal.open(JobLogDialog, {size: 'xl', scrollable: true})
+            ref.componentInstance.jobInfo = jobInfo
+        } else {
+            let ref = this.modal.open(JobPlayDialog, {size: 'xl', scrollable: true, backdrop: 'static', keyboard: false})
+            let ver: Version
+            for (let v of this.app.versions) {
+                if (jobInfo.version == v.name) {
+                    ver = v
+                    break
+                }
+            }
+            ref.componentInstance.setParams({name:jobInfo.operation, varDefines: []}, this.app, ver, ver.targetHosts)
+            ref.componentInstance.onJobStarted(jobInfo.jobId)
+        }
     }
 
     public get operator(): AbstractControl {

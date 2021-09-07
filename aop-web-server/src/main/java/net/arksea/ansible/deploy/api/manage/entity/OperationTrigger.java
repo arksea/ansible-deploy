@@ -25,7 +25,7 @@ public class OperationTrigger extends IdEntity {
     private String notifyRegex;
     private Boolean notifyMatchOrNot;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     public Long getVersionId() {
         return versionId;
     }
@@ -70,7 +70,7 @@ public class OperationTrigger extends IdEntity {
         this.projectTag = projectTag;
     }
 
-    @Column(nullable = false, length = 64)
+    @Column(nullable = false, length = 64, unique = true)
     public String getToken() {
         return token;
     }

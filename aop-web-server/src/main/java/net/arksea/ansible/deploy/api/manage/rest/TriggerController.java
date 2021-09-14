@@ -7,6 +7,7 @@ import net.arksea.ansible.deploy.api.manage.msg.OperationVariable;
 import net.arksea.ansible.deploy.api.manage.service.TriggerService;
 import net.arksea.restapi.BaseResult;
 import net.arksea.restapi.RestResult;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -15,9 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static net.arksea.ansible.deploy.api.ResultCode.SUCCEED;
 
@@ -65,6 +64,7 @@ public class TriggerController {
         Set<OperationVariable> vars = new HashSet<>();
         String token = "";
         String projectTag = "";
+        List<String> targetHosts = null;
         for (Map.Entry<String, String> e: params.entrySet()) {
             String key = e.getKey();
             switch (key) {
@@ -74,6 +74,9 @@ public class TriggerController {
                 case "projectTag":
                     projectTag = e.getValue();
                     break;
+                case "hosts":
+                    targetHosts = Arrays.asList(StringUtils.split(e.getValue(), ",;"));
+                    break;
                 default:
                     OperationVariable v = new OperationVariable();
                     v.setName(e.getKey());
@@ -82,7 +85,7 @@ public class TriggerController {
                     break;
             }
         }
-        long jobId = triggerService.onTrigger(projectTag, token, vars);
+        long jobId = triggerService.onTrigger(projectTag, token, vars, targetHosts);
         return new RestResult<>(SUCCEED, jobId, httpRequest);
     }
 

@@ -50,7 +50,7 @@ public class JobPlayer extends AbstractActor {
     private IJobEventListener listener;
     private JobCommandRunner jobCommandRunner;
     private boolean operationJobFailed = false;
-    private boolean hasClientPollingLog = false; //有客户端正在实时读取日志，退出消息将会被延迟
+    private long lastPollingLogTime; //有客户端正在实时读取日志，退出消息将会被延迟
 
     private JobPlayer(OperationJob job, Set<Long>hosts, Set<OperationVariable> operationVariables, JobResources beans) {
         this.job = job;
@@ -297,7 +297,7 @@ public class JobPlayer extends AbstractActor {
 
     private void handlePollLogs(PollLogs msg) {
         if (msg.index < logs.size() || !noMoreLogs) {
-            hasClientPollingLog = true;
+            lastPollingLogTime = System.currentTimeMillis();
             StringBuilder sb = new StringBuilder();
             long len = 0;
             int index;
@@ -313,14 +313,14 @@ public class JobPlayer extends AbstractActor {
             PollLogsResult result = new PollLogsResult(sb.toString(), index, logs.size());
             sender().tell(result, self());
         } else {
-            hasClientPollingLog = false;
+            lastPollingLogTime = 0;
             PollLogsResult result = new PollLogsResult("", -1, logs.size());
             sender().tell(result, self());
         }
     }
 
     private void handleStopJob(StopJob msg) {
-        if (hasClientPollingLog) {
+        if (System.currentTimeMillis() - lastPollingLogTime < 10_000) {
             delayStopJob();
         } else {
             jobCommandRunner.destroy();

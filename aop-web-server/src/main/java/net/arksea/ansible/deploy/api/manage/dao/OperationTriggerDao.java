@@ -11,4 +11,5 @@ import java.util.List;
  */
 public interface OperationTriggerDao extends CrudRepository<OperationTrigger, Long> {
     OperationTrigger findByProjectTag(String projectTag);
+    OperationTrigger findByProjectTagAndToken(String projectTag, String token);
 }

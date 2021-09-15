@@ -252,5 +252,12 @@ task startTomcat(type: Exec) {
     commandLine 'cmd', '/c', 'startup.bat'
     environment CATALINA_HOME: 'e:\\github\\ansible-deploy\\aop-web-server\\tomcat'
 }
-
 startTomcat.dependsOn(publishDev)
+
+task debugTomcat(type: Exec) {
+    workingDir './tomcat/bin'
+    commandLine 'cmd', '/c', 'startup.bat'
+    environment CATALINA_HOME: 'e:\\github\\ansible-deploy\\aop-web-server\\tomcat'
+    environment REMOTE_DEBUG: '-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
+}
+debugTomcat.dependsOn(publishDev)

@@ -47,19 +47,40 @@ export class JobPlayDialog implements OnInit, OnDestroy, AfterViewChecked {
         this.ver = ver
         this.hosts = hosts
         for (let v of op.varDefines) {
-            this.form.addControl('var_' + v.name, new FormControl(v.defaultValue, [Validators.maxLength(128)]))
+            let value = v.defaultValue
+            //当Operation Default Variable为空时表示不使用默认值，必须手工输入以强化操作前的确认，比如构建部署使用的代码分支
+            if (value && value != '') {
+                //变量值优先顺序：Version Variable -> App Variable -> Operation Default Variable
+                for (let appVar of app.vars) {
+                    if (appVar.name == v.name) {
+                        if (appVar.value &&　appVar.value != '') {
+                            value = appVar.value
+                        }
+                        break
+                    }
+                }
+                for (let verVar of ver.vars) {
+                    if (verVar.name == v.name) {
+                        if (verVar.value　&& verVar.value != '') {
+                            value = verVar.value
+                        }
+                        break
+                    }
+                }
+            }
+            this.form.addControl('var_' + v.name, new FormControl(value, [Validators.required, Validators.maxLength(128)]))
         }
     }
 
-    ngAfterViewChecked() {        
-        this.scrollToBottom();        
-    } 
+    ngAfterViewChecked() {
+        this.scrollToBottom()
+    }
     
     scrollToBottom(): void {
         try {
             this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
         } catch(err) {
-        }                 
+        }
     }
 
     ngOnInit(): void {
@@ -81,7 +102,7 @@ export class JobPlayDialog implements OnInit, OnDestroy, AfterViewChecked {
             })
         ).subscribe(this.updates)
         this.opAddModel.pipe(delay(1000)).subscribe(data => {
-            if (data.index != -1 && data.pollCount < JOB_LOGS_MAX_POLL_COUNT) {
+            if (data && data.index != -1 && data.pollCount < JOB_LOGS_MAX_POLL_COUNT) {
                 this.svc.pollJobLogs(data.jobId, data.index).subscribe(s => {
                     if (s.code == 0) {
                         let ret = s.result
@@ -107,19 +128,27 @@ export class JobPlayDialog implements OnInit, OnDestroy, AfterViewChecked {
         }
         this.svc.startJob(this.app,this.ver, this.operation, this.hosts, vars).subscribe(ret => {
             if (ret.code == 0) {
-                this.jobStarted.next(true)
-                let jobId = ret.result.id
-                this.svc.pollJobLogs(jobId, 0).subscribe(ret => {
-                    if (ret.code == 0) {
-                        this.opAddModel.next(new ModelData(jobId, ret.result.log, ret.result.index, ret.result.size, 1))
-                    }
-                })
+                this.onJobStarted(ret.result.id)
+            }
+        })
+    }
+
+    onJobStarted(jobId: number) {
+        this.jobStarted.next(true)
+        this.svc.pollJobLogs(jobId, 0).subscribe(ret => {
+            if (ret.code == 0) {
+                this.opAddModel.next(new ModelData(jobId, ret.result.log, ret.result.index, ret.result.size, 1))
             }
         })
     }
 
     skipJob() {
         this.modal.close('skip')
+    }
+
+    public close(result) {
+        this.opAddModel.unsubscribe()
+        this.modal.close(result)
     }
 
     private setHostStatus(log: string) {

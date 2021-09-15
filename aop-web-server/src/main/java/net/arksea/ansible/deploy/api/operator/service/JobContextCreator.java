@@ -77,6 +77,10 @@ public class JobContextCreator {
     }
 
     private void chmod(final String fileName) throws IOException {
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.startsWith("windows")) {
+            return;
+        }
         String cmd = "chmod u+x " + getJobPath() + fileName;
         final Process process = Runtime.getRuntime().exec(cmd);
         try (BufferedReader inReader = new BufferedReader(new InputStreamReader(process.getInputStream()));

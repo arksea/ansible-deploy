@@ -113,7 +113,7 @@ task publishQA {
             into 'publish/qa'
         }
         copy { //拷贝依赖库
-            from configurations.runtime
+            from configurations.runtimeClasspath
             into 'publish/qa/WEB-INF/lib'
         }
         copy { //拷贝类
@@ -177,7 +177,7 @@ task publishOnline {
             into 'publish/online'
         }
         copy { //拷贝依赖库
-            from configurations.runtime
+            from configurations.runtimeClasspath
             into 'publish/online/WEB-INF/lib'
         }
         copy { //拷贝类
@@ -228,7 +228,7 @@ task publishDev {
             into 'tomcat/webapps/aop-web-server'
         }
         copy { //拷贝依赖库
-            from configurations.runtime
+            from configurations.runtimeClasspath
             into 'tomcat/webapps/aop-web-server/WEB-INF/lib'
         }
         delete('tomcat/webapps/aop-web-server/WEB-INF/lib/xml-apis-1.0.b2.jar')

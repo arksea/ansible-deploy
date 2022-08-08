@@ -4,6 +4,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms'
 import { PageEvent } from '@angular/material/paginator';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { AppsService } from './apps.service'
+import { AppListService } from './app-list.service'
 import { ConfirmDialog } from '../utils/confirm.dialog'
 import { MessageNotify } from '../utils/message-notify'
 import { App, AppType, Page } from '../app.entity'
@@ -16,22 +17,16 @@ import { DeleteJobPlayDialog } from './job-play.dialog'
     templateUrl: './app-list.component.html'
 })
 export class AppListComponent implements OnInit {
-    pageSize: number = 7
-    appList : Page<App> = new Page()
-    appTypes: AppType[] = []
+
 
     constructor(
-        public svc: AppsService,
+        public svc: AppListService, 
+        public api: AppsService,
         public account: AccountService,
         protected alert: MessageNotify,
         protected modal: NgbModal,
         private router: Router) {
-            this.query(0,'')
-            this.svc.getAppTypes().subscribe(ret => {
-                if (ret.code == 0) {
-                    this.appTypes = ret.result
-                }
-            })
+            this.searchForm.get('searchPrefix').setValue(this.svc.searchPrefix)
     }
 
     searchForm: FormGroup = new FormGroup({
@@ -41,7 +36,8 @@ export class AppListComponent implements OnInit {
     search(event: FormDataEvent) {
         //event.preventDefault();
         let search = this.searchForm.get('searchPrefix').value
-        this.query(0, search)
+        this.svc.searchPrefix = search
+        this.svc.query()
     }
 
     ngOnInit(): void {
@@ -65,13 +61,13 @@ export class AppListComponent implements OnInit {
         ref.componentInstance.message = "确认要删除吗?"
         ref.result.then(result => {
             if (result == "ok") {
-                this.doDeleteApp(app)
+                this.svc.deleteApp(app)
             }
         }, resaon => { })
     }
 
     onDelBtnClick(app: App) {
-        this.svc.getOperationsByAppTypeId(app.appType.id).subscribe(ret => {
+        this.api.getOperationsByAppTypeId(app.appType.id).subscribe(ret => {
             if (ret.code == 0) {
                 let operations = ret.result
                 let hasDelScript = false
@@ -86,7 +82,7 @@ export class AppListComponent implements OnInit {
                                 if (result == 'skip') {
                                     this.confirmDeleteApp(app)
                                 } else if (result == "ok") {
-                                    this.doDeleteApp(app)
+                                    this.svc.deleteApp(app)
                                 }
                             }, reason => {
                                 this.alert.error("删除失败: " + reason)
@@ -97,15 +93,6 @@ export class AppListComponent implements OnInit {
                 if (!hasDelScript)  {
                     this.confirmDeleteApp(app)
                 }
-            }
-        })
-    }
-
-    private doDeleteApp(app: App) {
-        this.svc.deleteApp(app.id).subscribe(succeed => {
-            if (succeed) {
-                this.appList.items = this.appList.items.filter(it => it.id != app.id)
-                this.alert.success('已删除')
             }
         })
     }
@@ -128,18 +115,10 @@ export class AppListComponent implements OnInit {
     }
 
     public onPageEvent(event: PageEvent): PageEvent {
-        let page = event.pageIndex + 1;
-        this.pageSize = event.pageSize;
-        let search = this.searchForm.get('searchPrefix').value
-        this.query(page, search)
+        this.svc.pageSize = event.pageSize
+        this.svc.searchPrefix = this.searchForm.get('searchPrefix').value
+        this.svc.pageIndex = event.pageIndex
+        this.svc.query()
         return event;
-    }
-
-    private query(page: number, nameSearch: string) {
-        this.svc.getUserApps(page, this.pageSize, nameSearch).subscribe(ret => {
-            if (ret.code == 0) {
-                this.appList = ret.result
-            }
-        })
     }
 }

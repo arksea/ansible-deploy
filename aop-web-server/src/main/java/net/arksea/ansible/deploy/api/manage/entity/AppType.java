@@ -37,6 +37,7 @@ public class AppType extends IdEntity {
 
     @OneToMany(mappedBy = "appTypeId", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(FetchMode.SELECT)
+    @OrderBy("id")
     public Set<AppVarDefine> getAppVarDefines() {
         return appVarDefines;
     }
@@ -47,6 +48,7 @@ public class AppType extends IdEntity {
 
     @OneToMany(mappedBy = "appTypeId", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(FetchMode.SELECT)
+    @OrderBy("id")
     public Set<VersionVarDefine> getVersionVarDefines() {
         return versionVarDefines;
     }

@@ -11,6 +11,7 @@ import { AppsComponent } from './apps.component'
 import { AccountModule } from '../account/account.module'
 import { AppsService } from './apps.service'
 import { TriggerService } from './trigger.service'
+import { AppListService } from './app-list.service'
 import { AppListComponent } from './app-list.component'
 import { AppEditComponent } from './app-edit.component'
 import { VersionEditComponent } from './version-edit.component'
@@ -41,7 +42,7 @@ import { NewAppCodeFileDialog } from './new-app-code-file.dialog'
     AddHostDialog, EditTriggerDialog, JobPlayDialog, StatusJobPlayDialog,
     PortSelectDialog, DeleteJobPlayDialog, JobLogDialog, NewAppCodeFileDialog
   ],
-  providers: [AppsService, TriggerService],
+  providers: [AppsService, TriggerService, AppListService],
   exports: []
 })
 export class AppsModule { }

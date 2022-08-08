@@ -113,6 +113,7 @@ public class Version extends IdEntity {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @Fetch(FetchMode.SELECT)
+    @OrderBy("id")
     @JoinTable(name = "dp2_version_hosts",
             joinColumns = @JoinColumn(name = "version_id"),
             inverseJoinColumns = @JoinColumn(name = "host_id"))

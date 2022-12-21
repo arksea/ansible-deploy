@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:mysql://testdb:3306/deploy_server?autoReconnect=true&failOverReadOnly=false&useUnicode=true&characterEncoding=utf-8&&zeroDateTimeBehavior=convertToNull
+    username: test
+    password: test
+  jpa:
+    hibernate.ddl-auto: "update"
+
+logging:
+  level:
+    root: WARN
+    net.arksea.ansible.deploy: DEBUG
+
+job:
+  workRoot: ./job-work
+  logExpireDays: 1
+  notify:
+    mail:
+      username: test-devop@qq.com
+      password: 1234
+      from: test-devop@qq.com

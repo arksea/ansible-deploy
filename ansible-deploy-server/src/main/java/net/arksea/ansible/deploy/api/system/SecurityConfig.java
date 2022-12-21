@@ -58,10 +58,15 @@ public class SecurityConfig {
                                                    RememberMeServices rememberMeServices
                                                    ) throws Exception {
         http.authorizeHttpRequests(this.authorizeHttpRequestsCustomizer())
-                .httpBasic(cfg -> cfg.authenticationEntryPoint(new AuthenticationEntryPointImpl()))
-                .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
-                .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .rememberMe(rememberMe -> rememberMe.rememberMeServices(rememberMeServices));
+            .httpBasic(cfg -> cfg.authenticationEntryPoint(new AuthenticationEntryPointImpl()))
+            .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
+            .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .rememberMe(rememberMe -> rememberMe.rememberMeServices(rememberMeServices))
+            .logout(logout -> logout
+                .logoutRequestMatcher(request -> request.getRequestURI().equals("/api/logout"))
+                .logoutSuccessUrl("/api/logout/success")
+                .invalidateHttpSession(true)
+            );
         if (!"prod".equals(systemProfile)) {
             http.cors().configurationSource(corsConfigurationSource()) //允许跨域访问方便开发测试
                 .and().csrf().ignoringAntMatchers("/api/**");
@@ -77,8 +82,7 @@ public class SecurityConfig {
     private Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry> authorizeHttpRequestsCustomizer() {
         //从前往后找到匹配上的第一条规则，就不再继续匹配
         return authorize -> authorize
-            .antMatchers("/api/login").authenticated()
-            .antMatchers("/signup").permitAll()
+            .antMatchers("/api/signup","/api/sys/openRegistry","/api/logout/success").permitAll()
             .anyRequest().authenticated();
     }
 

@@ -31,10 +31,9 @@ public class LoginController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @RequestMapping(path="logout", method = RequestMethod.GET, produces = MEDIA_TYPE)
-    public String logout(final HttpServletRequest httpRequest) {
+    @RequestMapping(path="logout/success", method = RequestMethod.GET, produces = MEDIA_TYPE)
+    public String logoutSuccess(final HttpServletRequest httpRequest) {
         String reqid = (String)httpRequest.getAttribute("restapi-requestid");
         return RestUtils.createResult(ResultCode.SUCCEED, reqid);
     }
-
 }

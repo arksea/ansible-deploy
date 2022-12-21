@@ -31,7 +31,7 @@ export class AccountService {
                 this.getPermsAndRoles()
             }
         }
-        this.getAllPermChilds();
+        //this.getAllPermChilds();
     }
 
     private getPermsAndRoles() {
@@ -67,6 +67,7 @@ export class AccountService {
                 if (response.code === 0) {
                     this.loginUser = info.name
                     this.getPermsAndRoles()
+                    this.getAllPermChilds();
                     localStorage.setItem('token_expires', response.result)
                     localStorage.setItem('login_user', info.name)
                     if (this.loginUser == 'admin') {

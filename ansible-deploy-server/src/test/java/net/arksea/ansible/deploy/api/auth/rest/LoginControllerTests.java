@@ -53,7 +53,7 @@ public class LoginControllerTests {
     MockMvc mvc;
 
     @Test
-    void rootWhenAuthenticatedThenSaysHelloUser() throws Exception {
+    void loginWhenAuthenticatedAndLogout() throws Exception {
         MvcResult result = this.mvc.perform(
             post("/api/login")
                 .param("remember-me", "on")
@@ -61,23 +61,48 @@ public class LoginControllerTests {
             .andExpect(status().isOk())
             .andReturn();
         Cookie token = result.getResponse().getCookie("remember-me");
+
         this.mvc.perform(
             get("/api/user/roles")
                 .header("x-requestid", "123456")
                 .cookie(token)  )
             .andExpect(status().isOk())
             .andExpect(content().json("{\"code\":0,\"reqid\":\"123456\",\"result\":[\"系统信息查询\"]}"));
+
+        this.mvc.perform(
+            get("/api/logout")
+                .header("Accept","application/json, text/plain, */*")
+                .cookie(token)   )
+            .andExpect(header().stringValues("Set-Cookie", "remember-me=; Path=/; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT"))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(header().stringValues("Location", "/api/logout/success"));
     }
 
     @Test
-    void rootWhenUnauthenticatedThen401() throws Exception {
+    void rolesWhenUnauthenticatedThen401() throws Exception {
         this.mvc.perform(get("/api/user/roles"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    void tokenWhenBadCredentialsThen401() throws Exception {
+    void loginWhenBadCredentialsThen401() throws Exception {
         this.mvc.perform(post("/api/login"))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void loginWhenBadPasswordThen401() throws Exception {
+        this.mvc.perform(post("/api/login")
+                .param("remember-me", "on")
+                .with(httpBasic("user", "badpassword"))    )
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void logoutSuccess() throws Exception {
+        this.mvc.perform(get("/api/logout/success")
+                        .header("x-requestid", "123456")  )
+            .andExpect(status().isOk())
+            .andExpect(content().json("{\"code\":0,\"reqid\":\"123456\"}"));
     }
 }

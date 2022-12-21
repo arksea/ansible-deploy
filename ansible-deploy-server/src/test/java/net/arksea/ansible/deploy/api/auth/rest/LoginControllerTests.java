@@ -16,19 +16,13 @@
 
 package net.arksea.ansible.deploy.api.auth.rest;
 
-import net.arksea.ansible.deploy.api.filter.ApiFilter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.web.servlet.ServletComponentScan;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.servlet.http.Cookie;
 
@@ -37,13 +31,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-//@WebMvcTest(
-//        properties = "spring.profiles.active=test", //securityProfile使用此参数
-//        controllers = { HelloController.class }
-//)
-//@Import({SystemConfig.class, SecurityConfig.class})
-//@ComponentScan(basePackages = {"net.arksea.ansible.deploy"})
-
+/**
+ * Create by xiaohaixing on 2022/12/21
+ */
 @SpringBootTest(properties = "spring.profiles.active=test") //systemProfile使用此参数
 @EntityScan(basePackages = {"net.arksea.ansible.deploy"})
 @AutoConfigureMockMvc

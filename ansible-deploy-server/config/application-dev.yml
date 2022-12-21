@@ -7,6 +7,10 @@ spring:
     hibernate.ddl-auto: "update"
     properties:
       hibernate.show_sql: true
+  task:
+    scheduling:
+      thread-name-prefix: "scheduling-"
+      pool.size: 1
 
 server:
   port: 8080

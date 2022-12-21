@@ -5,6 +5,10 @@ spring:
     password: test
   jpa:
     hibernate.ddl-auto: "update"
+  task:
+    scheduling:
+      thread-name-prefix: "scheduling-"
+      pool.size: 1
 
 logging:
   file:

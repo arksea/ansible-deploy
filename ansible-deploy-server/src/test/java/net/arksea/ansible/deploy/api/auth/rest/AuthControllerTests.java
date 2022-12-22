@@ -37,49 +37,16 @@ public class AuthControllerTests {
         this.mvc.perform(get("/api/user/permissions")
                         .header("x-requestid", "2"))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\n" +
-                        "    \"code\": 0,\n" +
-                        "    \"reqid\": \"2\",\n" +
-                        "    \"result\": [\n" +
-                        "        \"主机管理:查询\",\n" +
-                        "        \"应用:查询\",\n" +
-                        "        \"端口管理:查询\",\n" +
-                        "        \"组管理:查询\",\n" +
-                        "        \"用户管理:查询\",\n" +
-                        "        \"系统:查询\"\n" +
-                        "    ]\n" +
-                        "}"));
+                .andExpect(content().json("{\"code\":0,\"reqid\":\"2\",\"result\":[\"主机管理:查询\",\"应用:查询\",\"端口管理:查询\",\"组管理:查询\",\"系统:查询\"]}"));
 
     }
 
     @Test
     @WithUserDetails("abc")
-    public void getAllPermissions() throws Exception {
+    public void getAllPermissionsChilds() throws Exception {
         this.mvc.perform(get("/api/user/permissions/childs")
                         .header("x-requestid", "3"))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\n" +
-                        "    \"code\": 0,\n" +
-                        "    \"reqid\": \"3\",\n" +
-                        "    \"result\": {\n" +
-                        "        \"系统:管理\": [\n" +
-                        "            \"主机管理:查询\",\n" +
-                        "            \"用户管理:修改\",\n" +
-                        "            \"应用:查询\",\n" +
-                        "            \"端口管理:查询\",\n" +
-                        "            \"组管理:修改\",\n" +
-                        "            \"组管理:查询\",\n" +
-                        "            \"用户管理:查询\",\n" +
-                        "            \"系统:查询\"\n" +
-                        "        ],\n" +
-                        "        \"系统:查询\": [\n" +
-                        "            \"主机管理:查询\",\n" +
-                        "            \"应用:查询\",\n" +
-                        "            \"端口管理:查询\",\n" +
-                        "            \"组管理:查询\",\n" +
-                        "            \"用户管理:查询\"\n" +
-                        "        ]\n" +
-                        "    }\n" +
-                        "}"));
+                .andExpect(content().json("{\"code\":0,\"reqid\":\"3\",\"result\":{\"用户管理:修改\":[\"用户管理:查询\"],\"系统:管理\":[\"主机管理:查询\",\"用户管理:修改\",\"端口管理:查询\",\"组管理:修改\",\"组管理:查询\",\"用户管理:查询\",\"系统:查询\"],\"系统:查询\":[\"主机管理:查询\",\"端口管理:查询\",\"组管理:查询\"]}}"));
     }
 }

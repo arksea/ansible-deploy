@@ -1,13 +1,10 @@
 package net.arksea.ansible.deploy.api.auth.entity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hibernate.validator.constraints.NotBlank;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.util.HashMap;
-import java.util.Map;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "sys_permissions")

@@ -42,9 +42,10 @@ public class ConfigDataInitializer {
                 init(conn);
                 conn.commit();
                 authService.reloadAuth();
+                logger.info("初始化数据库静态数据成功");
             } catch (Exception ex) {
                 conn.rollback();
-                logger.warn("初始化数据库静态数据失败");
+                logger.warn("初始化数据库静态数据失败", ex);
             } finally {
                 conn.setAutoCommit(autoCommit);
                 try {

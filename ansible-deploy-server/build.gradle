@@ -37,8 +37,8 @@ dependencies {
 	implementation 'net.arksea:restapi-base:3.0.1-SNAPSHOT'
 
 	//依赖的第三方库
-	implementation 'org.apache.commons:commons-lang3:3.3.2'
-	implementation 'commons-codec:commons-codec:1.15'
+	implementation 'org.apache.commons:commons-lang3'
+	implementation 'commons-codec:commons-codec'
 	implementation 'com.sun.mail:javax.mail:1.6.2'
 
 	implementation 'com.typesafe.akka:akka-actor_2.12:2.5.11'
@@ -50,7 +50,14 @@ dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	testImplementation 'org.springframework.security:spring-security-test'
+	//window下运行mysql_install_db不支持--tmpdir参数
+	//直接使用mariaDB4j-springboot会导致启动失败，所以重载并删除了此参数
+	//另外添加了支持UTF-8编码的参数： --character-set-server --collation-server
+	//testImplementation 'ch.vorburger.mariaDB4j:mariaDB4j-springboot:2.6.0'
+	testImplementation 'ch.vorburger.mariaDB4j:mariaDB4j:2.6.0'
+	testImplementation 'org.mariadb.jdbc:mariadb-java-client'
 }
 
 tasks.named('test') {

@@ -2,10 +2,7 @@ package net.arksea.restapi;
 
 import org.springframework.http.HttpStatus;
 
-import java.io.Serial;
-
 public class RestException extends RuntimeException {
-	@Serial
 	private static final long serialVersionUID = 4046774595854568532L;
 	private HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR; //Http状态码
 	private int code = 1; //附加(业务)错误码

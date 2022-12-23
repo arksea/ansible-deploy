@@ -33,9 +33,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 	implementation 'org.springframework.boot:spring-boot-starter-log4j2'
 
-	//
-	implementation 'net.arksea:restapi-base:3.0.1-SNAPSHOT'
-
 	//依赖的第三方库
 	implementation 'org.apache.commons:commons-lang3'
 	implementation 'commons-codec:commons-codec'

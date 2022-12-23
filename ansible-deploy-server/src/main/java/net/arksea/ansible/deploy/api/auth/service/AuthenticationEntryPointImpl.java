@@ -20,7 +20,7 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
         } else {
             code = ResultCode.UNAUTHORIZED;
         }
-        ErrorResult<String> erorr = new ErrorResult<>(code, reqid,  authException.getMessage());
+        ErrorResult erorr = new ErrorResult(code, reqid,  authException.getMessage());
         String body = objectMapper.writeValueAsString(erorr);
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setHeader("Content-Type", "application/json; charset=UTF-8");

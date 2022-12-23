@@ -19,8 +19,8 @@
  */
 package net.arksea.ansible.deploy.mariadb;
 
-
-import ch.vorburger.mariadb4j.springframework.MariaDB4jSpringService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,10 +28,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties
 public class MariaDB4jSpringConfiguration {
+    private final static Logger logger = LogManager.getLogger(MariaDB4jSpringConfiguration.class);
+    private final static MariaDB4jSpringService mariaDB4jSpringService;
+    static {
+        logger.info("========new MariaDB4jSpringService()========");
+        mariaDB4jSpringService = new MariaDB4jSpringService();
+    }
 
     @Bean
     public MariaDB4jSpringService mariaDB4j() {
-        return new MariaDB4jSpringServicePatched();
+        return mariaDB4jSpringService;
     }
 
 }

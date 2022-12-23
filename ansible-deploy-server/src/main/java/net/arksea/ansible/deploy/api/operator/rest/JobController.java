@@ -35,11 +35,11 @@ public class JobController {
     private static final String MEDIA_TYPE = "application/json; charset=UTF-8";
     private static final Logger logger = LogManager.getLogger(JobController.class);
     @Autowired
-    private JobService jobService = null;
+    JobService jobService;
     @Autowired
-    private ClientInfoService clientInfoService = null;
+    ClientInfoService clientInfoService;
     @Autowired
-    private ActorSystem system = null;
+    ActorSystem system;
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class StartOpeartionJob {
@@ -83,7 +83,7 @@ public class JobController {
                         if (failure == null) {
                             result.setResult(new RestResult<>(0, ret, reqid));
                         } else {
-                            result.setErrorResult(new ErrorResult<>(1, reqid, failure.getMessage()));
+                            result.setErrorResult(new ErrorResult(1, reqid, failure.getMessage()));
                         }
                     }
                 }, system.dispatcher()

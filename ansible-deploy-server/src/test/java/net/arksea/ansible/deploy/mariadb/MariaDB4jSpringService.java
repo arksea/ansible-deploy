@@ -94,7 +94,6 @@ public class MariaDB4jSpringService extends ch.vorburger.mariadb4j.MariaDB4jServ
     public void stop() {
         logger.info("MariaDB4jSpringService.stop()");
         try {
-            Thread.sleep(10_000);
             super.stop();
         } catch (Exception e) {
             lastException = e;

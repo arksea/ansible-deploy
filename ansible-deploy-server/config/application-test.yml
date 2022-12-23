@@ -5,7 +5,7 @@ spring:
     username: root
     password:
   jpa:
-    hibernate.ddl-auto: create-drop
+    hibernate.ddl-auto: create
 
 mariaDB4j:
   port: 3307

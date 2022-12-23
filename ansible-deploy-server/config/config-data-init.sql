@@ -34,8 +34,6 @@ INSERT INTO `sys_roles_permissions` (`role_id`, `permission_id`) VALUES (5, 11);
 INSERT INTO `sys_roles_permissions` (`role_id`, `permission_id`) VALUES (6, 11);
 INSERT INTO `sys_roles_permissions` (`role_id`, `permission_id`) VALUES (7, 5);
 INSERT INTO `sys_roles_permissions` (`role_id`, `permission_id`) VALUES (7, 7);
-INSERT INTO `sys_users` (`id`, `email`, `last_login`, `locked`, `name`, `password`, `register_date`, `salt`) VALUES (2, 'test-aop@163.com', '2020-11-24 16:18:40', b'0', 'user', '{noop}password', '2020-11-24 16:18:40', 'jxOh054/avZ+Mq/a7ybW8VB439miOFwRhJ3SyivzmiU=');
-INSERT INTO `sys_users_roles` (`user_id`, `role_id`) VALUES (2, 2);
 INSERT INTO `dp2_app_type` (`id`, `description`, `name`) VALUES (1, 'Java Web应用，容器为Tomcat8.0.3', 'Tomcat');
 INSERT INTO `dp2_app_type` (`id`, `description`, `name`) VALUES (2, 'Java应用，不依赖于容器，直接使用java -jar方式启动', 'JavaServer');
 INSERT INTO `dp2_app_type` (`id`, `description`, `name`) VALUES (3, '用Shell脚本启动的应用: 启动(startup.sh)，停止(shutdown.sh)', 'Command');

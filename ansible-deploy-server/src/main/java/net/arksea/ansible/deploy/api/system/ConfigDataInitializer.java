@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -26,6 +27,9 @@ public class ConfigDataInitializer {
 
     @Autowired
     AuthService authService;
+
+    @Resource(name="systemProfile")
+    String systemProfile;
 
     JdbcTemplate jdbcTemplate;
 
@@ -58,9 +62,17 @@ public class ConfigDataInitializer {
     }
 
     private void init(Connection conn) throws Exception {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/config-data-init.sql")));
+        if ("test".equals(systemProfile)) {
+            init(conn, "/config-data-init-test.sql");
+        } else {
+             init(conn, "/config-data-init.sql");
+        }
+    }
+
+    private void init(Connection conn, String sqlFile) throws Exception {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(sqlFile)));
         String line = reader.readLine();
-        while(line != null) {
+        while (line != null) {
             conn.prepareStatement(line).executeUpdate();
             line = reader.readLine();
         }

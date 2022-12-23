@@ -21,7 +21,7 @@ public class MariaDB4jSpringService extends ch.vorburger.mariadb4j.MariaDB4jServ
     public final static String CHAR_SET = "mariaDB4j.charSet";
     public final static String COLLATION = "mariaDB4j.collation";
 
-    protected ManagedProcessException lastException;
+    protected Exception lastException;
 
     @Value("${" + PORT + ":-1}")
     int port;
@@ -46,10 +46,6 @@ public class MariaDB4jSpringService extends ch.vorburger.mariadb4j.MariaDB4jServ
 
     @Value("${" + OS_USER + ":NA}")
     String osUser;
-
-    public ManagedProcessException getLastException() {
-        return lastException;
-    }
 
     @Value("${" + CHAR_SET + ":NA}")
     String charSet;
@@ -98,8 +94,9 @@ public class MariaDB4jSpringService extends ch.vorburger.mariadb4j.MariaDB4jServ
     public void stop() {
         logger.info("MariaDB4jSpringService.stop()");
         try {
+            Thread.sleep(10_000);
             super.stop();
-        } catch (ManagedProcessException e) {
+        } catch (Exception e) {
             lastException = e;
             throw new IllegalStateException("MariaDB4jSpringService stop() failed", e);
         }

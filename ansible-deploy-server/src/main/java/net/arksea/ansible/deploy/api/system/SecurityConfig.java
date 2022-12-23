@@ -83,7 +83,8 @@ public class SecurityConfig {
         //从前往后找到匹配上的第一条规则，就不再继续匹配
         return authorize -> authorize
             .antMatchers("/api/signup","/api/sys/openRegistry","/api/logout/success").permitAll()
-            .anyRequest().authenticated();
+            .antMatchers("/api/**").authenticated()
+            .anyRequest().permitAll();
     }
 
     @Bean

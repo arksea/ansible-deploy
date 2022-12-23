@@ -75,3 +75,38 @@ application {
 		manifest.attributes 'Class-Path': configurations.runtimeClasspath.collect { 'lib/' + it.getName() }.join(' ') + " config/"
 	}
 }
+task ngBuild(type: Exec) {
+	workingDir '../ansible-deploy-web'
+	commandLine 'cmd', '/c', 'ng build --prod'
+}
+task copyWebFiles {
+	doLast {
+		delete fileTree('build/resources/main/static')
+		copy {
+			from "../ansible-deploy-web/dist/aop-web"
+			into "build/resources/main/static/"
+		}
+	}
+}
+classes.dependsOn copyWebFiles
+task publish {
+	dependsOn build
+	doLast {
+		//拷贝前先删除部署目录
+		delete fileTree('publish')
+		copy { //拷贝本项目打包的jar文件
+			from "build/libs/${project.name}-${version}-plain.jar"
+			rename { "${project.name}-${version}.jar" }
+			into 'publish/'
+		}
+		copy { //拷贝依赖库
+			from configurations.runtimeClasspath
+			into 'publish/lib'
+		}
+		copy { //拷贝配置文件
+			from 'config/'
+			into 'publish/config'
+			exclude 'application-dev.yml','application-test.yml'
+		}
+	}
+}

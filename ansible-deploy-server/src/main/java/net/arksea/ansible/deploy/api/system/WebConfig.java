@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.CacheControl;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.config.annotation.*;
-import org.springframework.web.servlet.resource.VersionResourceResolver;
 
 import java.time.Duration;
 
@@ -21,8 +20,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/").setViewName("/index.html");
-        registry.addViewController("/web/**").setViewName("/index.html");
+        registry.addRedirectViewController("/", "/index.html");
+        registry.addRedirectViewController("/web/**", "/index.html");
     }
 
     @Override

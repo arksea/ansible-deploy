@@ -1,0 +1,34 @@
+spring:
+  datasource:
+    url: jdbc:mysql://testdb:3306/deploy_server?autoReconnect=true&failOverReadOnly=false&useUnicode=true&characterEncoding=utf-8&&zeroDateTimeBehavior=convertToNull
+    username: test
+    password: test
+  jpa:
+    hibernate.ddl-auto: "update"
+    properties:
+      hibernate.show_sql: true
+  task:
+    scheduling:
+      thread-name-prefix: "scheduling-"
+      pool.size: 1
+
+server:
+  port: 8080
+
+logging:
+  file:
+    path: logs
+  level:
+    org.springframework.web: INFO
+    net.arksea.ansible.deploy: DEBUG
+    #org.springframework.security: DEBUG
+    #org.springframework.boot.autoconfigure: DEBUG
+
+job:
+  workRoot: ./job-work
+  logExpireDays: 3
+  notify:
+    mail:
+      username: test-devop@qq.com
+      password: 1234
+      from: test-devop@qq.com

@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: AnsibleDeploy
+
+server:
+  port: 8062
+
+jwt:
+  private.key: classpath:security.key
+  public.key: classpath:security.pub
+
+job:
+  notify:
+    mail:
+      host: smtp.exmail.qq.com
+      port: 465
+      timeout: 20000
+      ssl: true

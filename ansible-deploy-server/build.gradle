@@ -1,0 +1,112 @@
+plugins {
+	id 'java'
+	id 'application'
+	id 'org.springframework.boot' version '2.7.6'
+	id 'io.spring.dependency-management' version '1.1.0'
+}
+
+group = 'net.arksea'
+version = '2.0.0'
+
+repositories {
+	mavenLocal()
+	maven {
+		allowInsecureProtocol true
+		url "http://nexus.arksea.net:8081/nexus/content/groups/public/"
+	}
+	mavenCentral()
+}
+
+configurations {
+	all { //与spring-boot-starter-log4j2冲突
+		exclude module: 'logback-classic'
+		exclude module: 'log4j-to-slf4j'
+	}
+}
+
+dependencies {
+	//Spring框架
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+	implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+
+	//依赖的第三方库
+	implementation 'org.apache.commons:commons-lang3'
+	implementation 'commons-codec:commons-codec'
+	implementation 'com.sun.mail:javax.mail:1.6.2'
+
+	implementation 'com.typesafe.akka:akka-actor_2.12:2.5.11'
+	implementation 'com.typesafe.akka:akka-remote_2.12:2.5.11'
+	implementation 'com.typesafe.akka:akka-cluster_2.12:2.5.11'
+	implementation 'com.typesafe.akka:akka-slf4j_2.12:2.5.11'
+	implementation 'org.scala-lang:scala-library:2.12.4'
+
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	testImplementation 'org.springframework.security:spring-security-test'
+	//window下运行mysql_install_db不支持--tmpdir参数
+	//直接使用mariaDB4j-springboot会导致启动失败，所以重载并删除了此参数
+	//另外添加了支持UTF-8编码的参数： --character-set-server --collation-server
+	//testImplementation 'ch.vorburger.mariaDB4j:mariaDB4j-springboot:2.6.0'
+	testImplementation 'ch.vorburger.mariaDB4j:mariaDB4j:2.6.0'
+	testImplementation 'org.mariadb.jdbc:mariadb-java-client'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+application {
+	mainClass = 'net.arksea.ansible.deploy.AnsibleDeployApplication'
+	applicationDefaultJvmArgs = ['-Dfile.encoding=utf-8','-Dspring.profiles.active=dev']
+	run {
+		classpath = sourceSets.main.runtimeClasspath + files('config/')
+	}
+	test {
+		classpath = sourceSets.test.runtimeClasspath + sourceSets.main.runtimeClasspath + files('config/')
+	}
+	jar {
+		manifest.attributes 'Main-Class': mainClass
+		manifest.attributes 'Class-Path': configurations.runtimeClasspath.collect { 'lib/' + it.getName() }.join(' ') + " config/"
+	}
+}
+task ngBuild(type: Exec) {
+	workingDir '../ansible-deploy-web'
+	commandLine 'cmd', '/c', 'ng build --prod'
+}
+task copyWebFiles {
+	doLast {
+		delete fileTree('build/resources/main/static')
+		copy {
+			from "../ansible-deploy-web/dist/aop-web"
+			into "build/resources/main/static/"
+		}
+	}
+}
+classes.dependsOn copyWebFiles
+task publish {
+	dependsOn build
+	doLast {
+		//拷贝前先删除部署目录
+		delete fileTree('publish')
+		copy { //拷贝本项目打包的jar文件
+			from "build/libs/${project.name}-${version}-plain.jar"
+			rename { "${project.name}-${version}.jar" }
+			into 'publish/'
+		}
+		copy { //拷贝依赖库
+			from configurations.runtimeClasspath
+			into 'publish/lib'
+		}
+		copy { //拷贝配置文件
+			from 'config/'
+			into 'publish/config'
+			exclude 'application-dev.yml','application-test.yml'
+		}
+	}
+}

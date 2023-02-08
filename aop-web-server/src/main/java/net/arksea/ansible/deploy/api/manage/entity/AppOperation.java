@@ -60,6 +60,7 @@ public class AppOperation extends IdEntity {
 
     @OneToMany(mappedBy = "operationId", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Fetch(FetchMode.SELECT)
+    @OrderBy("id")
     public Set<AppOperationCode> getCodes() {
         return codes;
     }
@@ -70,6 +71,7 @@ public class AppOperation extends IdEntity {
 
     @OneToMany(mappedBy = "operationId", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(FetchMode.SELECT)
+    @OrderBy("id")
     public Set<OperationVarDefine> getVarDefines() {
         return varDefines;
     }

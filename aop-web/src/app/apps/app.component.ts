@@ -77,6 +77,9 @@ export class AppComponent implements OnInit {
     }
 
     hasHostChecked(ver: Version): boolean {
+        if (ver.targetHosts.length == 0) {
+            return true
+        }
         for (let h of ver.targetHosts) {
             let name = this.checkName(ver, h)
             let c = this.hostChecked.get(name)

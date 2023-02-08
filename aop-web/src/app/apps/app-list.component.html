@@ -29,13 +29,13 @@
                             新建应用
                         </button>
                         <div class="dropdown-menu" aria-labelledby="btnGroupDropNewApp">
-                            <a class="dropdown-item" *ngFor="let t of appTypes"
+                            <a class="dropdown-item" *ngFor="let t of svc.appTypes"
                                 (click)="onNewBtnClick(t)">{{t.name}}</a>
                         </div>
                     </div>
                 </div>
             </li>
-            <li *ngFor="let a of appList.items;index as i;" class="list-group-item">
+            <li *ngFor="let a of svc.appList.items;index as i;" class="list-group-item">
                 <div class="d-flex">
                     <div class="w-75 mr-auto">
                         <p class="d-flax">
@@ -82,7 +82,7 @@
             </li>
         </ul>
     </div>
-    <mat-paginator [length]="appList.total" [pageSize]="pageSize" [pageSizeOptions]="[14, 30, 50, 100]"
+    <mat-paginator [length]="svc.appList.total" [pageSize]="svc.pageSize" [pageSizeOptions]="[14, 30, 50, 100]"
         (page)="onPageEvent($event)">
     </mat-paginator>
 </div>

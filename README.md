@@ -56,94 +56,48 @@
    
 ### 三、Ansible Deploy系统安装
 
-Ansible Deploy的安装很简单，因为是Java开发所以基本就是配置JDK与Tomcat就好了。
-
-##### 1、创建deploy用户用于系统运行
-
-##### 2、安装JDK1.8.xxx，配置PATH与JAVA_HOME
-
-##### 3、安装Tomcat8到$HOME/tomcat
-
-##### 4、将[ansible-deploy-0.9.zip](https://download.csdn.net/download/arksea/13206097)安装包解压到以下目录
-
-```text
-$HOME/tomcat/webapps/aop-web-server/
+##### 1、编译打包
+```
+gradle publish
+```
+以上命令会把资源拷贝到publish目录
+```dtd
+publish
+ |_ config
+ |_ lib
+ |_ ansible-deploy-server-0.9.6.jar
 ```
 
-如需自己编译需要注意一下，依赖的另一个工具项目要先配置到本地或代码库里：
+##### 2、创建deploy用户用于系统运行
+- 拷贝打包的文件到deploy目录
+- 下载Ansible，并为被管理的主机配置免密登录，详见第四节
 
-    ![restapi-utils](https://github.com/arksea/restapi-utils)
+##### 3、安装JDK1.8.xxx，配置PATH与JAVA_HOME
 
-##### 5、配置$HOME/tomcat/conf/server.xml，如果是新的版本需要自己调整一下
+##### 4、修改系统配置
 
-```xml
-<?xml version='1.0' encoding='utf-8'?>
-<Server port="8261" shutdown="SHUTDOWN">
-  <Listener className="org.apache.catalina.startup.VersionLoggerListener" />
-  <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
-  <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" />
-  <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
-  <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener" />
-  <GlobalNamingResources>
-    <Resource name="UserDatabase" auth="Container"
-              type="org.apache.catalina.UserDatabase"
-              description="User database that can be updated and saved"
-              factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
-              pathname="conf/tomcat-users.xml" />
-  </GlobalNamingResources>
-  <Service name="Catalina">
-    <Connector port="8062" protocol="HTTP/1.1" connectionTimeout="20000"  redirectPort="8462" />
-    <Connector port="8661" protocol="AJP/1.3" redirectPort="8462" />
-    <Engine name="Catalina" defaultHost="localhost">
-      <Realm className="org.apache.catalina.realm.LockOutRealm">
-        <Realm className="org.apache.catalina.realm.UserDatabaseRealm" resourceName="UserDatabase"/>
-      </Realm>
-      <Host name="localhost"  appBase="webapps/ansible-deploy" unpackWARs="false" autoDeploy="false">
-        <Context path="" docBase=""  reloadable="true" caseSensitive="false" debug="0"></Context>
-      </Host>
-    </Engine>
-  </Service>
-</Server>
+- application.yml修改以下配置 
+
+   server.port 
+
+   jwt秘钥
+
+   通知邮箱smtp服务器地址
+
+
+- application-prod.yml修改以下配置 
+
+   修改数据库连接配置
+
+   通知邮箱用户名密码
+
+##### 6、启动应用
+```sh
+java -jar ansible-deploy-server-xxxx.jar -Dfile.encoding=utf-8 -Dspring.profiles.active=prod
 ```
 
-##### 6、修改系统配置，主要是数据库连接配置
-
-配置文件位置：$HOME/tomcat/webapps/aop-web-server/WEB-INF/classes/application.properties
-```properties
-
-jdbc.driver=com.mysql.jdbc.Driver
-jdbc.url=jdbc:mysql://127.0.0.1:3306/deployserver?autoReconnect=true&failOverReadOnly=false&useUnicode=true&characterEncoding=utf-8
-jdbc.username=deploy
-jdbc.password=123456
-
-shiro.cipherKey=4AvVhmFLUs0KTA3Kprsdag==
-heartBeat.setStatusKey=123456
-
-```
-除了需要配置MySQL数据库连接的用户名密码，需要说明的做是两个
-
-###### 1)、shiro.cipherKey 系统登录的秘钥
-
-秘钥为16字节128位随机数的Base64编码，以下是生成代码：
-
-```groovy
-  SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
-  byte[] bytes = new byte[16];
-  secureRandom.nextBytes(bytes);
-  System.out.println((org.apache.shiro.codec.Base64.encodeToString(bytes)));
-```
-
-###### 2)、heartBeat.setStatusKey
-
-用于调用HTTP心跳API接口设置系统上下线的秘钥，没有格式要求，调用方法如下
-
-    url: http://localhost:{{http_port}}/heartbeat
-    method: PUT
-    body: "OFFLINE;123456"
-
-
-##### 7、系统运行后需要先注册admin用户，系统会默认为admin用户分配系统管理角色，注册后可能需要刷新页面。
-
+##### 7、系统运行后需要先注册admin用户
+  系统会默认为admin用户分配系统管理角色，注册后需要刷新页面。
 
 ### 四、附带的部署脚本例子
 
@@ -168,9 +122,9 @@ task publishToSvnOnline(type: Exec) {
 
 将Ansible安装到$HOME/ansible
 
-Ansible的具体安装步骤可以直接看官网的文档，就简单的几步。
+Ansible的具体安装步骤可以直接看官网的文档。
 
-虽然起了个Ansible Deploy的名字，实际上系统加了脚本配置的功能后，实际上并不一定要基于Ansible，也不一定用于Deploy，
+虽然起了个Ansible Deploy的名字，实际上并不一定要基于Ansible，也不一定用于Deploy，
 任何可以执行的脚本都可以执行，比如Groovy、Python等，所以需要什么脚本就安装什么环境吧。因为内置的部署脚本实例是基于Ansible，所以需要安装Ansible。
 
 #### 3、配置部署主控服务器对目标主机的SSH无密码登录
@@ -195,7 +149,7 @@ root ALL=(ALL) ALL
 op ALL=(ALL) NOPASSWD:ALL
 ```
 
-##### 3) 用刚才创建的op用户登录主库服务器生成秘钥
+##### 3) 用刚才创建的op用户登录主控服务器生成秘钥
 
 用ssh-key-gen 在主控服务器上创建公钥和密钥
 
